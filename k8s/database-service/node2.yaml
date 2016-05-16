@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: database-node2
+  labels:
+    name: database
+    node: node2
+spec:
+  containers:
+    -
+      name: database-node2
+      image: paunin/postgresql-cluster-pgsql
+      env:
+        -
+          name: "REPLICATION_PRIMARY_HOST"
+          value: "database-node1-service"
+        -
+          name: "NODE_ID"
+          value: "2"
+        -
+          name: "NODE_NAME"
+          value: "node2"
+        -
+          name: "CLUSTER_NODE_NETWORK_NAME"
+          value: "database-node2-service"
+        -
+          name: "REPLICATION_UPSTREAM_NODE_ID"
+          value: "1"
+        -
+          name: "REPLICATION_STANDBY_START_DELAY"
+          value: "60"
+        -
+          name: "REPLICATION_DAEMON_START_DELAY"
+          value: "180"
+        -
+          name: "CLUSTER_NODE_REGISTER_DELAY"
+          value: "15"
+      ports:
+        -
+          containerPort: 5432
+----
+apiVersion: v1
+kind: Service
+metadata:
+  name: database-node2-service
+  labels:
+    name: database
+    node: node2
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    name: database
+    node: node2

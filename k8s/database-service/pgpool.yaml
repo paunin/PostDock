@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: database-pgpool
+  labels:
+    name: database-balancer
+    node: pgpool
+spec:
+  containers:
+    -
+      name: database-pgpool
+      image: paunin/postgresql-cluster-pgpool
+      env: # those variables are not secret as it's just initial state of DB
+        -
+          name: "PCP_USER"
+          value: "pcp_user"
+        -
+          name: "PCP_PASSWORD"
+          value: "pcp_pass"
+        -
+          name: "PGPOOL_START_DELAY"
+          value: "120"
+        -
+          name: "REPLICATION_USER"
+          value: "replication_user"
+        -
+          name: "REPLICATION_PASSWORD"
+          value: "replication_pass"
+        -
+          name: "SEARCH_PRIMARY_NODE_TIMEOUT"
+          value: "5"
+        -
+          name: "DB_USERS"
+          value: "monkey_user:monkey_pass"
+        -
+          name: "BACKENDS"
+          value: "0:database-node1-service:5432:1:/var/lib/postgresql/data:ALLOW_TO_FAILOVER,1:database-node2-service::::,2:database-node3-service::::,3:database-node4-service::::,4:database-node5-service::::"
+
+      ports:
+        -
+          containerPort: 5432
+----
+apiVersion: v1
+kind: Service
+metadata:
+  name: database-pgpool-service
+  labels:
+    name: database-balancer
+    node: pgpool
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  externalIPs:
+    - 192.168.99.100
+  selector:
+    name: database-balancer
+    node: pgpool
