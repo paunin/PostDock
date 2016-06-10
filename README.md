@@ -115,6 +115,10 @@ It's possible because pgpool does'not control cluster and does dummy balancing w
 
 * Killing of node in the middle (e.g. pgslave1) will cause dieing of whole branch (https://groups.google.com/forum/?hl=fil#!topic/repmgr/lPAYlawhL0o)
 
+## FAQ
+
+* [How to promote master, after failover on postgresql with docker](http://stackoverflow.com/questions/37710868/how-to-promote-master-after-failover-on-postgresql-with-docker)
+
 ## Documentation and manuals
 
 * Streaming replication in postgres: https://wiki.postgresql.org/wiki/Streaming_Replication
