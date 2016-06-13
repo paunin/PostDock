@@ -10,6 +10,9 @@ volumes:
 services:
     pgmaster:
         image: paunin/postgresql-cluster-pgsql
+#        build:
+#            context: .
+#            dockerfile: Pgsql.Dockerfile
         volumes:
             - "cluster-archives:/var/cluster_archive"
         environment:
@@ -25,6 +28,12 @@ services:
             POSTGRES_PASSWORD: monkey_pass
             POSTGRES_USER: monkey_user
             POSTGRES_DB: monkey_db
+
+            CONFIGS: "listen_addresses:'*'"
+                                  # in format variable1:value1[,variable2:value2[,...]]
+                                  # used for pgpool.conf file
+
+
 
             #defaults:
             CLUSTER_NODE_REGISTER_DELAY: 5 # default is 5
@@ -43,6 +52,9 @@ services:
 #<<< Branch 1
     pgslave1:
         image: paunin/postgresql-cluster-pgsql
+#        build:
+#            context: .
+#            dockerfile: Pgsql.Dockerfile
         depends_on:
             - pgmaster
         volumes:
@@ -63,6 +75,9 @@ services:
     # Add more slaves if required
     pgslave2:
         image: paunin/postgresql-cluster-pgsql
+#        build:
+#            context: .
+#            dockerfile: Pgsql.Dockerfile
         depends_on:
             - pgslave1
         volumes:
@@ -84,6 +99,9 @@ services:
 #<<< Branch 2
     pgslave3:
         image: paunin/postgresql-cluster-pgsql
+#        build:
+#            context: .
+#            dockerfile: Pgsql.Dockerfile
         depends_on:
             - pgmaster
         volumes:
@@ -103,6 +121,9 @@ services:
 
     pgslave4:
         image: paunin/postgresql-cluster-pgsql
+#        build:
+#            context: .
+#            dockerfile: Pgsql.Dockerfile
         depends_on:
             - pgslave3
         volumes:
@@ -123,6 +144,9 @@ services:
 #>>> Branch 2
     pgpool:
         image: paunin/postgresql-cluster-pgpool
+#        build:
+#            context: .
+#            dockerfile: Pgpool.Dockerfile
         depends_on:
             - pgmaster
             - pgslave1
@@ -135,8 +159,6 @@ services:
             REPLICATION_USER: replication_user
             REPLICATION_PASSWORD: replication_pass
 
-            SEARCH_PRIMARY_NODE_TIMEOUT: 5 # default: 10
-
             DB_USERS: monkey_user:monkey_pass # in format user:password[,user:password[...]]
             BACKENDS: "0:pgmaster:5432:1:/var/lib/postgresql/data:ALLOW_TO_FAILOVER,1:pgslave1::::,2:pgslave2::::,3:pgslave3::::"
                       # in format num:host:port:weight:data_directory:flag[,...]
@@ -145,6 +167,9 @@ services:
                       #   weight: 1
                       #   data_directory: /var/lib/postgresql/data
                       #   flag: ALLOW_TO_FAILOVER
+            CONFIGS: "num_init_children:250,max_pool:4,search_primary_node_timeout:5"
+                      # in format variable1:value1[,variable2:value2[,...]]
+                      # used for pgpool.conf file
         ports:
             - 5430:5432
             - 9898:9898 # PCP

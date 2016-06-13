@@ -27,9 +27,6 @@ spec:
           name: "REPLICATION_PASSWORD"
           value: "replication_pass"
         -
-          name: "SEARCH_PRIMARY_NODE_TIMEOUT"
-          value: "5"
-        -
           name: "DB_USERS"
           value: "monkey_user:monkey_pass"
         -

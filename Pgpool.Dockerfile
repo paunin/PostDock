@@ -9,6 +9,4 @@ COPY ./configs_pgpool /var/pgpool_configs
 
 RUN chmod +x -R /usr/local/bin/pgpool
 
-ENV SEARCH_PRIMARY_NODE_TIMEOUT 10
-
 CMD ["/usr/local/bin/pgpool/entrypoint.sh"]
