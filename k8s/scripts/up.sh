@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
+NAMESPACE="app"
+CLUSTER_HOST="http://127.0.0.1:8080"
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-source $DIR"/setup_context.sh"
 
 CONFIG_CONTEXT="dev"
 
 echo "> Creating services..."
 
-kubectl create ns $NAMESPACE
-kubectl create -f k8s/database-service/*
+kubectl create --server=$CLUSTER_HOST ns $NAMESPACE
+kubectl create --server=$CLUSTER_HOST --namespace=$NAMESPACE -f k8s/database-service/

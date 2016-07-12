@@ -1,3 +1,28 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: data-volume-1
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 3Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/tmp/data-volume-1"
+----
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: data-claim-1
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+----
 apiVersion: v1
 kind: Pod
 metadata:
@@ -50,9 +75,20 @@ spec:
         -
           name: "REPLICATION_PASSWORD"
           value: "replication_pass"
+        -
+          name: "CONFIGS"
+          value: "autovacuum:on"
       ports:
         -
           containerPort: 5432
+      volumeMounts:
+        - mountPath:  /var/lib/postgresql/data
+          name: pg-data-volume
+  volumes:
+    - name: pg-data-volume
+      persistentVolumeClaim:
+        claimName: data-claim-1
+
 ----
 apiVersion: v1
 kind: Service
