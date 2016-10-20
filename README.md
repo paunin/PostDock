@@ -88,11 +88,6 @@ Role      | Name  | Upstream | Connection String
   standby | node4 | node2    | user=replication_user password=replication_pass host=pgslave3 dbname=replication_db port=5432
 ```
 
-### Time management in cluster
-You should take care about delays of starts for different parts of the cluster.
-Pgpool should be the last one to start, standbys servers should start after upstreams, etc
-In docker-compose you can find example of `_DELAY`-s but it still can be wrong.
-According your system and it's performance you should adjust those env variables.
 
 ## Useful commands
 

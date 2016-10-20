@@ -26,15 +26,6 @@ spec:
         -
           name: "REPLICATION_UPSTREAM_NODE_ID"
           value: "4"
-        -
-          name: "REPLICATION_STANDBY_START_DELAY"
-          value: "120"
-        -
-          name: "REPLICATION_DAEMON_START_DELAY"
-          value: "180"
-        -
-          name: "CLUSTER_NODE_REGISTER_DELAY"
-          value: "15"
       ports:
         -
           containerPort: 5432

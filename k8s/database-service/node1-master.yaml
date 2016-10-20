@@ -58,12 +58,6 @@ spec:
           name: "POSTGRES_DB"
           value: "monkey_db"
         -
-          name: "CLUSTER_NODE_REGISTER_DELAY"
-          value: "20"
-        -
-          name: "REPLICATION_DAEMON_START_DELAY"
-          value: "180"
-        -
           name: "CLUSTER_NAME"
           value: "pg_cluster"
         -

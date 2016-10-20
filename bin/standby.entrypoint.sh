@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e
-echo ">>> Waiting $REPLICATION_STANDBY_START_DELAY seconds to start standby node"
-sleep $REPLICATION_STANDBY_START_DELAY
+
+wait_db $REPLICATION_PRIMARY_HOST $REPLICATION_PRIMARY_PORT $REPLICATION_USER $REPLICATION_PASSWORD $REPLICATION_DB
+
 echo ">>> Starting standby node..."
 
 if [ ! -d "/var/cluster_archive" ]; then
@@ -19,9 +20,6 @@ if [ `ls $PGDATA/ | wc -l` = "0" ]; then
     chown -R postgres /run/postgresql
 
     PGPASSWORD=$REPLICATION_PASSWORD gosu postgres repmgr -h $REPLICATION_PRIMARY_HOST -U $REPLICATION_USER -d $REPLICATION_DB -D $PGDATA standby clone
-#    echo "trigger_file = '/tmp/pg_replica_trigger'" >> $PGDATA/recovery.conf
-#    echo "restore_command = 'cp /var/cluster_archive/%f \"%p\"'" >> $PGDATA/recovery.conf
-    /usr/local/bin/cluster/repmgr_register.sh
 fi
 
 
