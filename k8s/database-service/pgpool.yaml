@@ -18,9 +18,6 @@ spec:
           name: "PCP_PASSWORD"
           value: "pcp_pass"
         -
-          name: "PGPOOL_START_DELAY"
-          value: "120"
-        -
           name: "REPLICATION_USER"
           value: "replication_user"
         -

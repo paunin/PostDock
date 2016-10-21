@@ -1,9 +1,5 @@
 #!/bin/bash
 
-echo ">>> Waiting for $PGPOOL_START_DELAY seconds to start pgpool"
-sleep $PGPOOL_START_DELAY
-
-
 CONFIG_FILE='/etc/pgpool2/pgpool.conf'
 
 echo ">>> Adding user $PCP_USER for PCP"
@@ -48,6 +44,9 @@ backend_weight$NUM = $WEIGHT
 backend_data_directory$NUM = '$DIR'
 backend_flag$NUM = '$FLAG'
 " >> $CONFIG_FILE
+
+echo ">>> Waiting for backend  tcp://$HOST:$PORT to start pgpool"
+dockerize -wait tcp://$HOST:$PORT -timeout 250s
 
 done
 
