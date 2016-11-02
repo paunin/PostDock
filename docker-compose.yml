@@ -3,18 +3,12 @@ networks:
     cluster:
         driver: bridge
 
-volumes:
-    cluster-archives:
-        driver: local
-
 services:
     pgmaster:
 #        image: paunin/postgresql-cluster-pgsql
         build:
             context: .
             dockerfile: Pgsql.Dockerfile
-        volumes:
-            - "cluster-archives:/var/cluster_archive"
         environment:
 
             INITIAL_NODE_TYPE: master # Used by `repmgr register` as initial node role
@@ -54,8 +48,6 @@ services:
             dockerfile: Pgsql.Dockerfile
         depends_on:
             - pgmaster
-        volumes:
-            - "cluster-archives:/var/cluster_archive"
         environment:
             REPLICATION_PRIMARY_HOST: pgmaster
             NODE_ID: 2
@@ -77,8 +69,6 @@ services:
             dockerfile: Pgsql.Dockerfile
         depends_on:
             - pgslave1
-        volumes:
-            - "cluster-archives:/var/cluster_archive"
         environment:
             REPLICATION_PRIMARY_HOST: pgslave1 # I want to have cascade Streeming replication
             NODE_ID: 3
@@ -100,8 +90,6 @@ services:
             dockerfile: Pgsql.Dockerfile
         depends_on:
             - pgmaster
-        volumes:
-            - "cluster-archives:/var/cluster_archive"
         environment:
             REPLICATION_PRIMARY_HOST: pgmaster
             NODE_ID: 4
@@ -122,8 +110,6 @@ services:
             dockerfile: Pgsql.Dockerfile
         depends_on:
             - pgslave3
-        volumes:
-            - "cluster-archives:/var/cluster_archive"
         environment:
             REPLICATION_PRIMARY_HOST: pgslave3
             NODE_ID: 5
