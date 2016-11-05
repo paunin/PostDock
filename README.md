@@ -27,26 +27,19 @@ Please check comments for each ENV variable in [docker-compose](./docker-compose
 
 ## Strat cluster in Kubernetes
 
-To make it easier repository contains scripts for starting cluster using docker-machine and services' objects under `k8s` dir
-Requires software: `docker-machine` and `kubectl`
+To make it easier repository contains services' objects under `k8s` dir
 
-* Start k8s cluster by command `./k8s/scripts/cluster/up.sh` and wait until all pods up (to check it you acn use command `kubectl get pod --all-namespaces`)
-Sometimes you can have problem with auto installation of DNS (after message `Unable to connect to the server: EOF`)
-So do it manually with commands `docker-machine ssh $(docker-machine active) -N -L 8080:localhost:8080`(in separate terminal), `kubectl create namespace kube-system && kubectl create -f ./build/skydns.yaml`
-* Start postgres cluster
-    * If you have good fast machine and can relay on timeouts in configs `./k8s/scripts/up.sh` and check all pods are ready `kubectl get pod`
-    * However you can install layers of the system one by one with checking pods' status:
-        * Setup namespace and context of cluster: `./k8s/scripts/setup_context.sh && kubectl create ns app` (check namespace exists `kubectl get ns`)
-        * Create master node `kubectl create -f ./k8s/database-service/node1-master.yaml`
-        * Create first level of cluster `kubectl create -f ./k8s/database-service/node2.yaml && kubectl create -f ./k8s/database-service/node4.yaml` (node2 and node4 need around 4 minutes to start daemon)
-        * Create second level of cluster `kubectl create -f ./k8s/database-service/node3.yaml && kubectl create -f ./k8s/database-service/node5.yaml` (node3 and node5 need around 6 minutes to start daemon)
-        * Create pgpool endpoint `kubectl create -f ./k8s/database-service/pgpool.yaml` (need around 3 minutes to start service)
+* Requires software: `minikube` (for local tests) and `kubectl`
+* Using [minikube](https://github.com/kubernetes/minikube) you can start local Kubernetes cluster: `minikube start`, `minikube env`
+* Setup PostgreSQL cluster: `kubectl create -f ./k8s/database-service/`
 * Check everything works as expected
     * In each container you should see in logs 2 things:
         * Node registration success after line  `>>> Registering node with initial role master|standby`
         * Repmgr daemon started successfully after line `>>> Starting repmgr daemon...`
-    * Connect to postgresql cluster endpoint and make some read and write queries: `PGPASSWORD=monkey_pass psql -Umonkey_user -h192.168.99.100 -p5430 monkey_db`
-    * Check status/topology of the cluster (e.g. from master node) `docker exec -it "$(docker ps | grep 'postgresql-cluster-pgsql' | grep node1 | awk '{print $1}')" gosu postgres repmgr cluster show`
+    * Correct DB operating:
+      * Connect to any `pgsql` node to be able to access DB 
+      * Do some read and write queries after connecting be command `PGPASSWORD=monkey_pass psql -U monkey_user -h ddatabase-pgpool-service -p 5432 monkey_db`
+    * Check status/topology of the cluster (e.g. from master node) `gosu postgres repmgr cluster show`
 
 Initial topology:
 ```
@@ -73,7 +66,7 @@ Role      | Name  | Upstream | Connection String
 ## Some rules of using cluster
 
 ### Docker compose restart
-Don't try restart docker-compose without cleaning volumes after any failover (unless you use env variable FORCE_CLEAN=1 in each container)
+Don't try restart `docker-compose` without cleaning volumes after any failover (unless you use env variable `FORCE_CLEAN=1` in each container)
 You should update cluster with new topology manually because second start of initial master will bring inconsistent in the cluster.
 Optionally you can reconfigure your pgpool to ignore initial master before second start
 
@@ -99,12 +92,6 @@ Role      | Name  | Upstream | Connection String
 
 Kill master container and in a few moments cluster will define new master node,
 and Pgpool will try to detect new primary node for write access automatically.
-
-## Improvements
-
-Instead of one pgpool node you can have as many as you wish and balance load on them.
-It's possible because pgpool does'not control cluster and does dummy balancing with primary server detection.
-
 
 ## Known problems
 
