@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 DB_EXISTS=''
-MAX_TRIES=20
+MAX_TRIES=50
 SLEEP_TIME=5
 
 

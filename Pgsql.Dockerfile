@@ -1,7 +1,8 @@
 FROM postgres:9.5
-RUN echo deb http://debian.xtdv.net/debian jessie main > /etc/apt/sources.list && apt-get update
 
-RUN apt-get install -y repmgr
+RUN apt-get update
+RUN apt-get install -y postgresql-server-dev-9.5
+RUN apt-get install -y postgresql-9.5-repmgr
 
 ENV CLUSTER_NAME pg_cluster
 # special repmgr db for cluster info
