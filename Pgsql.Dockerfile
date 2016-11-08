@@ -30,5 +30,7 @@ RUN chmod -R +x /usr/local/bin/cluster && \
 
 COPY ./configs /var/cluster_configs
 
+VOLUME /var/lib/postgresql/data
+
 ENTRYPOINT ["/usr/local/bin/cluster/entrypoint.sh"]
 CMD ["postgres"]

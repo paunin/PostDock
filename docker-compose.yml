@@ -26,7 +26,7 @@ services:
             CONFIGS: "listen_addresses:'*'"
                                   # in format variable1:value1[,variable2:value2[,...]]
                                   # used for pgpool.conf file
-
+    
 
 
             #defaults:
@@ -131,7 +131,9 @@ services:
         depends_on:
             - pgmaster
             - pgslave1
-            - pgslave2
+            # - pgslave2
+            - pgslave3
+            # - pgslave4
         environment:
             PCP_USER: pcp_user
             PCP_PASSWORD: pcp_pass
