@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -e
 CONFIG_FILE='/etc/pgpool2/pgpool.conf'
 
 echo ">>> Adding user $PCP_USER for PCP"
