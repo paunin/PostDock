@@ -138,8 +138,9 @@ services:
             PCP_USER: pcp_user
             PCP_PASSWORD: pcp_pass
 
-            REPLICATION_USER: replication_user
-            REPLICATION_PASSWORD: replication_pass
+            CHECK_USER: monkey_user
+            CHECK_PASSWORD: monkey_pass
+            CHECK_PGCONNECT_TIMEOUT: 3 #timout for checking if primary node is healthy
 
             DB_USERS: monkey_user:monkey_pass # in format user:password[,user:password[...]]
             BACKENDS: "0:pgmaster:5432:1:/var/lib/postgresql/data:ALLOW_TO_FAILOVER,1:pgslave1::::,2:pgslave2::::,3:pgslave3::::"
