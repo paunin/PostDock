@@ -2,20 +2,29 @@
 set -e
 CONFIG_FILE='/etc/pgpool2/pgpool.conf'
 
+echo ">>> Opening access from all hosts by md5 in /etc/pgpool2/pool_hba.conf" #TODO: more configurable?
+echo "host all all 0.0.0.0/0 md5" > /etc/pgpool2/pool_hba.conf
+
 echo ">>> Adding user $PCP_USER for PCP"
 echo "$PCP_USER:`pg_md5 $PCP_PASSWORD`" >> /etc/pgpool2/pcp.conf
 cp -f /var/pgpool_configs/pgpool.conf /etc/pgpool2/
-
 
 echo ">>> Adding users for md5 auth"
 IFS=',' read -ra USER_PASSES <<< "$DB_USERS"
 for USER_PASS in ${USER_PASSES[@]}
 do
     IFS=':' read -ra USER <<< "$USER_PASS"
+    echo ">>>>>> Adding user ${USER[0]}"
     pg_md5 --md5auth --username="${USER[0]}" "${USER[1]}"
 done
-echo "host all all 0.0.0.0/0 md5" > /etc/pgpool2/pool_hba.conf
 
+echo ">>> Adding check user '$CHECK_USER' for md5 auth"
+pg_md5 --md5auth --username="$CHECK_USER" "$CHECK_PASSWORD"
+
+echo ">>> Adding user '$CHECK_USER' as check user"
+echo "
+sr_check_password = '$CHECK_PASSWORD'
+sr_check_user = '$CHECK_USER'" >> $CONFIG_FILE
 
 echo ">>> Adding backends"
 IFS=',' read -ra HOSTS <<< "$BACKENDS"
@@ -51,12 +60,6 @@ backend_flag$NUM = '$FLAG'
     dockerize -wait tcp://$HOST:$PORT -timeout 250s
 
 done
-
-echo ">>> Adding user '$CHECK_USER' as check user"
-echo "
-sr_check_password = '$CHECK_PASSWORD'
-sr_check_user = '$CHECK_USER'" >> $CONFIG_FILE
-
 
 echo ">>> Configuring $CONFIG_FILE"
 echo "
