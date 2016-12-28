@@ -2,7 +2,7 @@ FROM postgres:9.5
 ARG POSTGRES_VERSION=9.5
 
 RUN echo deb http://debian.xtdv.net/debian jessie main > /etc/apt/sources.list && apt-get update
-RUN apt-get install -y postgresql-server-dev-$POSTGRES_VERSION postgresql-$POSTGRES_VERSION-repmgr
+RUN apt-get install -y postgresql-server-dev-$POSTGRES_VERSION postgresql-$POSTGRES_VERSION-repmgr pgpool2
 
 ENV CLUSTER_NAME pg_cluster
 
