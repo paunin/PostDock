@@ -26,10 +26,19 @@ echo "
 sr_check_password = '$CHECK_PASSWORD'
 sr_check_user = '$CHECK_USER'" >> $CONFIG_FILE
 
+echo ">>> Adding user '$CHECK_USER' as health-check user"
+echo "
+health_check_password = '$CHECK_PASSWORD'
+health_check_user = '$CHECK_USER'" >> $CONFIG_FILE
+
 echo ">>> Adding backends"
+BACKENDS_COUNT=0
+
 IFS=',' read -ra HOSTS <<< "$BACKENDS"
 for HOST in ${HOSTS[@]}
 do
+    ACCESSABLE_NODE=false
+
     IFS=':' read -ra INFO <<< "$HOST"
 
     #default values
@@ -48,6 +57,14 @@ do
     [[ "${INFO[4]}" != "" ]] && DIR="${INFO[4]}"
     [[ "${INFO[5]}" != "" ]] && FLAG="${INFO[5]}"
 
+
+    echo ">>>>>> Waiting for backend $NUM to start pgpool (WAIT_BACKEND_TIMEOUT=$WAIT_BACKEND_TIMEOUT)"
+    dockerize -wait tcp://$HOST:$PORT -timeout "$WAIT_BACKEND_TIMEOUT"s && ACCESSABLE_NODE=true
+
+    $ACCESSABLE_NODE || echo ">>>>>> Will not add node $NUM - it's unreachable!"
+    $ACCESSABLE_NODE || continue
+
+    echo ">>>>>> Adding backend $NUM"
     echo "
 backend_hostname$NUM = '$HOST'
 backend_port$NUM = $PORT
@@ -56,10 +73,18 @@ backend_data_directory$NUM = '$DIR'
 backend_flag$NUM = '$FLAG'
 " >> $CONFIG_FILE
 
-    echo ">>>>>> Waiting for backend $NUM to start pgpool"
-    dockerize -wait tcp://$HOST:$PORT -timeout 250s
+    BACKENDS_COUNT=$((BACKENDS_COUNT+1))
 
 done
+
+echo ">>> Checking if we have enough backends to start"
+if [ "$REQUIRE_MIN_BACKENDS" != "0" ] && [ "$BACKENDS_COUNT" -lt "$REQUIRE_MIN_BACKENDS" ]; then
+    echo ">>>>>> Can not start pgpool with REQUIRE_MIN_BACKENDS=$REQUIRE_MIN_BACKENDS, BACKENDS_COUNT=$BACKENDS_COUNT"
+    exit 1
+else
+    echo ">>>>>> Will start pgpool REQUIRE_MIN_BACKENDS=$REQUIRE_MIN_BACKENDS, BACKENDS_COUNT=$BACKENDS_COUNT"
+fi
+
 
 echo ">>> Configuring $CONFIG_FILE"
 echo "

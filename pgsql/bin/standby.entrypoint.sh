@@ -10,7 +10,7 @@ if [ `ls $PGDATA/ | wc -l` = "0" ]; then
     chmod g+s /run/postgresql
     chown -R postgres /run/postgresql
     
-    echo ">>>>>> Clonning primary node..."
+    echo ">>>>>> Clonning primary node..." && sleep 5
     PGPASSWORD=$REPLICATION_PASSWORD gosu postgres repmgr -h $REPLICATION_PRIMARY_HOST -U $REPLICATION_USER -d $REPLICATION_DB -D $PGDATA standby clone
 fi
 

@@ -23,9 +23,6 @@ spec:
         ports:
           - containerPort: 5432
         env:
-          -
-            name: "SEARCH_PRIMARY_NODE_TIMEOUT"
-            value: "5"
           # pcp
           - name: "PCP_USER"
             valueFrom:

@@ -16,6 +16,8 @@ RUN chmod +x -R /usr/local/bin/pgpool
 ENV CHECK_USER replication_user
 ENV CHECK_PASSWORD replication_pass
 ENV CHECK_PGCONNECT_TIMEOUT 10
+ENV WAIT_BACKEND_TIMEOUT 120
+ENV REQUIRE_MIN_BACKENDS 0
 
 HEALTHCHECK --interval=1m --timeout=10s --retries=5 \
   CMD /usr/local/bin/pgpool/has_write_node.sh
