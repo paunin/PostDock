@@ -12,7 +12,7 @@ echo "
 " >> $CONFIG_FILE
 
 IFS=',' read -ra CONFIG_PAIRS <<< "$CONFIGS"
-for CONFIG_PAIR in ${CONFIG_PAIRS[@]}
+for CONFIG_PAIR in "${CONFIG_PAIRS[@]}"
 do
     IFS=':' read -ra CONFIG <<< "$CONFIG_PAIR"
     VAR="${CONFIG[0]}"
