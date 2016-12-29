@@ -8,7 +8,16 @@ if [ `ls $PGDATA/ | wc -l` != "0" ]; then
     if [[ "$FORCE_CLEAN" == "1" ]]; then
         echo ">>> Cleaning data folder..."
         rm -rf $PGDATA/*
+    else
+        if [ ! -f $PGDATA/PG_VERSION ] && [ ! -f $PGDATA/postgresql.conf ] && [ ! -f $PGDATA/postgresql.conf ]; then
+            echo ">>> Non postgresql data folder structure detected. Cleaning..."
+            rm -rf $PGDATA/*
+        else
+            echo ">>> Postgresql data folder structure detected!"
+        fi
     fi
+else
+    echo ">>> Data folder is empty"
 fi
 
 chown -R postgres $PGDATA && chmod -R 0700 $PGDATA
