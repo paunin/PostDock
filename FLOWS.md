@@ -150,6 +150,8 @@ docker-compose exec pgpool bash -c 'PGPASSWORD=$CHECK_PASSWORD psql -U $CHECK_US
 
 ### Split-brain (isolated master)
 
+[Test case](./tests/split-brain-isolated-master/setup.sh)
+
 The flow should proof that in case of lost connection to master from standbys but not from pgpools:
 * one of standby becomes master by election
 * `pgpool` stop using old master and switch to the elected one
@@ -204,4 +206,5 @@ docker-compose exec pgpool bash -c 'PGPASSWORD=$CHECK_PASSWORD psql -U $CHECK_US
  3       | pgslave3 | 5432 | 2      | 0.250000  | standby
 
 ```
-! Old master is still there, [Issue to solve](https://github.com/paunin/postgres-docker-cluster/issues/21)
+
+Use health-check in each node to check false-masters [`/usr/local/bin/cluster/healthcheck/is_major_master.sh`](./pgsql/bin/healthcheck/is_major_master.sh)
