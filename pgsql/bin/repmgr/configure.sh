@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -e
-
+echo ">>> Setting up repmgr..."
 REPMGR_CONFIG_FILE=/etc/repmgr.conf
 cp -f /var/cluster_configs/repmgr.conf $REPMGR_CONFIG_FILE
 
@@ -29,18 +29,16 @@ loglevel=$LOG_LEVEL
 " >> $REPMGR_CONFIG_FILE
 
 echo ">>> Setting up upstream node..."
-if [[ "$INITIAL_NODE_TYPE" != "master" ]]; then
-    if [ -n "$REPLICATION_UPSTREAM_NODE_ID" ]; then
-
-        if [[ "$NODE_ID" != "$REPLICATION_UPSTREAM_NODE_ID" ]]; then
-            echo "upstream_node=$REPLICATION_UPSTREAM_NODE_ID" >> $REPMGR_CONFIG_FILE
-        else
-            echo ">>> Misconfiguration of upstream node, NODE_ID=$NODE_ID AND REPLICATION_UPSTREAM_NODE_ID=$REPLICATION_UPSTREAM_NODE_ID"
-            exit 1
-        fi
-    else
-        echo ">>> For node with initial type $INITIAL_NODE_TYPE you have to setup REPLICATION_UPSTREAM_NODE_ID"
+if [[ "$CURRENT_NODE_TYPE" != "master" ]]; then
+    if [ -z "$CURRENT_REPLICATION_UPSTREAM_NODE_ID" ]; then
+        echo ">>> For node with initial type $CURRENT_NODE_TYPE you have to setup CURRENT_REPLICATION_UPSTREAM_NODE_ID"
         exit 1
     fi
+    if [[ "$NODE_ID" == "$CURRENT_REPLICATION_UPSTREAM_NODE_ID" ]]; then
+        echo ">>> Misconfiguration of upstream node, NODE_ID=$NODE_ID AND CURRENT_REPLICATION_UPSTREAM_NODE_ID=$CURRENT_REPLICATION_UPSTREAM_NODE_ID"
+        exit 1
+    fi
+
+    echo "upstream_node=$CURRENT_REPLICATION_UPSTREAM_NODE_ID" >> $REPMGR_CONFIG_FILE
 fi
 chown postgres $REPMGR_CONFIG_FILE
