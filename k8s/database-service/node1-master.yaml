@@ -38,9 +38,6 @@ spec:
       image: paunin/postgresql-cluster-pgsql
       env: # those variables are not secret as it's just initial state of DB
         -
-          name: "INITIAL_NODE_TYPE"
-          value: "master"
-        -
           name: "NODE_ID"
           value: "1"
         -

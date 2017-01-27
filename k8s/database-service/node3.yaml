@@ -23,9 +23,6 @@ spec:
         -
           name: "CLUSTER_NODE_NETWORK_NAME"
           value: "database-node3-service"
-        -
-          name: "REPLICATION_UPSTREAM_NODE_ID"
-          value: "2"
       ports:
         -
           containerPort: 5432

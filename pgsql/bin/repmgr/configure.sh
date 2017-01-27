@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -e
+
 echo ">>> Setting up repmgr..."
 REPMGR_CONFIG_FILE=/etc/repmgr.conf
 cp -f /var/cluster_configs/repmgr.conf $REPMGR_CONFIG_FILE
@@ -7,9 +8,11 @@ cp -f /var/cluster_configs/repmgr.conf $REPMGR_CONFIG_FILE
 if [ -z "$CLUSTER_NODE_NETWORK_NAME" ]; then
     CLUSTER_NODE_NETWORK_NAME="`hostname`"
 fi
+
+# Need this loopback to speedup connections, also k8s doesn't have DNS loopback by service name on the same pod
 echo ">>> Adding loopback '127.0.0.1 $CLUSTER_NODE_NETWORK_NAME'"
 echo "127.0.0.1 $CLUSTER_NODE_NETWORK_NAME" >> /etc/hosts
-# Need this loopback to speedup connections, also k8s doesn't have DNS loopback by service name on the same pod
+
 
 echo ">>> Setting up repmgr config file '$REPMGR_CONFIG_FILE'..."
 echo "
@@ -29,16 +32,17 @@ loglevel=$LOG_LEVEL
 " >> $REPMGR_CONFIG_FILE
 
 echo ">>> Setting up upstream node..."
-if [[ "$CURRENT_NODE_TYPE" != "master" ]]; then
-    if [ -z "$CURRENT_REPLICATION_UPSTREAM_NODE_ID" ]; then
-        echo ">>> For node with initial type $CURRENT_NODE_TYPE you have to setup CURRENT_REPLICATION_UPSTREAM_NODE_ID"
-        exit 1
-    fi
-    if [[ "$NODE_ID" == "$CURRENT_REPLICATION_UPSTREAM_NODE_ID" ]]; then
-        echo ">>> Misconfiguration of upstream node, NODE_ID=$NODE_ID AND CURRENT_REPLICATION_UPSTREAM_NODE_ID=$CURRENT_REPLICATION_UPSTREAM_NODE_ID"
+if [[ "$CURRENT_REPLICATION_PRIMARY_HOST" != "" ]]; then
+
+    wait_db $CURRENT_REPLICATION_PRIMARY_HOST $REPLICATION_PRIMARY_PORT $REPLICATION_USER $REPLICATION_PASSWORD $REPLICATION_DB
+    sleep 10
+    # Getting upstream node ID by name CURRENT_REPLICATION_PRIMARY_HOST
+    REPLICATION_UPSTREAM_NODE_ID=`PGPASSWORD=$REPLICATION_PASSWORD psql --username "$REPLICATION_USER" -h $CURRENT_REPLICATION_PRIMARY_HOST -p $REPLICATION_PRIMARY_PORT -d $REPLICATION_DB -tAc "SELECT id FROM repmgr_$CLUSTER_NAME.repl_nodes WHERE conninfo LIKE '% host=$REPLICATION_PRIMARY_HOST%'  ORDER BY id"`
+    if [[ "$REPLICATION_UPSTREAM_NODE_ID" == "" ]]; then
+        echo ">>> Can not get REPLICATION_UPSTREAM_NODE_ID by CURRENT_REPLICATION_PRIMARY_HOST=$CURRENT_REPLICATION_PRIMARY_HOST"
         exit 1
     fi
 
-    echo "upstream_node=$CURRENT_REPLICATION_UPSTREAM_NODE_ID" >> $REPMGR_CONFIG_FILE
+    echo "upstream_node=$REPLICATION_UPSTREAM_NODE_ID" >> $REPMGR_CONFIG_FILE
 fi
 chown postgres $REPMGR_CONFIG_FILE

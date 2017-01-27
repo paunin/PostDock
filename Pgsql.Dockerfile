@@ -26,11 +26,6 @@ ENV REPLICATION_PASSWORD replication_pass
 ENV REPLICATION_PRIMARY_PORT 5432
 
 
-ENV INITIAL_NODE_TYPE standby
-                              # Used by `repmgr register` as initial node role
-                              # Role can be changed on failover or in live cycle of cluster
-                              # (default: standby, available: master|standby)
-
 # Host for replication (REQUIRED, NO DEFAULT)
 # ENV REPLICATION_PRIMARY_HOST
 

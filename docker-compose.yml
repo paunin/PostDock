@@ -10,10 +10,6 @@ services:
             context: .
             dockerfile: Pgsql.Dockerfile
         environment:
-
-            INITIAL_NODE_TYPE: master # Used by `repmgr register` as initial node role
-                                      # Role can be changed on failover or in live cycle of cluster
-                                      # (default: standby, available: master|standby)
             NODE_ID: 1 # Integer number of node
             NODE_NAME: node1 # Node name
             CLUSTER_NODE_NETWORK_NAME: pgmaster # (default: hostname of the node)
@@ -48,7 +44,6 @@ services:
             NODE_ID: 2
             NODE_NAME: node2
             CLUSTER_NODE_NETWORK_NAME: pgslave1 # (default: hostname of the node)
-            REPLICATION_UPSTREAM_NODE_ID: 1
         ports:
             - 5441:5432
         networks:
@@ -67,7 +62,6 @@ services:
             NODE_ID: 3
             NODE_NAME: node3
             CLUSTER_NODE_NETWORK_NAME: pgslave2 # (default: hostname of the node)
-            REPLICATION_UPSTREAM_NODE_ID: 2
         ports:
             - 5442:5432
         networks:
@@ -86,7 +80,6 @@ services:
             NODE_ID: 4
             NODE_NAME: node4
             CLUSTER_NODE_NETWORK_NAME: pgslave3 # (default: hostname of the node)
-            REPLICATION_UPSTREAM_NODE_ID: 1
         ports:
             - 5443:5432
         networks:
@@ -104,7 +97,6 @@ services:
             NODE_ID: 5
             NODE_NAME: node5
             CLUSTER_NODE_NETWORK_NAME: pgslave4 # (default: hostname of the node)
-            REPLICATION_UPSTREAM_NODE_ID: 4
         ports:
             - 5444:5432
         networks:

@@ -7,7 +7,6 @@ services:
             dockerfile: Pgsql.Dockerfile
         environment:
 
-            INITIAL_NODE_TYPE: master
             NODE_ID: 1
             NODE_NAME: node1
             CLUSTER_NODE_NETWORK_NAME: pgmaster2

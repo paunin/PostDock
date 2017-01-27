@@ -24,9 +24,6 @@ spec:
         -
           name: "CLUSTER_NODE_NETWORK_NAME"
           value: "application-db-node3-service"
-        -
-          name: "REPLICATION_UPSTREAM_NODE_ID"
-          value: "1"
 
         # Cluster configs
         - name: "CLUSTER_NAME"
