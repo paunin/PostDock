@@ -78,12 +78,27 @@ PGPASSWORD=$CHECK_PASSWORD psql -U $CHECK_USER -h localhost template1 -c "show p
  3       | pgslave3 | 5432 | 2      | 0.250000  | standby
 ```
 
-## Some rules of using cluster
+## Adaptive mode
 
-### Docker compose restart
-Don't try restart `docker-compose` without cleaning volumes after any failover (unless you use environment variable `FORCE_CLEAN=1` in each container)
-You should update cluster with new topology manually because second start of initial master will bring inconsistent in the cluster.
-Optionally you can reconfigure your pgpool to ignore initial master before second start
+'Adaptive mode' means that node will be able to decide if instead of acting as a master on it's start or switch to standby role.
+That possible if you pass `PARTNER_NODES` (comma separated list of nodes in the cluster on the same level).
+So every time container starts it will check if it was master before and if there is no new master around (from the list `PARTNER_NODES`),
+otherwise it will start as a new standby node with `upstream = new master` in the cluster.
+
+Keep in mind: this feature does not work for cascade replication and you should not pass `PARTNER_NODES` to nodes on second level of the cluster.
+Instead of it just make sure that all nodes on the first level are running, so after restart any node from second level will be able to follow initial upstream from the first level.
+That also can mean - replication from second level potentially can connect to root master... Well not a big deal if you've decided to go with adaptive mode.
+But nevertheless you are able to play with `NODE_PRIORITY` environment variable and make sure entry point for second level of replication will never be elected as a new root master 
+
+## Health-checks
+
+To make sure you cluster works as expected without 'split-brain' or other issues, you have to setup health-checks and stop container if any health-check returns non-zero result.
+
+* Postgres containers:
+    * `/usr/local/bin/cluster/healthcheck/is_major_master.sh` - detect if node acts as a 'false'-master and there is another master - with more standbys
+* Pgpool
+    * `/usr/local/bin/pgpool/has_enough_backends.sh [REQUIRED_NUM_OF_BACKENDS, default=$REQUIRE_MIN_BACKENDS]` - check if there are enough backend behind `pgpool`
+    * `/usr/local/bin/pgpool/has_write_node.sh` - check if one of the backend can be used as a master with write access
 
 Abnormal but possible situation in cluster:
 ```
@@ -102,7 +117,6 @@ Role      | Name  | Upstream | Connection String
 * Get map of current cluster(on any `postgres` node): 
     * `gosu postgres repmgr cluster show` - tries to connect to all nodes on request ignore status of node in `repmgr_$CLUSTER_NAME.repl_nodes`
     * `gosu postgres psql $REPLICATION_DB -c "SELECT * FROM repmgr_$CLUSTER_NAME.repl_nodes"` - just select data from tables
-* Get matrix of connections (on any `postgres` node) `gosu postgres repmgr cluster crosscheck`
 * Get `pgpool` status (on any `pgpool` node): `PGPASSWORD=$CHECK_PASSWORD psql -U $CHECK_USER -h localhost template1 -c "show pool_nodes"`
 * In `pgpool` container check if primary node exists: `/usr/local/bin/pgpool/has_write_node.sh` 
 
@@ -112,9 +126,6 @@ Any command might be wrapped with `docker-compose` or `kubectl` - `docker-compos
 
 Check [the document](./FLOWS.md) to understand different cases of failover, split-brain resistance and recovery
 
-## Known problems
-
-* Killing of node in the middle (e.g. `pgslave1`) will cause dieing of whole branch (https://groups.google.com/forum/?hl=fil#!topic/repmgr/lPAYlawhL0o)
 
 ## FAQ
 
@@ -124,6 +135,9 @@ Check [the document](./FLOWS.md) to understand different cases of failover, spli
     * Complex logic with a lot of go-code
     * Non-standard tools for Postgres ecosystem
 * [How to promote master, after failover on postgresql with docker](http://stackoverflow.com/questions/37710868/how-to-promote-master-after-failover-on-postgresql-with-docker)
+* Killing of node in the middle (e.g. `pgslave1`) will cause dieing of whole branch (https://groups.google.com/forum/?hl=fil#!topic/repmgr/lPAYlawhL0o)
+   * That make seance as second or deeper level of replication should not be able to connect to root master (it makes extra load on server) or change upstream at all
+
 
 ## Documentation and manuals
 

@@ -1,7 +1,29 @@
 #!/usr/bin/env bash
 set -e
 
-export CURRENT_REPLICATION_PRIMARY_HOST="$REPLICATION_PRIMARY_HOST"
+CURRENT_MASTER=`cluster_master || echo ''`
+echo ">>> Auto-detected master name: '$CURRENT_MASTER'"
+
+if [ -f "$MASTER_ROLE_LOCK_FILE_NAME" ]; then
+    echo ">>> The node was acting as a master before restart!"
+
+    if [[ "$CURRENT_MASTER" == "" ]]; then
+        echo ">>> Can not find new master. Will keep starting postgres normally..."
+        export CURRENT_REPLICATION_PRIMARY_HOST=""
+    else
+        echo ">>> Current master is $CURRENT_MASTER. Will clone it and act as a standby node..."
+        rm -f "$MASTER_ROLE_LOCK_FILE_NAME"
+        export FORCE_CLEAN=1
+        export CURRENT_REPLICATION_PRIMARY_HOST="$CURRENT_MASTER"
+    fi
+else
+    if [[ "$CURRENT_MASTER" == "" ]]; then
+        export CURRENT_REPLICATION_PRIMARY_HOST="$REPLICATION_PRIMARY_HOST"
+    else
+        export CURRENT_REPLICATION_PRIMARY_HOST="$CURRENT_MASTER"
+    fi
+fi
+
 
 if [ `ls $PGDATA/ | wc -l` != "0" ]; then
     echo ">>> Data folder is not empty $PGDATA:"
