@@ -1,16 +1,21 @@
 FROM postgres:9.5.4
 ARG POSTGRES_VERSION=9.5
 
-RUN echo deb http://debian.xtdv.net/debian jessie main > /etc/apt/sources.list && apt-get update
-RUN apt-get install -y postgresql-server-dev-$POSTGRES_VERSION postgresql-$POSTGRES_VERSION-repmgr  openssh-server
+COPY ./pgsql/bin /usr/local/bin/cluster
+COPY ./pgsql/configs /var/cluster_configs
+COPY ./pgsql/ssh /home/postgres/.ssh
 
-# Need SSH for cross connections
-RUN mkdir /var/run/sshd && sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
-# SSH login fix. Otherwise user is kicked off after login
-RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+RUN echo deb http://debian.xtdv.net/debian jessie main > /etc/apt/sources.list \ 
+    && apt-get update \
+    && apt-get install -y postgresql-server-dev-$POSTGRES_VERSION postgresql-$POSTGRES_VERSION-repmgr openssh-server \
+    && mkdir /var/run/sshd && sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config \
+    && sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd \
+    && echo "export VISIBLE=now" >> /etc/profile \
+    && chmod -R +x /usr/local/bin/cluster \
+    && ln -s /usr/local/bin/cluster/functions/* /usr/local/bin/ \
+    && rm -rf /var/lib/apt/lists/*
 
 ENV NOTVISIBLE "in users profile"
-RUN echo "export VISIBLE=now" >> /etc/profile
 
 # Inherited variables
 # ENV POSTGRES_PASSWORD monkey_pass
@@ -65,15 +70,7 @@ ENV LOG_LEVEL INFO
 # Clean $PGDATA directory before start
 ENV FORCE_CLEAN 0
 
-
-COPY ./pgsql/bin /usr/local/bin/cluster
-RUN chmod -R +x /usr/local/bin/cluster
-RUN ln -s /usr/local/bin/cluster/functions/* /usr/local/bin/
-COPY ./pgsql/configs /var/cluster_configs
-COPY ./pgsql/ssh /home/postgres/.ssh
-
-EXPOSE 22
-EXPOSE 5432
+EXPOSE 22 5432
 
 VOLUME /var/lib/postgresql/data
 USER root
