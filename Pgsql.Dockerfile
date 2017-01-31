@@ -1,4 +1,4 @@
-FROM postgres:9.5
+FROM postgres:9.5.4
 ARG POSTGRES_VERSION=9.5
 
 RUN echo deb http://debian.xtdv.net/debian jessie main > /etc/apt/sources.list && apt-get update
