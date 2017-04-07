@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 docker-compose build && docker-compose up -d
-docker-compose kill pgslave2 pgslave4
 sleep 60
 
 docker-compose exec pgslave1 bash -c "echo 1.1.1.1 pgmaster >> /etc/hosts"

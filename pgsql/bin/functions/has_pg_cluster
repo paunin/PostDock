@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 if [ ! -f $PGDATA/PG_VERSION ] && [ ! -f $PGDATA/postgresql.conf ]; then
     exit 1
 else

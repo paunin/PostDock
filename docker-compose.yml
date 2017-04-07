@@ -10,9 +10,11 @@ services:
             context: .
             dockerfile: Pgsql.Dockerfile
         environment:
+            PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
             NODE_ID: 1 # Integer number of node
             NODE_NAME: node1 # Node name
             CLUSTER_NODE_NETWORK_NAME: pgmaster # (default: hostname of the node)
+            NODE_PRIORITY: 100  # (default: 100)
 
             #database we want to use for application
             POSTGRES_PASSWORD: monkey_pass
@@ -40,6 +42,7 @@ services:
             context: .
             dockerfile: Pgsql.Dockerfile
         environment:
+            PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
             REPLICATION_PRIMARY_HOST: pgmaster
             NODE_ID: 2
             NODE_NAME: node2
@@ -76,10 +79,12 @@ services:
             context: .
             dockerfile: Pgsql.Dockerfile
         environment:
+            PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
             REPLICATION_PRIMARY_HOST: pgmaster
             NODE_ID: 4
             NODE_NAME: node4
             CLUSTER_NODE_NETWORK_NAME: pgslave3 # (default: hostname of the node)
+            NODE_PRIORITY: 200  # (default: 100)
         ports:
             - 5443:5432
         networks:
@@ -119,7 +124,7 @@ services:
             CHECK_PGCONNECT_TIMEOUT: 3 #timout for checking if primary node is healthy
 
             DB_USERS: monkey_user:monkey_pass # in format user:password[,user:password[...]]
-            BACKENDS: "0:pgmaster:5432:1:/var/lib/postgresql/data:ALLOW_TO_FAILOVER,1:pgslave1::::,2:pgslave2::::,3:pgslave3::::" #,4:pgslaveDOES_NOT_EXIST::::
+            BACKENDS: "0:pgmaster:5432:1:/var/lib/postgresql/data:ALLOW_TO_FAILOVER,1:pgslave1::::,3:pgslave3::::,2:pgslave2::::" #,4:pgslaveDOES_NOT_EXIST::::
                       # in format num:host:port:weight:data_directory:flag[,...]
                       # defaults:
                       #   port: 5432

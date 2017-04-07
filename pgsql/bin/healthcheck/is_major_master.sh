@@ -1,12 +1,5 @@
 #!/usr/bin/env bash
 
-# ====================================== Cascade replication?
-DIFFERENT_UPSTREAMS=`gosu postgres repmgr cluster show | tail -n +3 | grep -v '* master' | awk -F"|" '{print $3}' | uniq | awk '{$1=$1};1' | wc -l`
-if [[ "$DIFFERENT_UPSTREAMS" -gt "1" ]]; then
-    echo ">>> I can't work with cascade replication! Will not run check! "
-    exit 0
-fi
-
 # ====================================== What is my name?
 MY_NAME=$NODE_NAME
 echo ">>> My name is $MY_NAME"
@@ -22,30 +15,45 @@ fi
 
 # ====================================== Build master map
 FAILED_NODES=0
-NODES=`gosu postgres psql $REPLICATION_DB -c "SELECT conninfo FROM repmgr_$CLUSTER_NAME.repl_show_nodes WHERE cluster='$CLUSTER_NAME'" | grep host | awk '{print $3}' | cut -d "=" -f2`
-NODES_COUNT=`echo "$NODES" | wc -l`
+
+
+# ====================================== Cascade replication? Adaptive mode?
+
+if [ "$PARTNER_NODES" != "" ]; then
+    echo ">>> Will ask nodes from PARTNER_NODES list"
+    IFS=',' read -ra NODES <<< "$PARTNER_NODES"
+else
+    DIFFERENT_UPSTREAMS=`gosu postgres repmgr cluster show | tail -n +3 | grep -v '* master' | awk -F"|" '{print $3}' | uniq | awk '{$1=$1};1' | grep -v -e '^[[:space:]]*$' | wc -l`
+    if [[ "$DIFFERENT_UPSTREAMS" -gt "1" ]]; then
+        echo ">>> I can't work with cascade replication without PARTNER_NODES list! Will not run check!"
+        exit 0
+    fi
+    echo ">>> Will ask all nodes in the cluster"
+    NODES=`PGPASSWORD=$REPLICATION_PASSWORD psql -h $CLUSTER_NODE_NETWORK_NAME -U $REPLICATION_USER $REPLICATION_DB  -c "SELECT conninfo FROM repmgr_$CLUSTER_NAME.repl_show_nodes WHERE cluster='$CLUSTER_NAME'" | grep host | awk '{print $3}' | cut -d "=" -f2`
+fi
+
+NODES_COUNT="${#NODES[@]}"
 
 unset MASTERS_MAP
 declare -A MASTERS_MAP
 
-for NODE in $NODES; do
+for NODE in "${NODES[@]}"; do
     NO_ROUTE=false
     echo ">>> Checking node $NODE"
-    CLUSTER_STATUS=`gosu postgres ssh -n "$NODE" repmgr cluster show`
+
+    MASTER=`PGCONNECT_TIMEOUT=$CHECK_PGCONNECT_TIMEOUT PGPASSWORD=$REPLICATION_PASSWORD psql -h $NODE -U $REPLICATION_USER $REPLICATION_DB  -tAc "SELECT upstream_node_name FROM repmgr_$CLUSTER_NAME.repl_show_nodes WHERE  cluster='$CLUSTER_NAME' AND conninfo LIKE '%host=$NODE%' AND (upstream_node_name IS NOT NULL AND upstream_node_name <>'') AND active=true"`
     if [[ "$?" -ne "0" ]]; then
         FAILED_NODES=$((FAILED_NODES + 1))
         echo ">>>>>> Failed nodes - $FAILED_NODES"
         continue
     fi
 
-    MASTERS=`echo "$CLUSTER_STATUS" | tail -n +3 | grep -v FAILED | grep -v '* master' | awk -F"|" '{print $3}' | awk '{$1=$1};1'`
-
-    for MASTER in $MASTERS; do
+    if [[ "$MASTER" != "" ]]; then
         MASTER_COUNT="${MASTERS_MAP[$MASTER]}"
         MASTER_COUNT=$(( MASTER_COUNT + 1 ))
         echo ">>>>>>>>> Count of references to potential master $MASTER is $MASTER_COUNT now"
         MASTERS_MAP[$MASTER]="$MASTER_COUNT"
-    done
+    fi
 done
 
 # ====================================== Display masters map

@@ -10,7 +10,11 @@ else
 fi
 
 echo ">>> Registering node with role $NODE_TYPE"
-gosu postgres repmgr $NODE_TYPE register --force || echo ">>>>>> Can't re-register node. Means it has been already done before!"
+gosu postgres repmgr "$NODE_TYPE" register --force || echo ">>>>>> Can't re-register node. Means it has been already done before!"
+
+if [[ "$NODE_TYPE" == 'standby' ]]; then
+    gosu postgres /usr/local/bin/cluster/repmgr/events/execs/includes/lock_standby.sh
+fi
 
 echo ">>> Starting repmgr daemon..."
 rm -rf /tmp/repmgrd.pid
