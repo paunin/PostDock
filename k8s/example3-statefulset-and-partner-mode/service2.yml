@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: application-db-node2-service
+  labels:
+    name: database
+    node: node2
+    system: application
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    name: database
+    node: node2
+    system: application

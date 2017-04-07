@@ -1,0 +1,95 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: application-db-node1
+  labels:
+    name: database
+    node: node1
+    system: application
+spec:
+  replicas: 1
+  serviceName: "application-db-node1-service"
+  template:
+    metadata:
+      labels:
+        name: database
+        node: node1
+        system: application
+    spec:
+      containers:
+        -
+          name: application-db-node1
+          imagePullPolicy: Always
+          image: paunin/postgresql-cluster-pgsql:9.6
+          livenessProbe:
+            exec:
+              command: ['/usr/local/bin/cluster/healthcheck/is_major_master.sh']
+            initialDelaySeconds: 600
+            timeoutSeconds: 59
+            periodSeconds: 60
+            successThreshold: 1
+            failureThreshold: 5
+          env:
+            - name: "PARTNER_NODES"
+              value: "application-db-node1-service,application-db-node2-service,application-db-node3-service"
+            -
+              name: "NODE_ID"
+              value: "1"
+            -
+              name: "NODE_NAME"
+              value: "node1"
+            -
+              name: "CLUSTER_NODE_NETWORK_NAME"
+              value: "application-db-node1-service"
+            -
+              name: "CONFIGS"
+              value: "wal_keep_segments:250,shared_buffers:500MB"
+
+            # Work DB
+            - name: "POSTGRES_DB"
+              valueFrom:
+                configMapKeyRef:
+                  name: application-config
+                  key: app.db.database
+            - name: "POSTGRES_USER"
+              valueFrom:
+                secretKeyRef:
+                  name: application-secret
+                  key: app.db.user
+            - name: "POSTGRES_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: application-secret
+                  key: app.db.password
+
+            # Cluster configs
+            - name: "CLUSTER_NAME"
+              valueFrom:
+                configMapKeyRef:
+                  name: application-config
+                  key: app.db.cluster.name
+            - name: "REPLICATION_DB"
+              valueFrom:
+                configMapKeyRef:
+                  name: application-config
+                  key: app.db.cluster.replication.db
+            - name: "REPLICATION_USER"
+              valueFrom:
+                secretKeyRef:
+                  name: application-secret
+                  key: app.db.cluster.replication.user
+            - name: "REPLICATION_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: application-secret
+                  key: app.db.cluster.replication.password
+          ports:
+            -
+              containerPort: 5432
+#          volumeMounts:
+#            - mountPath:  /var/lib/postgresql/data
+#              name: pg-data-volume
+#      volumes:
+#        - name: pg-data-volume
+#          persistentVolumeClaim:
+#            claimName: application-db-node1-claim
