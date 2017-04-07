@@ -8,7 +8,7 @@ services:
 #        image: paunin/postgresql-cluster-pgsql
         build:
             context: .
-            dockerfile: Pgsql.Dockerfile
+            dockerfile: Postgres-latest.Dockerfile
         environment:
             PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
             NODE_ID: 1 # Integer number of node
@@ -40,7 +40,7 @@ services:
 #        image: paunin/postgresql-cluster-pgsql
         build:
             context: .
-            dockerfile: Pgsql.Dockerfile
+            dockerfile: Postgres-latest.Dockerfile
         environment:
             PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
             REPLICATION_PRIMARY_HOST: pgmaster
@@ -59,7 +59,7 @@ services:
 #        image: paunin/postgresql-cluster-pgsql
         build:
             context: .
-            dockerfile: Pgsql.Dockerfile
+            dockerfile: Postgres-latest.Dockerfile
         environment:
             REPLICATION_PRIMARY_HOST: pgslave1 # I want to have cascade Streeming replication
             NODE_ID: 3
@@ -77,7 +77,7 @@ services:
 #        image: paunin/postgresql-cluster-pgsql
         build:
             context: .
-            dockerfile: Pgsql.Dockerfile
+            dockerfile: Postgres-latest.Dockerfile
         environment:
             PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
             REPLICATION_PRIMARY_HOST: pgmaster
@@ -96,7 +96,7 @@ services:
 #        image: paunin/postgresql-cluster-pgsql
         build:
             context: .
-            dockerfile: Pgsql.Dockerfile
+            dockerfile: Postgres-latest.Dockerfile
         environment:
             REPLICATION_PRIMARY_HOST: pgslave3
             NODE_ID: 5
