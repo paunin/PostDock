@@ -2,11 +2,12 @@
 set -e
 
 echo ">>> Waiting for primary node..."
-wait_db $CURRENT_REPLICATION_PRIMARY_HOST $REPLICATION_PRIMARY_PORT $REPLICATION_USER $REPLICATION_PASSWORD $REPLICATION_DB
+dockerize -wait tcp://$CURRENT_REPLICATION_PRIMARY_HOST:$REPLICATION_PRIMARY_PORT -timeout 300s
+sleep "$WAIT_SYSTEM_IS_STARTING" && sleep 5
 
 echo ">>> Starting standby node..."
 if ! has_pg_cluster; then
-    echo ">>>>>> Instance hasn't been set up yet. Clonning primary node..." && sleep 10
+    echo ">>>>>> Instance hasn't been set up yet. Clonning primary node..."
     PGPASSWORD=$REPLICATION_PASSWORD gosu postgres repmgr -h $CURRENT_REPLICATION_PRIMARY_HOST -U $REPLICATION_USER -d $REPLICATION_DB -D $PGDATA standby clone --fast-checkpoint --force
 
 fi
