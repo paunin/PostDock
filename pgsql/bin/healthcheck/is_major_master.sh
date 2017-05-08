@@ -18,6 +18,8 @@ FAILED_NODES=0
 
 
 # ====================================== Cascade replication? Adaptive mode?
+unset NODES
+declare -A NODES
 
 if [ "$PARTNER_NODES" != "" ]; then
     echo ">>> Will ask nodes from PARTNER_NODES list"
@@ -29,7 +31,7 @@ else
         exit 0
     fi
     echo ">>> Will ask all nodes in the cluster"
-    NODES=`PGPASSWORD=$REPLICATION_PASSWORD psql -h $CLUSTER_NODE_NETWORK_NAME -U $REPLICATION_USER $REPLICATION_DB  -c "SELECT conninfo FROM repmgr_$CLUSTER_NAME.repl_show_nodes WHERE cluster='$CLUSTER_NAME'" | grep host | awk '{print $3}' | cut -d "=" -f2`
+    read -ra NODES <<< `PGPASSWORD=$REPLICATION_PASSWORD psql -h $CLUSTER_NODE_NETWORK_NAME -U $REPLICATION_USER $REPLICATION_DB  -c "SELECT conninfo FROM repmgr_$CLUSTER_NAME.repl_show_nodes WHERE cluster='$CLUSTER_NAME'" | grep host | awk '{print $3}' | cut -d "=" -f2`
 fi
 
 NODES_COUNT="${#NODES[@]}"
@@ -37,7 +39,7 @@ NODES_COUNT="${#NODES[@]}"
 unset MASTERS_MAP
 declare -A MASTERS_MAP
 
-for NODE in "${NODES[@]}"; do
+for NODE in "${!NODES[@]}"; do
     NO_ROUTE=false
     echo ">>> Checking node $NODE"
 
