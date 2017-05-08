@@ -1,8 +1,12 @@
 FROM postgres:9.5
 ARG POSTGRES_VERSION=9.5
+ARG DOCKERIZE_VERSION=v0.2.0
 
 RUN echo deb http://debian.xtdv.net/debian jessie main > /etc/apt/sources.list && apt-get update --fix-missing && \
-    apt-get install -y postgresql-server-dev-$POSTGRES_VERSION postgresql-$POSTGRES_VERSION-repmgr
+    apt-get install -y postgresql-server-dev-$POSTGRES_VERSION postgresql-$POSTGRES_VERSION-repmgr wget
+
+RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 # Inherited variables
 # ENV POSTGRES_PASSWORD monkey_pass
@@ -52,7 +56,12 @@ ENV STANDBY_ROLE_LOCK_FILE_NAME $PGDATA/standby.lock
                                                   #    - event repmgrd_failover_follow happened
                                                   # contains upstream NODE_ID
                                                   # that basically used when standby changes upstream node set by default
+ENV REPMGR_WAIT_POSTGRES_START_TIMEOUT 300
+                                            # For how long in seconds repmgr will wait for postgres start on current node
+                                            # Should be big enough to perform replication clone
+
 #### Advanced options ####
+ENV WAIT_SYSTEM_IS_STARTING 5
 ENV CONNECT_TIMEOUT 2
 ENV RECONNECT_ATTEMPTS 3
 ENV RECONNECT_INTERVAL 5

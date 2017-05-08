@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
+set -e
 
-echo ">>> Waiting postgres on this node to start repmgr..."
-wait_db $CLUSTER_NODE_NETWORK_NAME $REPLICATION_PRIMARY_PORT $REPLICATION_USER $REPLICATION_PASSWORD $REPLICATION_DB
+echo ">>> Waiting $REPMGR_WAIT_POSTGRES_START_TIMEOUT seconds for postgres on this node to start repmgr..."
+dockerize -wait tcp://$CLUSTER_NODE_NETWORK_NAME:$REPLICATION_PRIMARY_PORT -timeout "$REPMGR_WAIT_POSTGRES_START_TIMEOUT"s
+sleep "$WAIT_SYSTEM_IS_STARTING"
+
 
 if [[ "$CURRENT_REPLICATION_PRIMARY_HOST" == "" ]]; then
     NODE_TYPE='master'
