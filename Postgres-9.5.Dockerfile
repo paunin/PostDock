@@ -1,12 +1,8 @@
 FROM postgres:9.5
 ARG POSTGRES_VERSION=9.5
-ARG DOCKERIZE_VERSION=v0.2.0
 
 RUN echo deb http://debian.xtdv.net/debian jessie main > /etc/apt/sources.list && apt-get update --fix-missing && \
     apt-get install -y postgresql-server-dev-$POSTGRES_VERSION postgresql-$POSTGRES_VERSION-repmgr wget
-
-RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 # Inherited variables
 # ENV POSTGRES_PASSWORD monkey_pass

@@ -2,7 +2,7 @@
 set -e
 
 echo ">>> Waiting for primary node..."
-dockerize -wait tcp://$CURRENT_REPLICATION_PRIMARY_HOST:$REPLICATION_PRIMARY_PORT -timeout 300s
+wait_db $CURRENT_REPLICATION_PRIMARY_HOST $REPLICATION_PRIMARY_PORT $REPLICATION_USER $REPLICATION_PASSWORD $REPLICATION_DB 300
 sleep "$WAIT_SYSTEM_IS_STARTING" && sleep 5
 
 echo ">>> Starting standby node..."
