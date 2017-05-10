@@ -1,0 +1,102 @@
+#cloud-config
+write_files:
+  - path: /etc/postgres-slave.env
+    permissions: 0600
+    owner: root
+    content: |
+      VOLUME_NAME=/media/pgdata
+      PG_CONTAINER_NAME=pgslave1
+      PG_VERSION=9.6
+      PARTNER_NODES="1.1.1.1,1.1.1.2"
+      NODE_ID=2
+      NODE_NAME=node2
+      CLUSTER_NODE_NETWORK_NAME=1.1.1.2
+      POSTGRES_PASSWORD=pgpass
+      POSTGRES_USER=pguser
+      REPLICATION_PRIMARY_HOST=1.1.1.1
+      CLUSTER_NAME=pg_cluster
+      REPLICATION_PASSWORD=replication_pass
+      # PGPOOL
+      PCP_USER=pcp_user
+      PCP_PASSWORD=pcp_pass
+      WAIT_BACKEND_TIMEOUT=60
+      CHECK_PGCONNECT_TIMEOUT=3
+      REQUIRE_MIN_BACKENDS=1
+      PGPOOL_CONFIGS="num_init_children:250,max_pool:4"
+
+coreos:
+  units:
+    - name: media.mount
+      command: start
+      content: |
+        [Unit]
+        Description=Mount ephemeral to /media
+        [Mount]
+        What=/dev/sdc1
+        Where=/media
+        Type=ext4
+
+    - name: postgres-slave.service
+      command: start
+      enable: true
+      content: |
+        [Unit]
+        Description=postgres-slave
+        After=network-online.target
+        After=docker.service
+        Description=Postgres Slave
+        Requires=network-online.target
+        Requires=docker.service
+
+        [Service]
+        Restart=always
+        RestartSec=5
+        EnvironmentFile=/etc/postgres-slave.env
+        ExecStartPre=-/usr/bin/docker stop ${PG_CONTAINER_NAME}
+        ExecStartPre=-/usr/bin/docker rm ${PG_CONTAINER_NAME}
+        ExecStartPre=/usr/bin/docker pull paunin/postgresql-cluster-pgsql:${PG_VERSION}
+        ExecStart=/usr/bin/docker run --name ${PG_CONTAINER_NAME} \
+            -e NODE_ID=${NODE_ID} \
+            -e NODE_NAME=${NODE_NAME} \
+            -e CLUSTER_NODE_NETWORK_NAME=${CLUSTER_NODE_NETWORK_NAME} \
+            -e PARTNER_NODES=${PARTNER_NODES} \
+            -e REPLICATION_PRIMARY_HOST=${REPLICATION_PRIMARY_HOST} \
+            -e REPLICATION_PASSWORD=${REPLICATION_PASSWORD} \
+            -e WAIT_SYSTEM_IS_STARTING=30 \
+            -p "5432:5432" \
+            -v "${VOLUME_NAME}${PG_CONTAINER_NAME}:/var/lib/postgresql/data" \
+            paunin/postgresql-cluster-pgsql:${PG_VERSION}
+
+    - name: pgpool.service
+      command: start
+      enable: true
+      content: |
+        [Unit]
+        Description=pgpool
+        After=network-online.target
+        After=docker.service
+        Requires=network-online.target
+        Requires=docker.service
+
+        [Service]
+        Restart=always
+        RestartSec=5
+        EnvironmentFile=/etc/postgres-slave.env
+        ExecStartPre=-/usr/bin/docker stop pgpool
+        ExecStartPre=-/usr/bin/docker rm pgpool
+        ExecStartPre=/usr/bin/docker pull paunin/postgresql-cluster-pgpool
+        ExecStart=/usr/bin/docker run --name pgpool \
+            -e PCP_USER=${PCP_USER} \
+            -e PCP_PASSWORD=${PCP_PASSWORD} \
+            -e WAIT_BACKEND_TIMEOUT=${WAIT_BACKEND_TIMEOUT} \
+            -e CHECK_USER=${POSTGRES_USER} \
+            -e CHECK_PASSWORD=${POSTGRES_PASSWORD} \
+            -e CHECK_PGCONNECT_TIMEOUT=${CHECK_PGCONNECT_TIMEOUT} \
+            -e DB_USERS=${POSTGRES_USER}:${POSTGRES_PASSWORD} \
+            -e BACKENDS="0:1.1.1.2:5432:1:/var/lib/postgresql/data:ALLOW_TO_FAILOVER,1:${PG_CONTAINER_NAME}:5432:::" \
+            -e REQUIRE_MIN_BACKENDS=${REQUIRE_MIN_BACKENDS} \
+            -e CONFIGS=${PGPOOL_CONFIGS} \
+            -p "5430:5433" \
+            -p "9898:9898" \
+            --link=${PG_CONTAINER_NAME} \
+            paunin/postgresql-cluster-pgpool:latest
