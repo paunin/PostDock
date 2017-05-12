@@ -19,7 +19,6 @@ FAILED_NODES=0
 
 # ====================================== Cascade replication? Adaptive mode?
 unset NODES
-declare -A NODES
 
 if [ "$PARTNER_NODES" != "" ]; then
     echo ">>> Will ask nodes from PARTNER_NODES list"
@@ -39,7 +38,7 @@ NODES_COUNT="${#NODES[@]}"
 unset MASTERS_MAP
 declare -A MASTERS_MAP
 
-for NODE in "${!NODES[@]}"; do
+for NODE in "${NODES[@]}"; do
     NO_ROUTE=false
     echo ">>> Checking node $NODE"
 
