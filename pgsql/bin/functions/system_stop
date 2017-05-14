@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+SIGNAL="$1"
+
+if [ -f "$PGDATA/postmaster.pid" ]; then
+    # How to stop postgres
+    # https://www.postgresql.org/docs/9.6/static/server-shutdown.html
+    case "$SIGNAL" in
+        TERM|SIGTERM) # Smart
+            echo ">>>>>> Stopping postgres in Smart mode..."
+            gosu postgres pg_ctl stop -m smart
+        ;;
+        INT|SIGINT) # Fast
+            echo ">>>>>> Stopping postgres in Fast mode..."
+            gosu postgres pg_ctl stop -m fast
+        ;;
+        QUIT|SIGQUIT|KILL|SIGKILL) # Immediate
+            echo ">>>>>> Stopping postgres in Immediate mode..."
+            gosu postgres pg_ctl stop -m immediate
+        ;;
+    esac
+else
+    echo ">>>>>> Postgres is not running yet - nothing to stop!"
+fi
+
+if [ -f "$REPMGR_PID_FILE" ]; then
+    REPMGR_PID=`head -1 $REPMGR_PID_FILE || echo ""`
+    echo ">>>>>> Stopping repmgr (REPMGR_PID=$REPMGR_PID) with signal $SIGNAL"
+    kill -s "$SIGNAL" "$REPMGR_PID"
+else
+    echo ">>>>>> Repmgr is not running yet - nothing to stop!"
+fi

@@ -57,6 +57,7 @@ ENV REPMGR_WAIT_POSTGRES_START_TIMEOUT 300
                                             # Should be big enough to perform replication clone
 
 #### Advanced options ####
+ENV REPMGR_PID_FILE /tmp/repmgrd.pid
 ENV WAIT_SYSTEM_IS_STARTING 5
 ENV CONNECT_TIMEOUT 2
 ENV RECONNECT_ATTEMPTS 3

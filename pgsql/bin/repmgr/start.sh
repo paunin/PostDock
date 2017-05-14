@@ -20,5 +20,5 @@ if [[ "$NODE_TYPE" == 'standby' ]]; then
 fi
 
 echo ">>> Starting repmgr daemon..."
-rm -rf /tmp/repmgrd.pid
-gosu postgres repmgrd -vvv --pid-file=/tmp/repmgrd.pid
+rm -rf "$REPMGR_PID_FILE"
+gosu postgres repmgrd -vvv --pid-file="$REPMGR_PID_FILE"
