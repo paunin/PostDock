@@ -4,6 +4,7 @@ metadata:
   name: application-config
 data:
   # DB service
+  app.db.database: "application"
   app.db.cluster.name: "application_cluster"
   app.db.cluster.replication.db: "replica_db"
   app.db.pool.backends: "0:application-db-node1-service::::,1:application-db-node2-service::::,2:application-db-node3-service::::"
