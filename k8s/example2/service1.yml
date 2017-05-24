@@ -7,8 +7,10 @@ metadata:
     node: node1
     system: application
 spec:
+  clusterIP: None
   ports:
     - port: 5432
+      targetPort: 5432
   selector:
     name: database
     node: node1

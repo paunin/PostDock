@@ -7,6 +7,7 @@ metadata:
     node: node3
     system: application
 spec:
+  clusterIP: None
   ports:
     - port: 5432
       targetPort: 5432
