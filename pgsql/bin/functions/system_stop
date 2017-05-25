@@ -2,20 +2,20 @@
 SIGNAL="$1"
 
 if [ -f "$PGDATA/postmaster.pid" ]; then
-    # How to stop postgres
     # https://www.postgresql.org/docs/9.6/static/server-shutdown.html
+    echo `head -1 $PGDATA/postmaster.pid || echo ""` > "$STOPPING_LOCK_FILE"
     case "$SIGNAL" in
         TERM|SIGTERM) # Smart
             echo ">>>>>> Stopping postgres in Smart mode..."
-            gosu postgres pg_ctl stop -m smart
+            gosu postgres pg_ctl stop -m smart &
         ;;
         INT|SIGINT) # Fast
             echo ">>>>>> Stopping postgres in Fast mode..."
-            gosu postgres pg_ctl stop -m fast
+            gosu postgres pg_ctl stop -m fast &
         ;;
         QUIT|SIGQUIT|KILL|SIGKILL) # Immediate
             echo ">>>>>> Stopping postgres in Immediate mode..."
-            gosu postgres pg_ctl stop -m immediate
+            gosu postgres pg_ctl stop -m immediate &
         ;;
     esac
 else
