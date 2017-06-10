@@ -113,7 +113,7 @@ services:
 #        image: paunin/postgresql-cluster-pgpool
         build:
             context: .
-            dockerfile: Pgpool.Dockerfile
+            dockerfile: Pgpool-latest.Dockerfile
         environment:
             PCP_USER: pcp_user
             PCP_PASSWORD: pcp_pass

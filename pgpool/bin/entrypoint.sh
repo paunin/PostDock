@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 set -e
-CONFIG_FILE='/etc/pgpool2/pgpool.conf'
 
-echo ">>> Opening access from all hosts by md5 in /etc/pgpool2/pool_hba.conf" #TODO: more configurable?
-echo "host all all 0.0.0.0/0 md5" > /etc/pgpool2/pool_hba.conf
+CONFIG_FILE='/usr/local/etc/pgpool.conf'
+PCP_FILE='/usr/local/etc/pcp.conf'
+HBA_FILE='/usr/local/etc/pool_hba.conf'
+
+echo ">>> Opening access from all hosts by md5 in $HBA_FILE" #TODO: more configurable?
+echo "host all all 0.0.0.0/0 md5" > $HBA_FILE
 
 echo ">>> Adding user $PCP_USER for PCP"
-echo "$PCP_USER:`pg_md5 $PCP_PASSWORD`" >> /etc/pgpool2/pcp.conf
-cp -f /var/pgpool_configs/pgpool.conf /etc/pgpool2/
+echo "$PCP_USER:`pg_md5 $PCP_PASSWORD`" >> $PCP_FILE
+cp -f /var/pgpool_configs/pgpool.conf $CONFIG_FILE
 
 echo ">>> Adding users for md5 auth"
 IFS=',' read -ra USER_PASSES <<< "$DB_USERS"
