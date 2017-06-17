@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+TRIES="$STOPPING_TIMEOUT"
+if [ -f "$STOPPING_LOCK_FILE" ]; then
+    ROSTGRES_STOPPING_PID=`head -1 $STOPPING_LOCK_FILE`
+    echo ">>> Waiting for postgres stopping process[PID=$ROSTGRES_STOPPING_PID, STOPPING_TIMEOUT=$STOPPING_TIMEOUT]"
+    while kill -0 "$ROSTGRES_STOPPING_PID" 2> /dev/null;
+    do
+        echo ">>>>>> Will wait $TRIES second(s) more"
+        TRIES=`expr "$TRIES" - 1`
+        if [[ "$TRIES" == "0" ]]; then
+            echo ">>>>>> Can't wait any more. Quiting now!"
+            break
+        fi
+        sleep 1;
+    done;
+    echo  "============ (= Good bye =) ============"
+fi
