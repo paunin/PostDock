@@ -17,7 +17,7 @@ if [[ "$?" -ne "0" ]]; then
     echo ">>> Could not get nodes in my pool!"
     exit 1
 fi
-HEALTHY_BACKENDS=`echo "$POOL" | tail -n +3 | awk -F"|"  '{print $4}' | grep '2' | wc -l`
+HEALTHY_BACKENDS=`echo "$POOL" | tail -n +3 | awk -F"|"  '{print $4}' | grep 'up' | wc -l`
 
 echo ">>> I need at least $ENOUGH_BACKENDS backends, have $HEALTHY_BACKENDS."
 
