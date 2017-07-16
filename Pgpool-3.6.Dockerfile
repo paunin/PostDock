@@ -3,7 +3,7 @@ ARG DOCKERIZE_VERSION=v0.2.0
 ARG POSTGRES_CLIENT_VERSION=9.4
 ARG PGPOOL_VERSION=3.6.4
 
-RUN echo deb http://debian.xtdv.net/debian jessie main > /etc/apt/sources.list && apt-get update && \
+RUN apt-get update  --fix-missing && \
     apt-get install -y postgresql-client-$POSTGRES_CLIENT_VERSION libffi-dev libssl-dev wget gcc libpq-dev make
 
 RUN  wget http://www.pgpool.net/download.php?f=pgpool-II-$PGPOOL_VERSION.tar.gz -O pgpool-II-$PGPOOL_VERSION.tar.gz && \

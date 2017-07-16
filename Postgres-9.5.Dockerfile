@@ -1,7 +1,7 @@
 FROM postgres:9.5
 ARG POSTGRES_VERSION=9.5
 
-RUN echo deb http://debian.xtdv.net/debian jessie main > /etc/apt/sources.list && apt-get update --fix-missing && \
+RUN apt-get update --fix-missing && \
     apt-get install -y postgresql-server-dev-$POSTGRES_VERSION postgresql-$POSTGRES_VERSION-repmgr wget
 
 # Inherited variables
