@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -e
+
+DELAY="$1"
+
+echo ">>> Waiting for upstream postgres server..."
+wait_db $CURRENT_REPLICATION_PRIMARY_HOST $REPLICATION_PRIMARY_PORT $REPLICATION_USER $REPLICATION_PASSWORD $REPLICATION_DB 300
+sleep "$WAIT_SYSTEM_IS_STARTING"
+if [[ "$DELAY" != "" ]]; then
+    sleep $DELAY
+fi

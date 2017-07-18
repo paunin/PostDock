@@ -52,14 +52,15 @@ ENV STANDBY_ROLE_LOCK_FILE_NAME $PGDATA/standby.lock
                                                   #    - event repmgrd_failover_follow happened
                                                   # contains upstream NODE_ID
                                                   # that basically used when standby changes upstream node set by default
-ENV REPMGR_WAIT_POSTGRES_START_TIMEOUT 300
+ENV REPMGR_WAIT_POSTGRES_START_TIMEOUT 90
                                             # For how long in seconds repmgr will wait for postgres start on current node
-                                            # Should be big enough to perform replication clone
+                                            # Should be big enough to perform post replication start which might take from a minute to a few
 
 #### Advanced options ####
 ENV REPMGR_PID_FILE /tmp/repmgrd.pid
 ENV WAIT_SYSTEM_IS_STARTING 5
 ENV STOPPING_LOCK_FILE /tmp/stop.pid
+ENV REPLICATION_LOCK_FILE /tmp/replication
 ENV STOPPING_TIMEOUT 15
 ENV CONNECT_TIMEOUT 2
 ENV RECONNECT_ATTEMPTS 3
