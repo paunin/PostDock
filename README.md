@@ -9,8 +9,8 @@
 ### What's in the box
 [This project](https://github.com/paunin/postgres-docker-cluster) includes:
 * dockerfiles for `postgresql` cluster
-    * [postgresql](./Pgsql.Dockerfile)
-    * [pgpool](./Pgpool.Dockerfile)
+    * [postgresql](./Postgres-latest.Dockerfile)
+    * [pgpool](./Pgpool-latest.Dockerfile)
 * Examples of usage(suitable for production environment as architecture has fault protection with auto failover)
     * example of [docker-compose](./docker-compose.yml) file to start this cluster.
     * directory [k8s](./k8s) contains information for building this cluster in kubernetes

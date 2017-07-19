@@ -4,7 +4,7 @@ services:
 #        image: paunin/postgresql-cluster-pgsql
         build:
             context: .
-            dockerfile: Pgsql.Dockerfile
+            dockerfile: Postgres-latest.Dockerfile
         environment:
 
             NODE_ID: 1
@@ -26,7 +26,7 @@ services:
 #        image: paunin/postgresql-cluster-pgpool
         build:
             context: .
-            dockerfile: Pgpool.Dockerfile
+            dockerfile: Pgpool-latest.Dockerfile
         depends_on:
             - pgmaster
             - pgmaster2
