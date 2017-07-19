@@ -56,7 +56,7 @@ docker-compose -f docker-compose.yml -f docker-compose/split-brain-pgpool.yml ex
  1       | pgmaster2 | 5432 | 2      | 0.500000  | primary
 ```
 * Provide connection to node again `docker-compose -f docker-compose.yml -f docker-compose/split-brain-pgpool.yml exec pgpool2 bash -c "cat /etc/hosts | grep -v pgmaster > /etc/hosts.tmp && cat /etc/hosts.tmp > /etc/hosts"`
-* And attach node back to the pool `docker-compose -f docker-compose.yml -f docker-compose/split-brain-pgpool.yml exec pgpool2 bash -c "pcp_attach_node 10 localhost 9898 pcp_user pcp_pass 0"`
+* And attach node back to the pool `docker-compose -f docker-compose.yml -f docker-compose/split-brain-pgpool.yml exec pgpool2 bash -c 'pcp_attach_node -h localhost -U $PCP_USER -w 0'`
 * Check `pgpool`, it should have initial node back as a primary node
 ```
 docker-compose -f docker-compose.yml -f docker-compose/split-brain-pgpool.yml exec pgpool2 bash -c 'PGPASSWORD=$CHECK_PASSWORD psql -U $CHECK_USER -h localhost template1 -c "show pool_nodes"'
@@ -135,7 +135,7 @@ Role      | Name  | Upstream | Connection String
   standby | node4 | node1    | user=replication_user password=replication_pass host=pgslave3 dbname=replication_db port=5432 connect_timeout=2
 ```
 
-You can attach node to `pgpool` by command: `docker-compose exec pgpool bash -c 'pcp_attach_node 10 localhost 9898 $PCP_USER $PCP_PASSWORD 3'`
+You can attach node to `pgpool` by command: `docker-compose exec pgpool bash -c 'pcp_attach_node -h localhost -U $PCP_USER 3'`
 And check `pgpool`
 ```
 docker-compose exec pgpool bash -c 'PGPASSWORD=$CHECK_PASSWORD psql -U $CHECK_USER -h localhost template1 -c "show pool_nodes"'

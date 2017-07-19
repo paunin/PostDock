@@ -13,6 +13,10 @@ echo "host all all 0.0.0.0/0 md5" > $HBA_FILE
 echo ">>> Adding user $PCP_USER for PCP"
 echo "$PCP_USER:`pg_md5 --config-file $CONFIG_FILE $PCP_PASSWORD`" >> $PCP_FILE
 
+echo ">>> Creating a ~/.pcppass file for $PCP_USER"
+echo localhost:9898:$PCP_USER:$PCP_PASSWORD >~/.pcppass
+chmod 0600 ~/.pcppass
+
 echo ">>> Adding users for md5 auth"
 IFS=',' read -ra USER_PASSES <<< "$DB_USERS"
 for USER_PASS in ${USER_PASSES[@]}
