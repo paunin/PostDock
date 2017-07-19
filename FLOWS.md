@@ -37,7 +37,7 @@ docker-compose exec pgpool bash -c 'PGPASSWORD=$CHECK_PASSWORD psql -U $CHECK_US
 The flow should proof that `pgpool` never has 2 primary nodes in the same moment.
 
 * Start pgpool with 2 write nodes `docker-compose -f docker-compose.yml -f docker-compose/split-brain-pgpool.yml up -d pgpool2`
-* See how pgpool reacts on two nodes with write access 
+* See how pgpool reacts on two nodes with write access
 ```
 docker-compose -f docker-compose.yml -f docker-compose/split-brain-pgpool.yml exec pgpool2 bash -c 'PGPASSWORD=$CHECK_PASSWORD psql -U $CHECK_USER -h localhost template1 -c "show pool_nodes"'
  node_id | hostname  | port | status | lb_weight |  role   
@@ -93,11 +93,11 @@ pgslave3_1  | [2016-12-27 17:13:45] [WARNING] connection to master has been lost
 pgslave3_1  | [2016-12-27 17:13:52] [WARNING] connection to master has been lost, trying to recover... 5 seconds before failover decision
 pgslave3_1  | [2016-12-27 17:13:59] [ERROR] unable to reconnect to master (timeout 20 seconds)...
 pgslave3_1  | [2016-12-27 17:14:01] [ERROR] connection to database failed: timeout expired
-pgslave3_1  | 
+pgslave3_1  |
 pgslave3_1  | [2016-12-27 17:14:11] [ERROR] connection to database failed: timeout expired
-pgslave3_1  | 
+pgslave3_1  |
 pgslave3_1  | [2016-12-27 17:14:21] [ERROR] connection to database failed: timeout expired
-pgslave3_1  | 
+pgslave3_1  |
 pgslave3_1  | [2016-12-27 17:14:21] [ERROR] Unable to reach most of the nodes.
 pgslave3_1  | Let the other standby servers decide which one will be the master.
 pgslave3_1  | Manual action will be needed to re-add this node to the cluster.
@@ -135,7 +135,7 @@ Role      | Name  | Upstream | Connection String
   standby | node4 | node1    | user=replication_user password=replication_pass host=pgslave3 dbname=replication_db port=5432 connect_timeout=2
 ```
 
-You can attach node to `pgpool` by command: `docker-compose exec pgpool bash -c 'pcp_attach_node -h localhost -U $PCP_USER 3'`
+You can attach node to `pgpool` by command: `docker-compose exec pgpool bash -c 'pcp_attach_node -h localhost -U $PCP_USER -w 3'`
 And check `pgpool`
 ```
 docker-compose exec pgpool bash -c 'PGPASSWORD=$CHECK_PASSWORD psql -U $CHECK_USER -h localhost template1 -c "show pool_nodes"'
@@ -196,7 +196,7 @@ Role      | Name  | Upstream | Connection String
   FAILED  | node4 | node1    | user=replication_user password=replication_pass host=pgslave3 dbname=replication_db port=5432 connect_timeout=2
   FAILED  | node2 | node1    | user=replication_user password=replication_pass host=pgslave1 dbname=replication_db port=5432 connect_timeout=2
 ```
-* Check `pgpool` 
+* Check `pgpool`
 ```
 docker-compose exec pgpool bash -c 'PGPASSWORD=$CHECK_PASSWORD psql -U $CHECK_USER -h localhost template1 -c "show pool_nodes"'
  node_id | hostname | port | status | lb_weight |  role   
