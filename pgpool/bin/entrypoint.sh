@@ -5,12 +5,13 @@ CONFIG_FILE='/usr/local/etc/pgpool.conf'
 PCP_FILE='/usr/local/etc/pcp.conf'
 HBA_FILE='/usr/local/etc/pool_hba.conf'
 
+cp -f /var/pgpool_configs/pgpool.conf $CONFIG_FILE
+
 echo ">>> Opening access from all hosts by md5 in $HBA_FILE" #TODO: more configurable?
 echo "host all all 0.0.0.0/0 md5" > $HBA_FILE
 
 echo ">>> Adding user $PCP_USER for PCP"
-echo "$PCP_USER:`pg_md5 $PCP_PASSWORD`" >> $PCP_FILE
-cp -f /var/pgpool_configs/pgpool.conf $CONFIG_FILE
+echo "$PCP_USER:`pg_md5 --config-file $CONFIG_FILE $PCP_PASSWORD`" >> $PCP_FILE
 
 echo ">>> Adding users for md5 auth"
 IFS=',' read -ra USER_PASSES <<< "$DB_USERS"
@@ -18,11 +19,11 @@ for USER_PASS in ${USER_PASSES[@]}
 do
     IFS=':' read -ra USER <<< "$USER_PASS"
     echo ">>>>>> Adding user ${USER[0]}"
-    pg_md5 --md5auth --username="${USER[0]}" "${USER[1]}"
+    pg_md5 --config-file $CONFIG_FILE --md5auth --username="${USER[0]}" "${USER[1]}"
 done
 
 echo ">>> Adding check user '$CHECK_USER' for md5 auth"
-pg_md5 --md5auth --username="$CHECK_USER" "$CHECK_PASSWORD"
+pg_md5 --config-file $CONFIG_FILE --md5auth --username="$CHECK_USER" "$CHECK_PASSWORD"
 
 echo ">>> Adding user '$CHECK_USER' as check user"
 echo "
@@ -108,4 +109,4 @@ done
 
 
 rm -rf /var/run/postgresql/pgpool.pid #in case file exists after urgent stop
-pgpool -n
+pgpool -n -f $CONFIG_FILE -F $PCP_FILE -a $HBA_FILE
