@@ -4,7 +4,7 @@ Using only `docker-compose` utility we can run some scenarios to demonstrate the
 
 ## Master crash
 
-* Start cluster `docker-compose up`
+* Start cluster `docker-compose up -d`
 * Kill master container and in a few moments cluster will define new master node `docker-compose stop pgmaster`
 * `pgpool` will try to detect new primary node for write access automatically.
 * See topology after master death
@@ -36,7 +36,7 @@ docker-compose exec pgpool bash -c 'PGPASSWORD=$CHECK_PASSWORD psql -U $CHECK_US
 
 The flow should proof that `pgpool` never has 2 primary nodes in the same moment.
 
-* Start pgpool with 2 write nodes `docker-compose -f docker-compose.yml -f docker-compose/split-brain-pgpool.yml up pgpool2` 
+* Start pgpool with 2 write nodes `docker-compose -f docker-compose.yml -f docker-compose/split-brain-pgpool.yml up -d pgpool2`
 * See how pgpool reacts on two nodes with write access 
 ```
 docker-compose -f docker-compose.yml -f docker-compose/split-brain-pgpool.yml exec pgpool2 bash -c 'PGPASSWORD=$CHECK_PASSWORD psql -U $CHECK_USER -h localhost template1 -c "show pool_nodes"'
@@ -124,7 +124,7 @@ docker-compose exec pgpool bash -c 'PGPASSWORD=$CHECK_PASSWORD psql -U $CHECK_US
  1       | pgslave1 | 5432 | 2      | 0.250000  | standby
  3       | pgslave3 | 5432 | 3      | 0.250000  | standby
 ```
-* Bringing back lost slave will add it to cluster (but not to `pgpool`) - `docker-compose up pgslave3`
+* Bringing back lost slave will add it to cluster (but not to `pgpool`) - `docker-compose up -d pgslave3`
 ```
 docker-compose exec pgmaster bash -c "gosu postgres repmgr cluster show"
 [2016-12-27 17:52:21] [INFO] connecting to database
