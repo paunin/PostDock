@@ -6,8 +6,11 @@
 
 ## How to install the example
 
-* Create namespace by `kubectl create -f ./namespace/mysystem.yml`
-* Create the rest with command `kubectl create -f ./`
+* Create namespace by `kubectl create -f ./namespace/`
+* Create configs: `kubectl create -f ./configs/`
+* Create services `kubectl create -f ./services/`
+* Create tnodes `kubectl create -f ./nodes/`
+* Create pgpool `kubectl create -f ./pgpool/`
 * See containers are running `kubectl get pod --namespace=mysystem` (give it some time to warm up the cluster after all containers are running)
 * Test by commands and see status of the cluster
 
@@ -21,7 +24,7 @@ kubectl get pod | grep pgpool | awk '{print $1 }' | while read pod; do echo "$po
 
 ## Persistence in the cluster (AWS example)
 
-Instead of having `emptyDir` in configurations for nodes in files `node*.yml` you should uncomment lines in the end of the files
+Instead of having `emptyDir` in configurations for nodes in files `nodes/*.yml` you should uncomment lines in the end of the files
 and also setup claims and volumes by command `kubectl create -f ./volumes/` right after creation of namespace
 
 ## Version  k8s <1.5
@@ -35,5 +38,5 @@ by block:
 apiVersion: apps/v1alpha1
 kind: PetSet
 ```
-in files `node*.yml`
+in all files `nodes/*.yml`
 
