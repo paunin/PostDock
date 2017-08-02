@@ -43,40 +43,32 @@ Please check comments for each `ENV` variable in [docker-compose.yml](./docker-c
 ## Start cluster in Kubernetes
 
 To make it easier repository contains services' objects under `k8s` dir
+Setup `PostgreSQL` cluster folowing steps in [the example](./k8s/example1/README.md)
+It has info how to check cluster state, so you will be able to see something like this:
 
-* Requires software: `minikube` (for local tests) and `kubectl`
-* Using [minikube](https://github.com/kubernetes/minikube) you can start local Kubernetes cluster: `minikube start`, `minikube env`
-* Setup `PostgreSQL` cluster: `kubectl create -f ./k8s/database-service/`
-* Check everything works as expected
-    * Proper DB operating:
-      * Connect to any `postgres` node to be able to access DB (e.g. `docker-compose exec pgpool bash -c 'PGPASSWORD=$CHECK_PASSWORD psql -U $CHECK_USER -h localhost template1 -c "show pool_nodes"'`)
-      * Do some read and write queries after connecting be command `PGPASSWORD=monkey_pass psql -U monkey_user -h database-pgpool-service -p 5432 monkey_db`
-    * Check status/topology of the cluster (e.g. from master node) `gosu postgres repmgr cluster show`
-
-Initial topology:
-* Repmgr:
+From DB node:
 ```
-gosu postgres repmgr cluster show
-[2016-12-28 06:46:13] [INFO] connecting to database
 Role      | Name  | Upstream | Connection String
-----------+-------|----------|----------------------------------------------------------------------------------------------------------------
-* master  | node1 |          | user=replication_user password=replication_pass host=pgmaster dbname=replication_db port=5432 connect_timeout=2
-  standby | node4 | node1    | user=replication_user password=replication_pass host=pgslave3 dbname=replication_db port=5432 connect_timeout=2
-  standby | node2 | node1    | user=replication_user password=replication_pass host=pgslave1 dbname=replication_db port=5432 connect_timeout=2
-  standby | node3 | node2    | user=replication_user password=replication_pass host=pgslave2 dbname=replication_db port=5432 connect_timeout=2
-  standby | node5 | node4    | user=replication_user password=replication_pass host=pgslave4 dbname=replication_db port=5432 connect_timeout=2
+----------+-------|----------|---------------------------------------------------------------------------------------------------------------------
+* master  | node1 |          | user=replica_user password=replica_pass host=mysystem-db-node1-service dbname=replica_db port=5432 connect_timeout=2
+  standby | node4 | node1    | user=replica_user password=replica_pass host=mysystem-db-node4-service dbname=replica_db port=5432 connect_timeout=2
+  standby | node2 | node1    | user=replica_user password=replica_pass host=mysystem-db-node2-service dbname=replica_db port=5432 connect_timeout=2
+  standby | node3 | node2    | user=replica_user password=replica_pass host=mysystem-db-node3-service dbname=replica_db port=5432 connect_timeout=2
+  standby | node5 | node4    | user=replica_user password=replica_pass host=mysystem-db-node5-service dbname=replica_db port=5432 connect_timeout=2
+```
+From Pgpool node:
+```
+ node_id |         hostname          | port | status | lb_weight |  role   | select_cnt | load_balance_node | replication_delay
+---------+---------------------------+------+--------+-----------+---------+------------+-------------------+-------------------
+ 0       | mysystem-db-node1-service | 5432 | up     | 0.200000  | primary | 0          | false             | 0
+ 1       | mysystem-db-node2-service | 5432 | up     | 0.200000  | standby | 0          | false             | 0
+ 2       | mysystem-db-node3-service | 5432 | up     | 0.200000  | standby | 0          | false             | 0
+ 3       | mysystem-db-node4-service | 5432 | up     | 0.200000  | standby | 0          | false             | 0
+ 4       | mysystem-db-node5-service | 5432 | up     | 0.200000  | standby | 0          | true              | 0
+(5 rows)
+
 ```
 
-* Pgpool:
-```
-PGPASSWORD=$CHECK_PASSWORD psql -U $CHECK_USER -h localhost template1 -c "show pool_nodes"
- node_id | hostname | port | status | lb_weight |  role   
----------+----------+------+--------+-----------+---------
- 0       | pgmaster | 5432 | 2      | 0.250000  | primary
- 1       | pgslave1 | 5432 | 2      | 0.250000  | standby
- 2       | pgslave2 | 5432 | 2      | 0.250000  | standby
- 3       | pgslave3 | 5432 | 2      | 0.250000  | standby
-```
 
 ## Adaptive mode
 
@@ -102,14 +94,14 @@ To make sure you cluster works as expected without 'split-brain' or other issues
 
 Abnormal but possible situation in cluster:
 ```
-gosu postgres repmgr cluster show
 Role      | Name  | Upstream | Connection String
-----------+-------|----------|----------------------------------------------------------------------------------------------
-  standby | node3 | node2    | user=replication_user password=replication_pass host=pgslave2 dbname=replication_db port=5432
-  standby | node5 | node4    | user=replication_user password=replication_pass host=pgslave4 dbname=replication_db port=5432
-* master  | node1 |          | user=replication_user password=replication_pass host=pgmaster dbname=replication_db port=5432
-* master  | node2 |          | user=replication_user password=replication_pass host=pgslave1 dbname=replication_db port=5432
-  standby | node4 | node2    | user=replication_user password=replication_pass host=pgslave3 dbname=replication_db port=5432
+----------+-------|----------|---------------------------------------------------------------------------------------------------------------------
+* master  | node1 |          | user=replica_user password=replica_pass host=mysystem-db-node1-service dbname=replica_db port=5432 connect_timeout=2
+  standby | node4 | node2    | user=replica_user password=replica_pass host=mysystem-db-node4-service dbname=replica_db port=5432 connect_timeout=2
+* master  | node2 |          | user=replica_user password=replica_pass host=mysystem-db-node2-service dbname=replica_db port=5432 connect_timeout=2
+  standby | node3 | node2    | user=replica_user password=replica_pass host=mysystem-db-node3-service dbname=replica_db port=5432 connect_timeout=2
+  standby | node5 | node4    | user=replica_user password=replica_pass host=mysystem-db-node5-service dbname=replica_db port=5432 connect_timeout=2
+
 ```
 
 ## Useful commands

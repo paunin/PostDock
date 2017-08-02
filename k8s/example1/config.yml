@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: mysystem
+  name: mysystem-config
+  labels:
+    app: mysystem
+data:
+  app.db.database: "mysystem.mysystem"
+  app.db.cluster.name: "mysystem_cluster"
+  app.db.cluster.replication.db: "replica_db"
+  app.db.pool.backends: "0:mysystem-db-node1-service::::,1:mysystem-db-node2-service::::,2:mysystem-db-node3-service::::,3:mysystem-db-node4-service::::,4:mysystem-db-node5-service::::"
+  app.db.host: "wide-pgpool-service.wide"
+  app.db.port: "5432"
+
+

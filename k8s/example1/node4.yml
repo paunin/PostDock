@@ -1,0 +1,75 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  namespace: mysystem
+  name: mysystem-db-node4
+  labels:
+    name: database
+    node: node4
+    system: mysystem
+    app: mysystem
+spec:
+  replicas: 1
+  serviceName: "mysystem-db-node4"
+  template:
+    metadata:
+      labels:
+        name: database
+        node: node4
+        system: mysystem
+        app: mysystem
+    spec:
+      containers:
+        - name: mysystem-db-node4
+          image: paunin/postgresql-cluster-pgsql:9.5
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "10Mi"
+              cpu: "10m"
+          env:
+            - name: "REPMGR_WAIT_POSTGRES_START_TIMEOUT"
+              value: "600"
+            - name: "PARTNER_NODES"
+              value: "mysystem-db-node1-service,mysystem-db-node2-service,mysystem-db-node4-service"
+            - name: "REPLICATION_PRIMARY_HOST"
+              value: "mysystem-db-node1-service"
+            - name: "NODE_ID"
+              value: "4"
+            - name: "NODE_NAME"
+              value: "node4"
+            - name: "CLUSTER_NODE_NETWORK_NAME"
+              value: "mysystem-db-node4-service"
+            - name: "REPLICATION_UPSTREAM_NODE_ID"
+              value: "1"
+
+            # Cluster configs
+            - name: "CLUSTER_NAME"
+              valueFrom:
+                configMapKeyRef:
+                  name: mysystem-config
+                  key: app.db.cluster.name
+            - name: "REPLICATION_DB"
+              valueFrom:
+                configMapKeyRef:
+                  name: mysystem-config
+                  key: app.db.cluster.replication.db
+            - name: "REPLICATION_USER"
+              valueFrom:
+                secretKeyRef:
+                  name: mysystem-secret
+                  key: app.db.cluster.replication.user
+            - name: "REPLICATION_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: mysystem-secret
+                  key: app.db.cluster.replication.password
+          ports:
+            - containerPort: 5432
+#          volumeMounts:
+#            - mountPath:  /var/lib/postgresql/data
+#              name: pg-data-volume
+#      volumes:
+#        - name: pg-data-volume
+#          persistentVolumeClaim:
+#            claimName: application-db-node4-claim

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: mysystem
+  name: mysystem-pgpool-service
+  labels:
+    name: database-balancer
+    node: pgpool
+    system: mysystem
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    name: database-balancer
+    node: pgpool
+    system: mysystem

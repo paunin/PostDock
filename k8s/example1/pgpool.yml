@@ -1,0 +1,77 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: mysystem
+  name: mysystem-database-pgpool
+  labels:
+    name: database-balancer
+    node: pgpool
+    system: mysystem
+    app: mysystem
+spec:
+  replicas: 2
+  revisionHistoryLimit: 5
+  template:
+    metadata:
+      name: database-pgpool
+      labels:
+        name: database-balancer
+        node: pgpool
+        system: mysystem
+        app: mysystem
+    spec:
+      containers:
+      - name: database-pgpool
+        image: paunin/postgresql-cluster-pgpool
+        livenessProbe:
+          exec:
+            command: ['bash', '-c', '/usr/local/bin/pgpool/has_write_node.sh && /usr/local/bin/pgpool/has_enough_backends.sh']
+          initialDelaySeconds: 600
+          timeoutSeconds: 10
+          periodSeconds: 30
+          successThreshold: 1
+          failureThreshold: 3
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "100Mi"
+            cpu: "10m"
+
+        ports:
+          - containerPort: 5432
+        env:
+          # pcp
+          - name: "CONFIGS"
+            value: "num_init_children:60,max_pool:4,client_idle_limit:900,connection_life_time:300"
+          - name: "PCP_USER"
+            valueFrom:
+              secretKeyRef:
+                name: mysystem-secret
+                key: app.db.pool.pcp.user
+          - name: "PCP_PASSWORD"
+            valueFrom:
+              secretKeyRef:
+                name: mysystem-secret
+                key: app.db.pool.pcp.password
+
+          # Cluster configs  to hearbit checks
+          - name: "CHECK_USER"
+            valueFrom:
+              secretKeyRef:
+                name: mysystem-secret
+                key: app.db.cluster.replication.user
+          - name: "CHECK_PASSWORD"
+            valueFrom:
+              secretKeyRef:
+                name: mysystem-secret
+                key: app.db.cluster.replication.password
+          - name: "DB_USERS"
+            valueFrom:
+              secretKeyRef:
+                name: mysystem-secret
+                key: app.db.pool.users
+          - name: "BACKENDS"
+            valueFrom:
+              configMapKeyRef:
+                name: mysystem-config
+                key: app.db.pool.backends
