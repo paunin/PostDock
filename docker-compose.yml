@@ -21,7 +21,7 @@ services:
             POSTGRES_USER: monkey_user
             POSTGRES_DB: monkey_db
 
-            CONFIGS: "listen_addresses:'*'"
+            CONFIGS: "listen_addresses:'*',max_replication_slots:5"
                                   # in format variable1:value1[,variable2:value2[,...]]
                                   # used for pgpool.conf file
             #defaults:
@@ -109,6 +109,23 @@ services:
                 aliases:
                     - pgslave4
 #>>> Branch 2
+    backup:
+#        image: paunin/postgresql-cluster-barman
+        build:
+            context: .
+            dockerfile: Barman-latest.Dockerfile
+        environment:
+            REPLICATION_USER: replication_user # default is replication_user
+            REPLICATION_PASSWORD: replication_pass # default is replication_pass
+            REPLICATION_HOST: pgmaster
+            POSTGRES_PASSWORD: monkey_pass
+            POSTGRES_USER: monkey_user
+            POSTGRES_DB: monkey_db
+            INITIAL_BACKUP_DELAY: 10
+        networks:
+            cluster:
+                aliases:
+                    - backup
     pgpool:
 #        image: paunin/postgresql-cluster-pgpool
         build:

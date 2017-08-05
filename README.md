@@ -20,6 +20,7 @@
 Two docker images were produced:
 * Postgresql server image which can start in master or slave mode: https://hub.docker.com/r/paunin/postgresql-cluster-pgsql/
 * Pgpool service with  flexible configurations: https://hub.docker.com/r/paunin/postgresql-cluster-pgpool/
+* Barman - backup manager for postgres https://hub.docker.com/r/paunin/postgresql-cluster-barman/
 
 ## Schema of the example cluster
 
@@ -81,6 +82,16 @@ Keep in mind: this feature does not work for cascade replication and you should 
 Instead of it just make sure that all nodes on the first level are running, so after restart any node from second level will be able to follow initial upstream from the first level.
 That also can mean - replication from second level potentially can connect to root master... Well not a big deal if you've decided to go with adaptive mode.
 But nevertheless you are able to play with `NODE_PRIORITY` environment variable and make sure entry point for second level of replication will never be elected as a new root master 
+
+## Backups and recovery
+
+[Barman](http://docs.pgbarman.org/) is used to provide realtime backups using streaming of WAL files.
+This image requires connection information(host, port) and 2 sets of credentials, as you can see from [the Dockerfile](./Barman-latest.Dockerfile):
+
+* Replication credentials
+* Postgres admin credentials
+
+*Recovery process TBD*
 
 ## Health-checks
 
