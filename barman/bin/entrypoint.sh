@@ -18,11 +18,14 @@ echo "conninfo = host=$REPLICATION_HOST dbname=$POSTGRES_DB user=$POSTGRES_USER 
 echo ">>> Creating replication slot for barman"
 echo "slot_name = $REPLICATION_SLOT_NAME" >> $UPSTREAM_CONFIG_FILE
 
-SLOTS_COUNT=`barman show-server upstream | grep "replication_slot: Record(slot_name='$REPLICATION_SLOT_NAME'" | wc -l`
+SLOTS_COUNT=`barman show-server $UPSTREAM_NAME | grep "replication_slot: Record(slot_name='$REPLICATION_SLOT_NAME'" | wc -l`
 if [ "$SLOTS_COUNT" -gt "0" ]; then 
     echo ">>>>>> Looks like replication slot already exists"
 else 
-   barman receive-wal --create-slot upstream  
+   barman receive-wal --create-slot $UPSTREAM_NAME  
 fi
 
-barman receive-wal upstream
+echo '>>> STARTING SSH (if required)...'
+source /home/postgres/.ssh/entrypoint.sh
+
+barman receive-wal $UPSTREAM_NAME

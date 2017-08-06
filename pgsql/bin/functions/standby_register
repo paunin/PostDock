@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+echo ">>> Registering node with role standby"
+gosu postgres repmgr standby register --force 
+
+gosu postgres /usr/local/bin/cluster/repmgr/events/execs/includes/lock_standby.sh

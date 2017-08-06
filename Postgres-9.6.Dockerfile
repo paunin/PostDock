@@ -2,13 +2,14 @@ FROM postgres:9.6
 ARG POSTGRES_VERSION=9.6
 
 RUN apt-get update --fix-missing && \
-    apt-get install -y postgresql-server-dev-$POSTGRES_VERSION postgresql-$POSTGRES_VERSION-repmgr wget
+    apt-get install -y postgresql-server-dev-$POSTGRES_VERSION postgresql-$POSTGRES_VERSION-repmgr wget openssh-server
 
 # Inherited variables
 # ENV POSTGRES_PASSWORD monkey_pass
 # ENV POSTGRES_USER monkey_user
 # ENV POSTGRES_DB monkey_db
 
+# Name of the cluster you want to start
 ENV CLUSTER_NAME pg_cluster
 
 # special repmgr db for cluster info
@@ -55,6 +56,13 @@ ENV STANDBY_ROLE_LOCK_FILE_NAME $PGDATA/standby.lock
 ENV REPMGR_WAIT_POSTGRES_START_TIMEOUT 90
                                             # For how long in seconds repmgr will wait for postgres start on current node
                                             # Should be big enough to perform post replication start which might take from a minute to a few
+ENV USE_REPLICATION_SLOTS 1
+                                # Use replication slots to make sure that WAL files will not be removed without beein synced to replicas
+                                # Recomended(not required though) to put 0 for replicas of the second and deeper levels
+ENV CLEAN_OVER_REWIND 0
+                        # Clean $PGDATA directory before start standby and not try to rewind
+ENV SSH_ENABLE 0
+                        # If you need SSH server running on the node
 
 #### Advanced options ####
 ENV REPMGR_PID_FILE /tmp/repmgrd.pid
@@ -67,8 +75,6 @@ ENV RECONNECT_ATTEMPTS 3
 ENV RECONNECT_INTERVAL 5
 ENV MASTER_RESPONSE_TIMEOUT 20
 ENV LOG_LEVEL INFO
-# Clean $PGDATA directory before start
-ENV FORCE_CLEAN 0
 ENV CHECK_PGCONNECT_TIMEOUT 10
 
 
@@ -77,6 +83,11 @@ RUN chmod -R +x /usr/local/bin/cluster
 RUN ln -s /usr/local/bin/cluster/functions/* /usr/local/bin/
 COPY ./pgsql/configs /var/cluster_configs
 
+ENV NOTVISIBLE "in users profile"
+
+COPY ./ssh /home/postgres/.ssh
+
+EXPOSE 22
 EXPOSE 5432
 
 VOLUME /var/lib/postgresql/data

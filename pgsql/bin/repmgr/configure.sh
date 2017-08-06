@@ -11,7 +11,7 @@ fi
 
 echo ">>> Setting up repmgr config file '$REPMGR_CONFIG_FILE'..."
 echo "
-
+use_replication_slots=$USE_REPLICATION_SLOTS
 pg_bindir=/usr/lib/postgresql/$PG_MAJOR/bin
 cluster=$CLUSTER_NAME
 node=$NODE_ID
