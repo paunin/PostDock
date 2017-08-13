@@ -11,7 +11,7 @@ echo ">>> Waiting for upstream DB"
 dockerize -wait tcp://$REPLICATION_HOST:$REPLICATION_PORT -timeout "$WAIT_UPSTREAM_TIMEOUT"s
 sleep $INITIAL_BACKUP_DELAY
 
-echo ">>> Configuring barman for sreaming replication"
+echo ">>> Configuring barman for streaming replication"
 echo "streaming_conninfo = host=$REPLICATION_HOST user=$REPLICATION_USER password=$REPLICATION_PASSWORD port=$REPLICATION_PORT" >> $UPSTREAM_CONFIG_FILE
 echo "conninfo = host=$REPLICATION_HOST dbname=$POSTGRES_DB user=$POSTGRES_USER password=$POSTGRES_PASSWORD port=$REPLICATION_PORT connect_timeout=$POSTGRES_CONNECTION_TIMEOUT" >> $UPSTREAM_CONFIG_FILE
 
