@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
-echo ">>> Getting partners' slots"
+# Basically we should remove all slots from the node which exist on master server
+echo ">>> Getting slots from master node"
+SLOTS=`PGCONNECT_TIMEOUT=$CHECK_PGCONNECT_TIMEOUT PGPASSWORD=$REPLICATION_PASSWORD  psql -h $CURRENT_REPLICATION_PRIMARY_HOST -U $REPLICATION_USER  $REPLICATION_DB -tAc "SELECT slot_name FROM pg_replication_slots"`
+echo "$SLOTS"
 
-echo ">>> Closing partners' slots"
+echo ">>> Closing slots which exist on master node"
+for SLOT in ${SLOTS[@]}; do
+    echo ">>>>>> Closing slot $SLOT"
+    gosu postgres psql -tAc "SELECT pg_drop_replication_slot('$SLOT')" || echo ">>>>>>>>> Can't close the slot!"
+done
