@@ -76,7 +76,7 @@ ENV RECONNECT_INTERVAL 5
 ENV MASTER_RESPONSE_TIMEOUT 20
 ENV LOG_LEVEL INFO
 ENV CHECK_PGCONNECT_TIMEOUT 10
-
+ENV REPMGR_SLOT_NAME_PREFIX repmgr_slot_
 
 COPY ./pgsql/bin /usr/local/bin/cluster
 RUN chmod -R +x /usr/local/bin/cluster

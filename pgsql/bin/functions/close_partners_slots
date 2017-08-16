@@ -10,3 +10,9 @@ for SLOT in ${SLOTS[@]}; do
     echo ">>>>>> Closing slot $SLOT"
     gosu postgres psql -tAc "SELECT pg_drop_replication_slot('$SLOT')" || echo ">>>>>>>>> Can't close the slot!"
 done
+
+echo ">>> Closing slot which current muster used on the node"
+MASTER_ID=`get_upstream_node_id`
+SLOT_NAME=$REPMGR_SLOT_NAME_PREFIX$MASTER_ID
+echo ">>>>>> Closing slot $SLOT_NAME"
+gosu postgres psql -tAc "SELECT pg_drop_replication_slot('$SLOT_NAME');" || echo ">>>>>>>>> Can't close the slot!"
