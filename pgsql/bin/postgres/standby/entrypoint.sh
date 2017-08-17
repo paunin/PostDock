@@ -3,6 +3,15 @@ set -e
 
 wait_upstream_postgres 5
 
+if [ `ls $PGDATA/ | wc -l` != "0" ]; then
+    echo ">>> Data folder is not empty $PGDATA:"
+    ls -al $PGDATA
+    if [[ "$CLEAN_OVER_REWIND" == "1" ]] && [[ "$MASTER_SLAVE_SWITCH" == "1" ]]; then
+        echo ">>> Cleaning data folder..."
+        rm -rf $PGDATA/*
+    fi
+fi
+
 echo ">>> Starting standby node..."
 if ! has_pg_cluster; then
     echo ">>> Instance hasn't been set up yet."
@@ -12,6 +21,9 @@ else
     do_rewind
 fi
 
-rm -f $MASTER_ROLE_LOCK_FILE_NAME # that file should not be here
+rm -f $MASTER_ROLE_LOCK_FILE_NAME # that file should not be here anyways
+
+postgres_configure
+
 echo ">>> Starting postgres..."
-exec gosu postgres postgres
+exec gosu postgres postgres &

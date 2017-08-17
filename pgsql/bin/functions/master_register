@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+echo ">>> Registering node with role master"
+gosu postgres repmgr master register --force 

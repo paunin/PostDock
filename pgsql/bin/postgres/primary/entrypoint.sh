@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -e
-/usr/local/bin/cluster/postgres/primary/configure.sh
+postgres_configure
 
 echo ">>> Creating replication user '$REPLICATION_USER'"
 psql --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" -c "CREATE ROLE $REPLICATION_USER WITH REPLICATION PASSWORD '$REPLICATION_PASSWORD' SUPERUSER CREATEDB  CREATEROLE INHERIT LOGIN;"

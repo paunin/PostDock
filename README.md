@@ -1,4 +1,6 @@
-# Streaming replication cluster for pgsql + pgpool2
+# PostDock - Postgres + Docker
+
+Postgres streaming replication cluster for any docker environment (Kubernetes, Docker Compose, Docker Swarm, Apache Mesos)
 
 ## Info
 
@@ -8,19 +10,21 @@
 
 ### What's in the box
 [This project](https://github.com/paunin/postgres-docker-cluster) includes:
-* dockerfiles for `postgresql` cluster
+* Dockerfiles for `postgresql` cluster
     * [postgresql](./Postgres-latest.Dockerfile)
     * [pgpool](./Pgpool-latest.Dockerfile)
 * Examples of usage(suitable for production environment as architecture has fault protection with auto failover)
     * example of [docker-compose](./docker-compose.yml) file to start this cluster.
-    * directory [k8s](./k8s) contains information for building this cluster in kubernetes
+    * directory [k8s](./k8s) contains information for building this cluster in Kubernetes
+
 
 ### Artifacts
 
 Two docker images were produced:
 * Postgresql server image which can start in master or slave mode: https://hub.docker.com/r/paunin/postgresql-cluster-pgsql/
 * Pgpool service with  flexible configurations: https://hub.docker.com/r/paunin/postgresql-cluster-pgpool/
-* Barman - backup manager for postgres https://hub.docker.com/r/paunin/postgresql-cluster-barman/
+* Barman - backup manager for Postgres https://hub.docker.com/r/paunin/postgresql-cluster-barman/
+
 
 ## Schema of the example cluster
 
@@ -39,15 +43,16 @@ Each `postgres` node (`pgmaster`, `pgslaveX`) is managed by `repmgr/repmgrd`. It
 
 To start cluster run it as normal `docker-compose` application `docker-compose up -d`
 
-Please check comments for each `ENV` variable in [docker-compose.yml](./docker-compose.yml) file to understand parameter for cluster's node
+Please check comments for each `ENV` variable in [docker-compose.yml](./docker-compose.yml) file to understand parameter for each cluster node
+
 
 ## Start cluster in Kubernetes
 
-To make it easier repository contains services' objects under `k8s` dir
-Setup `PostgreSQL` cluster folowing steps in [the example](./k8s/example1/README.md)
-It has info how to check cluster state, so you will be able to see something like this:
+To make it easier repository contains services' objects under `k8s` dir.
+Setup `PostgreSQL` cluster following the steps in [the example](./k8s/example1/README.md)
+It also has information how to check cluster state, so you will be able to see something like this:
 
-From DB node:
+From any DB node pod:
 ```
 Role      | Name  | Upstream | Connection String
 ----------+-------|----------|---------------------------------------------------------------------------------------------------------------------
@@ -57,7 +62,8 @@ Role      | Name  | Upstream | Connection String
   standby | node3 | node2    | user=replica_user password=replica_pass host=mysystem-db-node3-service dbname=replica_db port=5432 connect_timeout=2
   standby | node5 | node4    | user=replica_user password=replica_pass host=mysystem-db-node5-service dbname=replica_db port=5432 connect_timeout=2
 ```
-From Pgpool node:
+
+From any Pgpool pod:
 ```
  node_id |         hostname          | port | status | lb_weight |  role   | select_cnt | load_balance_node | replication_delay
 ---------+---------------------------+------+--------+-----------+---------+------------+-------------------+-------------------
@@ -83,15 +89,70 @@ Instead of it just make sure that all nodes on the first level are running, so a
 That also can mean - replication from second level potentially can connect to root master... Well not a big deal if you've decided to go with adaptive mode.
 But nevertheless you are able to play with `NODE_PRIORITY` environment variable and make sure entry point for second level of replication will never be elected as a new root master 
 
+
+## SSH access
+
+If you have need to organize your cluster with some tricky logic or less problematic cross checks. You can enable SSH server on each node. Just set ENV variable `SSH_ENABLE=1` (disabled by default) in all containers (including pgpool and barman). That will allow you to connect from any to any node by simple command under `postgres` user: `gosu postgres ssh {NODE NETWORK NAME}`
+
+You might want to change default ssh keys which are put into the cluster. For that you need to mount files with your keys in paths `/home/postgres/.ssh/id_rsa`, `/home/postgres/.ssh/id_rsa.pub`.
+
+
+## Replication slots
+
+If you want to disable the feature of Postgres>=9.4 - [replication slots](https://www.postgresql.org/docs/9.4/static/catalog-pg-replication-slots.html) simply set ENV variable `USE_REPLICATION_SLOTS=0` (enabled by default). So cluster will rely only on Postgres configuration `wal_keep_segments` (`500` by default). You also should remember that default number for configuration `max_replication_slots` is `5`. You can change it (as any other configuration) with ENV variable `CONFIGS`.
+
+
+## Configuring the cluster
+
+You can configure any node of the cluster(`postgres.conf`) or pgpool(`pgpool.conf`) with ENV variable `CONFIGS` (format: `variable1:value1[,variable2:value2[,...]]`). Also see the Dockerfiles and [docker-compose.yml](./docker-compose.yml) files in the root of the repository to understand all available and used configurations!
+
+### Postgres
+
+For the rest - you better **follow** the advise and look into the [Postgres-latest.Dockerfile](./Postgres-latest.Dockerfile) file - it full of comments :)
+
+### Pgpool
+
+The most important part to configure in Pgpool (apart of general `CONFIGS`) is backends and users which could access these backends. You can configure backends with ENV variable. You can find good example of setting up pgpool in [docker-compose.yml](./docker-compose.yml) file:
+
+```
+DB_USERS: monkey_user:monkey_pass # in format user:password[,user:password[...]]
+BACKENDS: "0:pgmaster:5432:1:/var/lib/postgresql/data:ALLOW_TO_FAILOVER,1:pgslave1::::,3:pgslave3::::,2:pgslave2::::" #,4:pgslaveDOES_NOT_EXIST::::
+            # in format num:host:port:weight:data_directory:flag[,...]
+            # defaults:
+            #   port: 5432
+            #   weight: 1
+            #   data_directory: /var/lib/postgresql/data
+            #   flag: ALLOW_TO_FAILOVER
+REQUIRE_MIN_BACKENDS: 3 # minimal number of backends to start pgpool (some might be unreachable)
+```
+
+### Barman
+
+The most important part for barman is to setup access variables. Example can be found in [docker-compose.yml](./docker-compose.yml) file:
+
+```
+REPLICATION_USER: replication_user # default is replication_user
+REPLICATION_PASSWORD: replication_pass # default is replication_pass
+REPLICATION_HOST: pgmaster
+POSTGRES_PASSWORD: monkey_pass
+POSTGRES_USER: monkey_user
+POSTGRES_DB: monkey_db
+```
+
+### Other configurations
+
+**See the Dockerfiles and [docker-compose.yml](./docker-compose.yml) files in the root of the repository to understand all available and used configurations!**
+
 ## Backups and recovery
 
-[Barman](http://docs.pgbarman.org/) is used to provide realtime backups using streaming of WAL files.
+[Barman](http://docs.pgbarman.org/) is used to provide real-time backups using streaming of WAL files.
 This image requires connection information(host, port) and 2 sets of credentials, as you can see from [the Dockerfile](./Barman-latest.Dockerfile):
 
 * Replication credentials
 * Postgres admin credentials
 
-*Recovery process TBD*
+*Disaster Recovery process @TBD*
+
 
 ## Health-checks
 
@@ -115,6 +176,7 @@ Role      | Name  | Upstream | Connection String
 
 ```
 
+
 ## Useful commands
 
 * Get map of current cluster(on any `postgres` node): 
@@ -124,6 +186,7 @@ Role      | Name  | Upstream | Connection String
 * In `pgpool` container check if primary node exists: `/usr/local/bin/pgpool/has_write_node.sh` 
 
 Any command might be wrapped with `docker-compose` or `kubectl` - `docker-compose exec {NODE} bash -c '{COMMAND}'` or `kubectl exec {POD_NAME} -- bash -c '{COMMAND}'`
+
 
 ## Scenarios
 
@@ -138,7 +201,7 @@ Check [the document](./FLOWS.md) to understand different cases of failover, spli
     * Complex logic with a lot of go-code
     * Non-standard tools for Postgres ecosystem
 * [How to promote master, after failover on postgresql with docker](http://stackoverflow.com/questions/37710868/how-to-promote-master-after-failover-on-postgresql-with-docker)
-* Killing of node in the middle (e.g. `pgslave1`) will cause dieing of whole branch (https://groups.google.com/forum/?hl=fil#!topic/repmgr/lPAYlawhL0o)
+* Killing of node in the middle (e.g. `pgslave1`) will cause [dieing of whole branch](https://groups.google.com/forum/?hl=fil#!topic/repmgr/lPAYlawhL0o)
    * That make seance as second or deeper level of replication should not be able to connect to root master (it makes extra load on server) or change upstream at all
 
 
@@ -147,4 +210,5 @@ Check [the document](./FLOWS.md) to understand different cases of failover, spli
 * Streaming replication in postgres: https://wiki.postgresql.org/wiki/Streaming_Replication
 * Repmgr: https://github.com/2ndQuadrant/repmgr
 * Pgpool2: http://www.pgpool.net/docs/latest/pgpool-en.html
+* Barman: http://www.pgbarman.org/
 * Kubernetes: http://kubernetes.io/

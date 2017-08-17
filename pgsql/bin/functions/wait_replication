@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # interval in seconds to check if replication is still in progress
-INTERVAL=20
+INTERVAL=30
 
 # Lock file is used to wait for replication is over
 # REPLICATION_LOCK_FILE - set in Dockerfile
@@ -34,5 +34,5 @@ do
     LAST_REPLICATION_SIZE="$CURRENT_REPLICATION_SIZE"
     sleep $INTERVAL
 done
-
+echo ">>> Replication is done"
 exit 0
