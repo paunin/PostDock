@@ -11,7 +11,7 @@ echo ">>> Waiting for upstream DB"
 dockerize -wait tcp://$REPLICATION_HOST:$REPLICATION_PORT -timeout "$WAIT_UPSTREAM_TIMEOUT"s
 sleep $INITIAL_BACKUP_DELAY
 
-echo ">>> Configuring barman for sreaming replication"
+echo ">>> Configuring barman for streaming replication"
 echo "
 [$CLUSTER_NAME]
 description =  'Cluster $CLUSTER_NAME replication'
