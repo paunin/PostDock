@@ -12,17 +12,26 @@ dockerize -wait tcp://$REPLICATION_HOST:$REPLICATION_PORT -timeout "$WAIT_UPSTRE
 sleep $INITIAL_BACKUP_DELAY
 
 echo ">>> Configuring barman for sreaming replication"
-echo "streaming_conninfo = host=$REPLICATION_HOST user=$REPLICATION_USER password=$REPLICATION_PASSWORD port=$REPLICATION_PORT" >> $UPSTREAM_CONFIG_FILE
-echo "conninfo = host=$REPLICATION_HOST dbname=$POSTGRES_DB user=$POSTGRES_USER password=$POSTGRES_PASSWORD port=$REPLICATION_PORT connect_timeout=$POSTGRES_CONNECTION_TIMEOUT" >> $UPSTREAM_CONFIG_FILE
+echo "
+[$CLUSTER_NAME]
+description =  'Cluster $CLUSTER_NAME replication'
+backup_method = postgres
+streaming_archiver = on
+streaming_archiver_name = barman_receive_wal
+streaming_archiver_batch_size = 50
+streaming_conninfo = host=$REPLICATION_HOST user=$REPLICATION_USER password=$REPLICATION_PASSWORD port=$REPLICATION_PORT
+conninfo = host=$REPLICATION_HOST dbname=$POSTGRES_DB user=$POSTGRES_USER password=$POSTGRES_PASSWORD port=$REPLICATION_PORT connect_timeout=$POSTGRES_CONNECTION_TIMEOUT
+slot_name = $REPLICATION_SLOT_NAME
+" >> $UPSTREAM_CONFIG_FILE
 
-echo ">>> Creating replication slot for barman"
-echo "slot_name = $REPLICATION_SLOT_NAME" >> $UPSTREAM_CONFIG_FILE
-
-SLOTS_COUNT=`barman show-server upstream | grep "replication_slot: Record(slot_name='$REPLICATION_SLOT_NAME'" | wc -l`
+SLOTS_COUNT=`barman show-server $UPSTREAM_NAME | grep "replication_slot: Record(slot_name='$REPLICATION_SLOT_NAME'" | wc -l`
 if [ "$SLOTS_COUNT" -gt "0" ]; then 
     echo ">>>>>> Looks like replication slot already exists"
 else 
-   barman receive-wal --create-slot upstream  
+   barman receive-wal --create-slot $UPSTREAM_NAME  
 fi
 
-barman receive-wal upstream
+echo '>>> STARTING SSH (if required)...'
+source /home/postgres/.ssh/entrypoint.sh
+
+barman receive-wal $UPSTREAM_NAME

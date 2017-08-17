@@ -11,7 +11,7 @@ fi
 
 echo ">>> Setting up repmgr config file '$REPMGR_CONFIG_FILE'..."
 echo "
-
+use_replication_slots=$USE_REPLICATION_SLOTS
 pg_bindir=/usr/lib/postgresql/$PG_MAJOR/bin
 cluster=$CLUSTER_NAME
 node=$NODE_ID
@@ -36,12 +36,14 @@ if [[ "$CURRENT_REPLICATION_PRIMARY_HOST" != "" ]]; then
         REPLICATION_UPSTREAM_NODE_ID="$LOCKED_STANDBY"
     else
         wait_upstream_postgres 5
-        REPLICATION_UPSTREAM_NODE_ID=`PGPASSWORD=$REPLICATION_PASSWORD psql --username "$REPLICATION_USER" -h $CURRENT_REPLICATION_PRIMARY_HOST -p $REPLICATION_PRIMARY_PORT -d $REPLICATION_DB -tAc "SELECT id FROM repmgr_$CLUSTER_NAME.repl_nodes WHERE conninfo LIKE '% host=$CURRENT_REPLICATION_PRIMARY_HOST%' LIMIT 1"`
+        REPLICATION_UPSTREAM_NODE_ID=`get_upstream_node_id`
     fi
 
     if [[ "$REPLICATION_UPSTREAM_NODE_ID" == "" ]]; then
         echo ">>> Can not get REPLICATION_UPSTREAM_NODE_ID from LOCK file or by CURRENT_REPLICATION_PRIMARY_HOST=$CURRENT_REPLICATION_PRIMARY_HOST"
         exit 1
+    else 
+        echo ">>> REPLICATION_UPSTREAM_NODE_ID=$REPLICATION_UPSTREAM_NODE_ID"
     fi
 
     echo "upstream_node=$REPLICATION_UPSTREAM_NODE_ID" >> $REPMGR_CONFIG_FILE

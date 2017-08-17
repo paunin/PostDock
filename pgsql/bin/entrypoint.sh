@@ -6,6 +6,9 @@ for f in TERM SIGTERM QUIT SIGQUIT INT SIGINT KILL SIGKILL; do
     trap "system_stop $f" "$f"
 done
 
+echo '>>> STARTING SSH (if required)...'
+source /home/postgres/.ssh/entrypoint.sh
+
 echo '>>> STARTING POSTGRES...'
 /usr/local/bin/cluster/postgres/entrypoint.sh & wait ${!} || echo ">>> Foreground processes returned code: '$?'"
 
