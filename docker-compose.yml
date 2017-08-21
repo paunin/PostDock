@@ -49,6 +49,7 @@ services:
             NODE_NAME: node2
             CLUSTER_NODE_NETWORK_NAME: pgslave1 # (default: hostname of the node)
             CLEAN_OVER_REWIND: 1
+            CONFIGS: "max_replication_slots:10" #some overrides
         ports:
             - 5441:5432
         networks:
