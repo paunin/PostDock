@@ -32,6 +32,8 @@ services:
             
         ports:
             - 5432:5432
+        volumes:
+            - pgmaster:/var/lib/postgresql/data
         networks:
             cluster:
                 aliases:
@@ -52,6 +54,8 @@ services:
             CONFIGS: "max_replication_slots:10" #some overrides
         ports:
             - 5441:5432
+        volumes:
+            - pgslave1:/var/lib/postgresql/data
         networks:
             cluster:
                 aliases:
@@ -71,6 +75,8 @@ services:
             #USE_REPLICATION_SLOTS: 0
         ports:
             - 5442:5432
+        volumes:
+            - pgslave2:/var/lib/postgresql/data
         networks:
             cluster:
                 aliases:
@@ -92,6 +98,8 @@ services:
             CLEAN_OVER_REWIND: 1
         ports:
             - 5443:5432
+        volumes:
+            - pgslave3:/var/lib/postgresql/data
         networks:
             cluster:
                 aliases:
@@ -110,6 +118,8 @@ services:
             #USE_REPLICATION_SLOTS: 0
         ports:
             - 5444:5432
+        volumes:
+            - pgslave4:/var/lib/postgresql/data
         networks:
             cluster:
                 aliases:
@@ -129,6 +139,8 @@ services:
             POSTGRES_DB: monkey_db
             SSH_ENABLE: 1
             BACKUP_SCHEDULE: "*/5 * * * *"
+        volumes:
+            - backup:/var/backups
         networks:
             cluster:
                 aliases:
@@ -166,3 +178,10 @@ services:
             cluster:
                 aliases:
                     - pgpool
+volumes:
+    pgmaster:
+    pgslave1:
+    pgslave2:
+    pgslave3:
+    pgslave4:
+    backup:
