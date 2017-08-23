@@ -6,6 +6,11 @@ echo "*:$REPLICATION_PRIMARY_PORT:*:$REPLICATION_USER:$REPLICATION_PASSWORD" >> 
 chmod 0600 /home/postgres/.pgpass
 chown postgres:postgres /home/postgres/.pgpass
 
+if ! has_pg_cluster; then
+    echo ">>> Cleaning data folder which might have some garbage..."
+    rm -rf $PGDATA/*
+fi
+
 CURRENT_MASTER=`cluster_master || echo ''`
 echo ">>> Auto-detected master name: '$CURRENT_MASTER'"
 
