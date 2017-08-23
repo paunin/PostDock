@@ -2,7 +2,7 @@ FROM postgres:9.5
 ARG POSTGRES_VERSION=9.5
 
 RUN apt-get update --fix-missing && \
-    apt-get install -y postgresql-server-dev-$POSTGRES_VERSION postgresql-$POSTGRES_VERSION-repmgr wget  openssh-server
+    apt-get install -y postgresql-server-dev-$POSTGRES_VERSION postgresql-$POSTGRES_VERSION-repmgr wget  openssh-server barman-cli
 
 # Inherited variables
 # ENV POSTGRES_PASSWORD monkey_pass

@@ -129,6 +129,7 @@ services:
             POSTGRES_DB: monkey_db
             SSH_ENABLE: 1
             INITIAL_BACKUP_DELAY: 10
+            BACKUP_SCHEDULE: "*/5 * * * *"
         networks:
             cluster:
                 aliases:

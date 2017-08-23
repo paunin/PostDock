@@ -145,13 +145,24 @@ POSTGRES_DB: monkey_db
 
 ## Backups and recovery
 
-[Barman](http://docs.pgbarman.org/) is used to provide real-time backups using streaming of WAL files.
+[Barman](http://docs.pgbarman.org/) is used to provide real-time backups and Point In Time Recovery (PITR)..
 This image requires connection information(host, port) and 2 sets of credentials, as you can see from [the Dockerfile](./Barman-latest.Dockerfile):
 
 * Replication credentials
 * Postgres admin credentials
 
-*Disaster Recovery process @TBD*
+Barman acts as warm standby and stream WAL from source. Additionaly it periodicaly takes remote physical backups using `pg_basebackup`.
+This allows to make PITR in reasonable time within window of specified size, because you only have to replay WAL from lastest base backup.
+Barman automatically deletes old backups and WAL according to retetion policy.
+Backup source is static — pgmaster node.
+In case of master failover, backuping will continue from standby server
+Whole backup procedure is performed remotely, but for recovery SSH access is required.
+
+*Before using in production read following documentation:*
+ * http://docs.pgbarman.org/release/2.2/index.html
+ * https://www.postgresql.org/docs/current/static/continuous-archiving.html
+
+*For Disaster Recovery process @see RECOVERY.md*
 
 
 ## Health-checks
