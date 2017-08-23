@@ -11,12 +11,11 @@ echo ">>> Checking all configurations"
 
 echo ">>> Waiting for upstream DB"
 dockerize -wait tcp://$REPLICATION_HOST:$REPLICATION_PORT -timeout "$WAIT_UPSTREAM_TIMEOUT"s
-sleep $INITIAL_BACKUP_DELAY
 
 echo ">>> Configuring barman for streaming replication"
 echo "
-[$CLUSTER_NAME]
-description =  'Cluster $CLUSTER_NAME replication'
+[$UPSTREAM_NAME]
+description =  'Cluster $UPSTREAM_NAME replication'
 backup_method = postgres
 streaming_archiver = on
 streaming_archiver_name = barman_receive_wal

@@ -14,7 +14,7 @@ if [[ "$SSH_ENABLE" == "1" ]]; then
     chmod 600 -R /home/postgres/.ssh/id_rsa
 
     echo '>>> STARTING SSH SERVER...'
-    /usr/sbin/sshd -D &
+    /usr/sbin/sshd 2>&1
 else
     echo ">>> SSH is not enabled!"
 fi
