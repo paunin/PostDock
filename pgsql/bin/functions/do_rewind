@@ -2,8 +2,9 @@
 
 echo `date` > $REPLICATION_LOCK_FILE
 echo ">>> Rewinding to the latest state"
-if [[ "$MASTER_SLAVE_SWITCH" == "1" ]]; then
+TRY_TO_FOLLOW_CLUSTER_MASTER=`PGCONNECT_TIMEOUT=$CHECK_PGCONNECT_TIMEOUT PGPASSWORD=$REPLICATION_PASSWORD  psql -h $CURRENT_REPLICATION_PRIMARY_HOST -U $REPLICATION_USER  $REPLICATION_DB -tAc "SELECT count(*) FROM repmgr_$CLUSTER_NAME.repl_nodes WHERE type='master' AND conninfo LIKE '%host=$CURRENT_REPLICATION_PRIMARY_HOST%'"`
 
+if [[ "$MASTER_SLAVE_SWITCH" == "1" ]] || [ "$TRY_TO_FOLLOW_CLUSTER_MASTER" == "1" ]; then
     echo ">>>>>> Archiving configs"
     gosu postgres repmgr standby archive-config --config-archive-dir=/tmp/repmgr-archive
 
@@ -24,7 +25,6 @@ if [[ "$MASTER_SLAVE_SWITCH" == "1" ]]; then
         echo ">>>>>>>>> Creating $REPLICATION_SLOT"
         PGCONNECT_TIMEOUT=$CHECK_PGCONNECT_TIMEOUT PGPASSWORD=$REPLICATION_PASSWORD  psql -h $CURRENT_REPLICATION_PRIMARY_HOST -U $REPLICATION_USER  $REPLICATION_DB -c "SELECT * FROM pg_create_physical_replication_slot('$REPLICATION_SLOT')"
     fi
-
     echo ">>>>>> Rewind to the host $CURRENT_REPLICATION_PRIMARY_HOST"
     gosu postgres pg_rewind --source-server="user=$REPLICATION_USER password=$REPLICATION_PASSWORD host=$CURRENT_REPLICATION_PRIMARY_HOST dbname=$REPLICATION_DB  port=$REPLICATION_PRIMARY_PORT connect_timeout=10" --target-pgdata=$PGDATA
 
@@ -32,7 +32,7 @@ if [[ "$MASTER_SLAVE_SWITCH" == "1" ]]; then
     gosu postgres repmgr standby restore-config -D $PGDATA --config-archive-dir=/tmp/repmgr-archive
 fi
 
-TRY_TO_FOLLOW_CLUSTER_MASTER=`PGCONNECT_TIMEOUT=$CHECK_PGCONNECT_TIMEOUT PGPASSWORD=$REPLICATION_PASSWORD  psql -h $CURRENT_REPLICATION_PRIMARY_HOST -U $REPLICATION_USER  $REPLICATION_DB -tAc "SELECT count(*) FROM repmgr_$CLUSTER_NAME.repl_nodes WHERE type='master' AND conninfo LIKE '%host=$CURRENT_REPLICATION_PRIMARY_HOST%'"`
+
 if [ "$TRY_TO_FOLLOW_CLUSTER_MASTER" == "0" ]; then
     echo ">>>>>> Repmgr can follow only main cluster master"
 else
