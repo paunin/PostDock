@@ -162,7 +162,7 @@ Whole backup procedure is performed remotely, but for recovery SSH access is req
  * http://docs.pgbarman.org/release/2.2/index.html
  * https://www.postgresql.org/docs/current/static/continuous-archiving.html
 
-*For Disaster Recovery process @see RECOVERY.md*
+*For Disaster Recovery process see [RECOVERY.md](./RECOVERY.md)*
 
 
 ## Health-checks
