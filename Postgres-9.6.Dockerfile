@@ -86,6 +86,7 @@ COPY ./pgsql/configs /var/cluster_configs
 ENV NOTVISIBLE "in users profile"
 
 COPY ./ssh /home/postgres/.ssh
+RUN chmod -R postgres:postgres /home/postgres
 
 EXPOSE 22
 EXPOSE 5432
