@@ -21,3 +21,5 @@ do
     echo ">>>>>> Adding config '$VAR'='$VAL' "
     echo "$VAR = $VAL" >> $CONFIG_FILE
 done
+
+chown postgres:postgres $CONFIG_FILE
