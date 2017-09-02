@@ -4,6 +4,8 @@ Using only `docker-compose` utility we can run some scenarios to demonstrate the
 
 ## Master crash
 
+[Test case](./tests/pgpool-lost-master/run.sh)
+
 * Start cluster `docker-compose up -d`
 * Kill master container and in a few moments cluster will define new master node `docker-compose stop pgmaster`
 * `pgpool` will try to detect new primary node for write access automatically.
@@ -67,6 +69,8 @@ docker-compose -f docker-compose.yml -f docker-compose/split-brain-pgpool.yml ex
 ```
 
 ## Split-brain (isolated standby)
+
+[Test case](./tests/split-brain-isolated-standby/run.sh)
 
 The flow should proof that one (out of two) standby nodes will not be elected as master in case of lost connection to the rest of cluster
 
@@ -150,7 +154,7 @@ docker-compose exec pgpool bash -c 'PGPASSWORD=$CHECK_PASSWORD psql -U $CHECK_US
 
 ### Split-brain (isolated master)
 
-[Test case](./tests/split-brain-isolated-master/setup.sh)
+[Test case](./tests/split-brain-isolated-master/run.sh)
 
 The flow should proof that in case of lost connection to master from standbys but not from pgpools:
 * one of standby becomes master by election

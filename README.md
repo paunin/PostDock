@@ -102,32 +102,6 @@ From any Pgpool pod:
 
 ```
 
-
-## Adaptive mode
-
-'Adaptive mode' means that node will be able to decide if instead of acting as a master on it's start or switch to standby role.
-That possible if you pass `PARTNER_NODES` (comma separated list of nodes in the cluster on the same level).
-So every time container starts it will check if it was master before and if there is no new master around (from the list `PARTNER_NODES`),
-otherwise it will start as a new standby node with `upstream = new master` in the cluster.
-
-Keep in mind: this feature does not work for cascade replication and you should not pass `PARTNER_NODES` to nodes on second level of the cluster.
-Instead of it just make sure that all nodes on the first level are running, so after restart any node from second level will be able to follow initial upstream from the first level.
-That also can mean - replication from second level potentially can connect to root master... Well not a big deal if you've decided to go with adaptive mode.
-But nevertheless you are able to play with `NODE_PRIORITY` environment variable and make sure entry point for second level of replication will never be elected as a new root master 
-
-
-## SSH access
-
-If you have need to organize your cluster with some tricky logic or less problematic cross checks. You can enable SSH server on each node. Just set ENV variable `SSH_ENABLE=1` (disabled by default) in all containers (including pgpool and barman). That will allow you to connect from any to any node by simple command under `postgres` user: `gosu postgres ssh {NODE NETWORK NAME}`
-
-**You might want to change DEFAULT SSH KEYS which are put into the cluster.** For that you need to mount files with your keys in paths `/home/postgres/.ssh/id_rsa`, `/home/postgres/.ssh/id_rsa.pub`.
-
-
-## Replication slots
-
-If you want to disable the feature of Postgres>=9.4 - [replication slots](https://www.postgresql.org/docs/9.4/static/catalog-pg-replication-slots.html) simply set ENV variable `USE_REPLICATION_SLOTS=0` (enabled by default). So cluster will rely only on Postgres configuration `wal_keep_segments` (`500` by default). You also should remember that default number for configuration `max_replication_slots` is `5`. You can change it (as any other configuration) with ENV variable `CONFIGS`.
-
-
 ## Configuring the cluster
 
 You can configure any node of the cluster(`postgres.conf`) or pgpool(`pgpool.conf`) with ENV variable `CONFIGS` (format: `variable1:value1[,variable2:value2[,...]]`). Also see the Dockerfiles and [docker-compose.yml](./docker-compose.yml) files in the root of the repository to understand all available and used configurations!
@@ -168,6 +142,32 @@ POSTGRES_DB: monkey_db
 ### Other configurations
 
 **See the Dockerfiles and [docker-compose.yml](./docker-compose.yml) files in the root of the repository to understand all available and used configurations!**
+
+
+## Adaptive mode
+
+'Adaptive mode' means that node will be able to decide if instead of acting as a master on it's start or switch to standby role.
+That possible if you pass `PARTNER_NODES` (comma separated list of nodes in the cluster on the same level).
+So every time container starts it will check if it was master before and if there is no new master around (from the list `PARTNER_NODES`),
+otherwise it will start as a new standby node with `upstream = new master` in the cluster.
+
+Keep in mind: this feature does not work for cascade replication and you should not pass `PARTNER_NODES` to nodes on second level of the cluster.
+Instead of it just make sure that all nodes on the first level are running, so after restart any node from second level will be able to follow initial upstream from the first level.
+That also can mean - replication from second level potentially can connect to root master... Well not a big deal if you've decided to go with adaptive mode.
+But nevertheless you are able to play with `NODE_PRIORITY` environment variable and make sure entry point for second level of replication will never be elected as a new root master 
+
+
+## SSH access
+
+If you have need to organize your cluster with some tricky logic or less problematic cross checks. You can enable SSH server on each node. Just set ENV variable `SSH_ENABLE=1` (disabled by default) in all containers (including pgpool and barman). That will allow you to connect from any to any node by simple command under `postgres` user: `gosu postgres ssh {NODE NETWORK NAME}`
+
+You might want to change default ssh keys which are put into the cluster. For that you need to mount files with your keys in paths `/home/postgres/.ssh/id_rsa`, `/home/postgres/.ssh/id_rsa.pub`.
+
+
+## Replication slots
+
+If you want to disable the feature of Postgres>=9.4 - [replication slots](https://www.postgresql.org/docs/9.4/static/catalog-pg-replication-slots.html) simply set ENV variable `USE_REPLICATION_SLOTS=0` (enabled by default). So cluster will rely only on Postgres configuration `wal_keep_segments` (`500` by default). You also should remember that default number for configuration `max_replication_slots` is `5`. You can change it (as any other configuration) with ENV variable `CONFIGS`.
+
 
 ## Backups and recovery
 
@@ -229,6 +229,9 @@ Any command might be wrapped with `docker-compose` or `kubectl` - `docker-compos
 
 Check [the document](./FLOWS.md) to understand different cases of failover, split-brain resistance and recovery
 
+## Tests
+
+Check [the test directory](./tests/README.md) to understand how to run or create new tests
 
 ## FAQ
 
