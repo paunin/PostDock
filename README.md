@@ -2,6 +2,8 @@
 
 Postgres streaming replication cluster for any docker environment (Kubernetes, Docker Compose, Docker Swarm, Apache Mesos)
 
+<img align="right" width="400" src="https://github.com/paunin/PostDock/blob/master/artwork/logo.png?raw=true">
+
 - [Info](#info)
   * [Publications](#publications)
   * [What's in the box](#what-s-in-the-box)
@@ -23,6 +25,8 @@ Postgres streaming replication cluster for any docker environment (Kubernetes, D
 - [Scenarios](#scenarios)
 - [FAQ](#faq)
 - [Documentation and manuals](#documentation-and-manuals)
+
+-------
 
 ## Info
 
