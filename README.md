@@ -2,6 +2,28 @@
 
 Postgres streaming replication cluster for any docker environment (Kubernetes, Docker Compose, Docker Swarm, Apache Mesos)
 
+- [Info](#info)
+  * [Publications](#publications)
+  * [What's in the box](#what-s-in-the-box)
+  * [Artifacts](#artifacts)
+- [Schema of the example cluster](#schema-of-the-example-cluster)
+- [Start cluster with docker-compose](#start-cluster-with-docker-compose)
+- [Start cluster in Kubernetes](#start-cluster-in-kubernetes)
+- [Adaptive mode](#adaptive-mode)
+- [SSH access](#ssh-access)
+- [Replication slots](#replication-slots)
+- [Configuring the cluster](#configuring-the-cluster)
+  * [Postgres](#postgres)
+  * [Pgpool](#pgpool)
+  * [Barman](#barman)
+  * [Other configurations](#other-configurations)
+- [Backups and recovery](#backups-and-recovery)
+- [Health-checks](#health-checks)
+- [Useful commands](#useful-commands)
+- [Scenarios](#scenarios)
+- [FAQ](#faq)
+- [Documentation and manuals](#documentation-and-manuals)
+
 ## Info
 
 ### Publications
