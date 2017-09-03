@@ -1,7 +1,7 @@
 version: '2'
 services:
     pgmaster2:
-#        image: paunin/postgresql-cluster-pgsql
+#        image: paunin/postdock-pgsql
         build:
             context: .
             dockerfile: Postgres-latest.Dockerfile
@@ -23,7 +23,7 @@ services:
                 aliases:
                     - pgmaster2
     pgpool2:
-#        image: paunin/postgresql-cluster-pgpool
+#        image: paunin/postdock-pgpool
         build:
             context: .
             dockerfile: Pgpool-latest.Dockerfile

@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: database-pgpool
-        image: paunin/postgresql-cluster-pgpool
+        image: paunin/postdock-pgpool
         livenessProbe:
           exec:
             command: ['bash', '-c', '/usr/local/bin/pgpool/has_write_node.sh && /usr/local/bin/pgpool/has_enough_backends.sh']

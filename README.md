@@ -47,9 +47,9 @@ Postgres streaming replication cluster for any docker environment (Kubernetes, D
 ### Artifacts
 
 Two docker images were produced:
-* Postgresql server image which can start in master or slave mode: https://hub.docker.com/r/paunin/postgresql-cluster-pgsql/
-* Pgpool service with  flexible configurations: https://hub.docker.com/r/paunin/postgresql-cluster-pgpool/
-* Barman - backup manager for Postgres https://hub.docker.com/r/paunin/postgresql-cluster-barman/
+* Postgresql server image which can start in master or slave mode: https://hub.docker.com/r/paunin/postdock-pgsql/
+* Pgpool service with  flexible configurations: https://hub.docker.com/r/paunin/postdock-pgpool/
+* Barman - backup manager for Postgres https://hub.docker.com/r/paunin/postdock-barman/
 
 
 ## Schema of the example cluster
