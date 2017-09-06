@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-docker-compose down -v && docker-compose build && docker-compose up -d pgmaster pgslave1 pgslave3
+docker-compose up -d pgmaster pgslave1 pgslave3
 
 docker-compose exec  -T pgmaster wait_local_postgres
 docker-compose exec  -T pgslave1 wait_local_postgres

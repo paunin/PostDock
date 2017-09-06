@@ -22,6 +22,8 @@ echo -e "${BLUE}=====================PostDock tests======================${RESTO
 
 for TEST in $TESTS; do
     echo -n ">>> Running test $TEST":
+    docker-compose down -v && docker-compose build
+    
     if [[ "$DEBUG" == "1"  ]]; then
         echo -e " ${BLUE}>>>>>>${RESTORE}"
         ./tests/$TEST/run.sh
@@ -30,9 +32,6 @@ for TEST in $TESTS; do
     else
         TEST_OUTPUT=$(./tests/$TEST/run.sh 2>&1)
         TEST_EXIT_CODE=$?
-    fi
-    if [[ "$NO_CLEANUP" != "1" ]]; then
-        docker-compose down -v
     fi
 
     case "$TEST_EXIT_CODE" in
@@ -44,6 +43,10 @@ for TEST in $TESTS; do
             echo -e "${RED} Failed ${RESTORE}" "(Output: '${RED}$TEST_OUTPUT${RESTORE}')" 
             TESTS_FAILED=$((TESTS_FAILED+1))
     esac
+
+    if [[ "$NO_CLEANUP" != "1" ]]; then
+        docker-compose down -v
+    fi
 done
 
 echo -e "${BLUE}=========================================================${RESTORE}"
