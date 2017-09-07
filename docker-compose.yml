@@ -138,7 +138,7 @@ services:
             POSTGRES_USER: monkey_user
             POSTGRES_DB: monkey_db
             SSH_ENABLE: 1
-            BACKUP_SCHEDULE: "*/5 * * * *"
+            BACKUP_SCHEDULE: "*/30 */5 * * *"
         volumes:
             - backup:/var/backups
         networks:
