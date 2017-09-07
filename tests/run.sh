@@ -21,8 +21,9 @@ fi
 echo -e "${BLUE}=====================PostDock tests======================${RESTORE}"
 
 for TEST in $TESTS; do
-    echo -n ">>> Running test $TEST":
+    echo ">>> Preparing environment:"
     docker-compose down -v && docker-compose build
+    echo -n ">>> Running test $TEST:"
     
     if [[ "$DEBUG" == "1"  ]]; then
         echo -e " ${BLUE}>>>>>>${RESTORE}"
@@ -45,6 +46,7 @@ for TEST in $TESTS; do
     esac
 
     if [[ "$NO_CLEANUP" != "1" ]]; then
+        echo ">>> Tear down environment:"
         docker-compose down -v
     fi
 done
