@@ -1,6 +1,6 @@
 FROM debian:jessie
 
-ARG BARMAN_VERSION=2.3-1.pgdg80+1
+ARG BARMAN_VERSION=2.3-2.pgdg80+1
 ARG DOCKERIZE_VERSION=v0.2.0
 # grab gosu for easy step-down from root
 ARG GOSU_VERSION=1.7
