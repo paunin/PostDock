@@ -7,7 +7,7 @@ Postgres streaming replication cluster for any docker environment (Kubernetes, D
 - [Info](#info)
   * [Publications](#publications)
   * [What's in the box](#what-s-in-the-box)
-  * [Artifacts](#artifacts)
+  * [Docker images tags convention](#docker-images-tags-convention)
 - [Schema of the example cluster](#schema-of-the-example-cluster)
 - [Start cluster with docker-compose](#start-cluster-with-docker-compose)
 - [Start cluster in Kubernetes](#start-cluster-in-kubernetes)
@@ -43,13 +43,23 @@ Postgres streaming replication cluster for any docker environment (Kubernetes, D
     * example of [docker-compose](./docker-compose.yml) file to start this cluster.
     * directory [k8s](./k8s) contains information for building this cluster in Kubernetes
 
+### Docker images tags convention
 
-### Artifacts
+Taking into account that PostDock project itself has versioning schema, all docker images produced by the repository have schema - `postdock/<component>:<postdock_version>-<component><component_version>`, where:
 
-Two docker images were produced:
-* Postgresql server image which can start in master or slave mode: https://hub.docker.com/r/paunin/postdock-pgsql/
-* Pgpool service with  flexible configurations: https://hub.docker.com/r/paunin/postdock-pgpool/
-* Barman - backup manager for Postgres https://hub.docker.com/r/paunin/postdock-barman/
+* `<component>` - can be one of the value from the set `postgres`, `pgpool`, `barman`
+* `<postdock_version>` - semantic version(without `bug-fix` component)
+* `<component_version>` - depends on component:
+    * `postgres` - major and minor version without dot in between(can be `95`,`96`,`100`,101)
+    * `pgpool` - major and minor version without dot in between(can be `33`,`36`)
+    * `barman` - major version (can be `2`,`3`)
+
+Aliases are available:
+
+* `postdock/<component>:latest-<component><component_version>` - refers to the latest release of the postdock and certain version of the component
+* `postdock/<component>:latest` - refers to the latest release of the postdock and the component
+
+**There is no alias for `master` branch build**
 
 
 ## Schema of the example cluster
