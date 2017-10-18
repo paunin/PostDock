@@ -1,2 +1,2 @@
-* * * * * root barman cron > /proc/1/fd/1 2> /proc/1/fd/2
+*/5 * * * * root cd /home/postgres && /usr/local/bin/barman_docker/wal-receiver.sh > /proc/1/fd/1 2> /proc/1/fd/2
 

@@ -9,9 +9,6 @@ echo ">>> Checking all configurations"
 [[ "$POSTGRES_PASSWORD" != "" ]] || ( echo 'Variable POSTGRES_PASSWORD is not set!' ;exit 3 )
 [[ "$POSTGRES_DB" != "" ]] || ( echo 'Variable POSTGRES_DB is not set!' ;exit 4 )
 
-echo ">>> Waiting for upstream DB"
-dockerize -wait tcp://$REPLICATION_HOST:$REPLICATION_PORT -timeout "$WAIT_UPSTREAM_TIMEOUT"s
-
 echo ">>> Configuring barman for streaming replication"
 echo "
 [$UPSTREAM_NAME]
@@ -27,13 +24,6 @@ backup_directory = $BACKUP_DIR
 retention_policy = RECOVERY WINDOW OF $BACKUP_RETENTION_DAYS DAYS
 " >> $UPSTREAM_CONFIG_FILE
 
-SLOTS_COUNT=`barman show-server $UPSTREAM_NAME | grep "replication_slot: Record(slot_name='$REPLICATION_SLOT_NAME'" | wc -l`
-if [ "$SLOTS_COUNT" -gt "0" ]; then 
-	echo ">>>>>> Looks like replication slot already exists"
-else 
-	barman receive-wal --create-slot $UPSTREAM_NAME
-fi
-
 echo '>>> STARTING SSH (if required)...'
 source /home/postgres/.ssh/entrypoint.sh
 
@@ -43,5 +33,6 @@ echo "$BACKUP_SCHEDULE root barman backup all > /proc/1/fd/1 2> /proc/1/fd/2" >>
 chmod 0644 /etc/cron.d/barman
 
 echo '>>> STARTING CRON'
+env >> /etc/environment
 cron -f
 
