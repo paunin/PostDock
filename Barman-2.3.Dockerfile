@@ -1,4 +1,4 @@
-FROM debian:jessie
+FROM golang:1.8-jessie
 
 ARG BARMAN_VERSION=2.3-2.pgdg80+1
 # grab gosu for easy step-down from root
@@ -53,6 +53,9 @@ COPY ./barman/configs/barman.conf /etc/barman.conf
 COPY ./barman/configs/upstream.conf $UPSTREAM_CONFIG_FILE
 COPY ./barman/bin /usr/local/bin/barman_docker
 RUN chmod +x /usr/local/bin/barman_docker/* && ls /usr/local/bin/barman_docker
+
+COPY ./barman/metrics /go
+RUN cd /go && go build /go/main.go
 
 VOLUME $BACKUP_DIR
 
