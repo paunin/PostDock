@@ -20,7 +20,7 @@ func main() {
 
 func handler(w http.ResponseWriter, r *http.Request) {
     for k, v := range collectMetrics() {
-        fmt.Fprintf(w, "%s: %d\n", k, v)
+        fmt.Fprintf(w, "%s %d\n", k, v)
     }
 }
 
@@ -31,7 +31,7 @@ func collectMetrics() map[string]int64 {
     backups := diagnose.Servers.Pg_cluster.Backups
 
     metrics["barman_check_is_ok"] = int64(barmanCheck())
-    metrics["backups_amount"] = int64(len(backups))
+    metrics["barman_backups_amount"] = int64(len(backups))
     if (len(backups) > 0) {
         var keys []string
         for k := range backups {
@@ -40,18 +40,18 @@ func collectMetrics() map[string]int64 {
         sort.Strings(keys)
         latestBackup := backups[keys[len(keys)-1]]
         oldestBackup := backups[keys[0]]
-        metrics["last_backup_started_at"] = latestBackup.Begin_time.Unix()
-        metrics["last_backup_finished_at"] = latestBackup.End_time.Unix()
-        metrics["last_backup_size"] = latestBackup.Size
-        metrics["last_backup_duration_total"] = int64(latestBackup.Copy_stats["total_time"])
-        metrics["last_backup_duration_copy"] = int64(latestBackup.Copy_stats["copy_time"])
-        metrics["oldest_backup_date"] = oldestBackup.End_time.Unix()
+        metrics["barman_last_backup_start_time_seconds"] = latestBackup.Begin_time.Unix()
+        metrics["barman_last_backup_end_time_seconds"] = latestBackup.End_time.Unix()
+        metrics["barman_last_backup_size_bytes"] = latestBackup.Size
+        metrics["barman_last_backup_duration_total_seconds"] = int64(latestBackup.Copy_stats["total_time"])
+        metrics["barman_last_backup_duration_copy_seconds"] = int64(latestBackup.Copy_stats["copy_time"])
+        metrics["barman_oldest_backup_end_time_seconds"] = oldestBackup.End_time.Unix()
     }
 
     var diskUsage syscall.Statfs_t
     syscall.Statfs("/var/backups", &diskUsage)
-    metrics["disk_free"] = int64(diskUsage.Bavail * uint64(diskUsage.Bsize))
-    metrics["disk_used"] = int64((diskUsage.Blocks - diskUsage.Bfree) * uint64(diskUsage.Bsize))
+    metrics["barman_disk_free_bytes"] = int64(diskUsage.Bavail * uint64(diskUsage.Bsize))
+    metrics["barman_disk_used_bytes"] = int64((diskUsage.Blocks - diskUsage.Bfree) * uint64(diskUsage.Bsize))
 
     return metrics
 }

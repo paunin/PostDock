@@ -47,7 +47,7 @@ func (suite *MainTestSuite) TestBarmanCheckFailed() {
     }
 
     resp := suite.rr.Body.String();
-    assert.Contains(suite.T(), resp, "barman_check_is_ok: 0")
+    assert.Contains(suite.T(), resp, "barman_check_is_ok 0")
 }
 
 func (suite *MainTestSuite) TestHandler() {
@@ -59,16 +59,16 @@ func (suite *MainTestSuite) TestHandler() {
     }
 
     resp := suite.rr.Body.String();
-    assert.Contains(suite.T(), resp, "barman_check_is_ok: 1")
-    assert.Contains(suite.T(), resp, "backups_amount: 2")
-    assert.Contains(suite.T(), resp, "last_backup_started_at: 1503656945")
-    assert.Contains(suite.T(), resp, "last_backup_finished_at: 1503656955")
-    assert.Contains(suite.T(), resp, "last_backup_size: 36304273")
-    assert.Contains(suite.T(), resp, "last_backup_duration_copy: 5")
-    assert.Contains(suite.T(), resp, "last_backup_duration_total: 10")
-    assert.Contains(suite.T(), resp, "oldest_backup_date: 1503570545")
-    assert.Contains(suite.T(), resp, "disk_free: ")
-    assert.Contains(suite.T(), resp, "disk_used: ")
+    assert.Contains(suite.T(), resp, "barman_check_is_ok 1")
+    assert.Contains(suite.T(), resp, "barman_backups_amount 2")
+    assert.Contains(suite.T(), resp, "barman_last_backup_start_time_seconds 1503656945")
+    assert.Contains(suite.T(), resp, "barman_last_backup_end_time_seconds 1503656955")
+    assert.Contains(suite.T(), resp, "barman_last_backup_size_bytes 36304273")
+    assert.Contains(suite.T(), resp, "barman_last_backup_duration_copy_seconds 5")
+    assert.Contains(suite.T(), resp, "barman_last_backup_duration_total_seconds 10")
+    assert.Contains(suite.T(), resp, "barman_oldest_backup_end_time_seconds 1503570545")
+    assert.Contains(suite.T(), resp, "barman_disk_free_bytes ")
+    assert.Contains(suite.T(), resp, "barman_disk_used_bytes ")
 }
 
 func fakeExecCommand(command string, args...string) *exec.Cmd {
