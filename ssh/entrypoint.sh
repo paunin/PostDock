@@ -2,6 +2,9 @@
 
 set -e
 
+chown -R postgres:postgres /home/postgres
+chmod 600 -R /home/postgres/.ssh/id_rsa
+
 if [[ "$SSH_ENABLE" == "1" ]]; then
     echo '>>> TUNING UP SSH CLIENT...'
 
@@ -10,8 +13,6 @@ if [[ "$SSH_ENABLE" == "1" ]]; then
     echo "export VISIBLE=now" >> /etc/profile
 
     cat /home/postgres/.ssh/id_rsa.pub >> /home/postgres/.ssh/authorized_keys
-    chown -R postgres:postgres /home/postgres
-    chmod 600 -R /home/postgres/.ssh/id_rsa
 
     echo '>>> STARTING SSH SERVER...'
     /usr/sbin/sshd 2>&1

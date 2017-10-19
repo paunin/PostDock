@@ -200,6 +200,7 @@ Whole backup procedure is performed remotely, but for recovery SSH access is req
 
 *For Disaster Recovery process see [RECOVERY.md](./RECOVERY.md)*
 
+Barman exposes several metrics on `:8080/metrics` for more information see [Barman docs](./barman/README.md)
 
 ## Health-checks
 

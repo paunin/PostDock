@@ -1,3 +1,11 @@
+## Free space requirements:
+1. For base backup itself, you can check size with `barman show-backup`
+
+2. Space for WALs
+	* Take into account that barman stores WALs in compress form. You can calcuate required space by checking once again `barman show-backup`. There you will find disk usage and compression rate.
+	* During recovery barman put `restore_command = cp...` which means that you have to have at least double of WAL size.
+Upod recovery completion duplicates wil be removed.
+
 ## Recovery steps:
 
 1. Stop pg cluster, but retain containers. **IMPORTANT start with slaves**
@@ -8,7 +16,7 @@
     ```    
 1. Check sshd is running on master, if not start it:
     ```
-    /home/postgres/.ssh/entrypoint.sh
+    SSH_ENABLE=1 /home/postgres/.ssh/entrypoint.sh
     ```
 1. Connect to barman container and select appropriate base backup
     ```
@@ -16,7 +24,7 @@
     ```
 1. Recover to required point, for example:
     ```
-    barman recover pg_cluster 20170815T041301 /var/lib/postgresql/data/ --target-time "2017-08-15 04:11:26.5" --remote-ssh-command="ssh pgmaster"
+    barman recover pg_cluster 20170815T041301 /var/lib/postgresql/data/ --target-time "2017-08-15 04:11:26.5" --remote-ssh-command="ssh pgmaster" -j$(nproc)
     ```
 1. Connect to master node, start recovery and check DB consistency, then finish recovery
     ```
@@ -28,7 +36,7 @@
     ```
     rm /var/run/recovery.lock
     ```
-1. Wait until master will fully functional and restart each standby node one by one
+1. Wait until master will become fully functional and restart every standby node
     ```
     rm /var/run/recovery.lock
     ```
