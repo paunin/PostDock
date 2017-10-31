@@ -19,10 +19,12 @@ Postgres streaming replication cluster for any docker environment (Kubernetes, D
   * [Pgpool](#pgpool)
   * [Barman](#barman)
   * [Other configurations](#other-configurations)
+- [Extended version of postgres](#extended-version-of-postgres)
 - [Backups and recovery](#backups-and-recovery)
 - [Health-checks](#health-checks)
 - [Useful commands](#useful-commands)
 - [Scenarios](#scenarios)
+- [How to contribute](#how-to-contribute)
 - [FAQ](#faq)
 - [Documentation and manuals](#documentation-and-manuals)
 
@@ -47,7 +49,7 @@ Postgres streaming replication cluster for any docker environment (Kubernetes, D
 
 Taking into account that PostDock project itself has versioning schema, all docker images produced by the repository have schema - `postdock/<component>:<postdock_version>-<component><component_version>`, where:
 
-* `<component>` - can be one of the value from the set `postgres`, `pgpool`, `barman`
+* `<component>` - can be one of the value from the set `postgres`, `postgres-extended`, `pgpool`, `barman`
 * `<postdock_version>` - semantic version(without `bug-fix` component)
 * `<component_version>` - depends on component:
     * `postgres` - major and minor version without dot in between(can be `95`,`96`,`100`,101)
@@ -179,6 +181,10 @@ You might want to change default ssh keys which are put into the cluster. For th
 If you want to disable the feature of Postgres>=9.4 - [replication slots](https://www.postgresql.org/docs/9.4/static/catalog-pg-replication-slots.html) simply set ENV variable `USE_REPLICATION_SLOTS=0` (enabled by default). So cluster will rely only on Postgres configuration `wal_keep_segments` (`500` by default). You also should remember that default number for configuration `max_replication_slots` is `5`. You can change it (as any other configuration) with ENV variable `CONFIGS`.
 
 
+## Extended version of postgres
+
+Component `postgres-extended` from the section [Docker images tags convention](#docker-images-tags-convention) should be used if you want to have postgres with extensions and libraries. Each directory in [the directory](./PostgresExtended/bin/extensions) represents extension included in the image.
+
 ## Backups and recovery
 
 [Barman](http://docs.pgbarman.org/) is used to provide real-time backups and Point In Time Recovery (PITR)..
@@ -224,7 +230,6 @@ Role      | Name  | Upstream | Connection String
 
 ```
 
-
 ## Useful commands
 
 * Get map of current cluster(on any `postgres` node): 
@@ -240,9 +245,10 @@ Any command might be wrapped with `docker-compose` or `kubectl` - `docker-compos
 
 Check [the document](./FLOWS.md) to understand different cases of failover, split-brain resistance and recovery
 
-## Tests
 
-Check [the test directory](./tests/README.md) to understand how to run or create new tests
+## How to contribute
+
+Check [the doc](./tests/CONTRIBUTE.md) to understand how to contribute
 
 ## FAQ
 

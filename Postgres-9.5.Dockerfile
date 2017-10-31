@@ -1,8 +1,12 @@
+
+##########################################################################
+##   AUTO-GENERATED FILE FROM ./includes.Dockerfile by ./make/make.sh   ##
+##########################################################################
+
 FROM postgres:9.5
-ARG POSTGRES_VERSION=9.5
 
 RUN apt-get update --fix-missing && \
-    apt-get install -y postgresql-server-dev-$POSTGRES_VERSION postgresql-$POSTGRES_VERSION-repmgr wget  openssh-server barman-cli
+    apt-get install -y postgresql-server-dev-$PG_MAJOR postgresql-$PG_MAJOR-repmgr wget openssh-server barman-cli
 
 # Inherited variables
 # ENV POSTGRES_PASSWORD monkey_pass
@@ -62,7 +66,7 @@ ENV USE_REPLICATION_SLOTS 1
 ENV CLEAN_OVER_REWIND 0
                         # Clean $PGDATA directory before start standby and not try to rewind
 ENV SSH_ENABLE 0
-                        # If you need SSH server running on the nodes
+                        # If you need SSH server running on the node
 
 #### Advanced options ####
 ENV REPMGR_PID_FILE /tmp/repmgrd.pid
