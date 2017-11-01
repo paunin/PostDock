@@ -2,9 +2,6 @@
 
 set -e
 
-chown -R postgres:postgres /home/postgres
-chmod 600 -R /home/postgres/.ssh/id_rsa
-
 if [[ "$SSH_ENABLE" == "1" ]]; then
     echo '>>> TUNING UP SSH CLIENT...'
 

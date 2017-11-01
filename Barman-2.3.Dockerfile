@@ -49,7 +49,8 @@ ENV BACKUP_DIR /var/backups
 EXPOSE 22
 
 COPY ./ssh /home/postgres/.ssh
-RUN chown -R postgres:postgres /home/postgres
+RUN chown -R postgres:postgres /home/postgres && \
+    chmod 600 -R /home/postgres/.ssh/id_rsa
 COPY ./barman/configs/barman.conf /etc/barman.conf
 COPY ./barman/configs/upstream.conf $UPSTREAM_CONFIG_FILE
 COPY ./barman/bin /usr/local/bin/barman_docker
