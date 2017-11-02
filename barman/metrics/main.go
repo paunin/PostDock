@@ -29,6 +29,9 @@ func collectMetrics() map[string]int64 {
 
     diagnose := barmanDiagnose()
     backups := diagnose.Servers.Pg_cluster.Backups
+    backups = FilterBackups(backups, func(b BarmanBackup) bool {
+        return b.Status == "DONE"
+    })
 
     metrics["barman_check_is_ok"] = int64(barmanCheck())
     metrics["barman_backups_amount"] = int64(len(backups))
@@ -54,6 +57,16 @@ func collectMetrics() map[string]int64 {
     metrics["barman_disk_used_bytes"] = int64((diskUsage.Blocks - diskUsage.Bfree) * uint64(diskUsage.Bsize))
 
     return metrics
+}
+
+func FilterBackups(backups map[string]BarmanBackup, filter func(BarmanBackup) bool) map[string]BarmanBackup {
+    result := make(map[string]BarmanBackup, len(backups))
+    for key, backup := range backups {
+        if filter(backup) {
+            result[key] = backup
+        }
+    }
+    return result
 }
 
 var execCommand = exec.Command
@@ -83,6 +96,7 @@ type BarmanBackup struct {
     End_time CustomTime
     Copy_stats map[string]float64
     Size int64
+    Status string
 }
 
 func barmanDiagnose() BarmanDiagnose {
