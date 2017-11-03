@@ -71,7 +71,7 @@ func FilterBackups(backups map[string]BarmanBackup, filter func(BarmanBackup) bo
 
 var execCommand = exec.Command
 func barmanCheck() int {
-    checkCmd := execCommand("barman", "check")
+    checkCmd := execCommand("barman", "check", "all")
     checkErr := checkCmd.Run()
 
     barman_check_ok := 1
