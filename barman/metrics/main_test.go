@@ -96,6 +96,9 @@ func TestHelperProcess(t *testing.T){
                 }
                 fmt.Fprintf(os.Stdout, string(testfile))
             case "check":
+                if arguments[1] != "all" {
+                    os.Exit(2)
+                }
                 code, err := strconv.Atoi(os.Getenv("GO_FAKE_EXIT_CODE"))
                 if err != nil {
                     panic(err.Error())

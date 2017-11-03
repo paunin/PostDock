@@ -58,7 +58,7 @@ func collectMetrics() map[string]int64 {
 
 var execCommand = exec.Command
 func barmanCheck() int {
-    checkCmd := execCommand("barman", "check")
+    checkCmd := execCommand("barman", "check", "all")
     checkErr := checkCmd.Run()
 
     barman_check_ok := 1
