@@ -1,12 +1,7 @@
-
-##########################################################################
-##   AUTO-GENERATED FILE FROM ./includes.Dockerfile by ./make/make.sh   ##
-##########################################################################
-
 FROM debian:jessie
 ARG DOCKERIZE_VERSION=v0.2.0
 ARG POSTGRES_CLIENT_VERSION=9.6
-ARG PGPOOL_VERSION=3.3.4\*
+ARG PGPOOL_VERSION={{ PGPOOL_VERSION }}
 
 RUN groupadd -r postgres --gid=999 && useradd -r -g postgres -d /home/postgres  --uid=999 postgres
 

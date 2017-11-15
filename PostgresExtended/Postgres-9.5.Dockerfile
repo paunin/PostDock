@@ -3,7 +3,7 @@
 ##   AUTO-GENERATED FILE FROM ./includes.Dockerfile by ./make/make.sh   ##
 ##########################################################################
 
-FROM postgres:9.6
+FROM postgres:9.5
 
 RUN apt-get update --fix-missing && \
     apt-get install -y postgresql-server-dev-$PG_MAJOR postgresql-$PG_MAJOR-repmgr wget openssh-server barman-cli
@@ -99,3 +99,7 @@ VOLUME /var/lib/postgresql/data
 USER root
 
 CMD ["/usr/local/bin/cluster/entrypoint.sh"]
+ARG EXTENSIONS="pgosm postgis nominatim"
+COPY ./bin/ /extensions_installer/
+RUN chmod -R +x /extensions_installer/ && /extensions_installer/install.sh "$EXTENSIONS" && \
+    rm -rf /extensions_installer/

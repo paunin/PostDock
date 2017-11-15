@@ -1,3 +1,8 @@
+
+##########################################################################
+##   AUTO-GENERATED FILE FROM ./includes.Dockerfile by ./make/make.sh   ##
+##########################################################################
+
 FROM debian:jessie
 ARG DOCKERIZE_VERSION=v0.2.0
 ARG POSTGRES_CLIENT_VERSION=9.6
@@ -22,7 +27,7 @@ RUN  wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key a
      sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" >> /etc/apt/sources.list.d/pgdg.list' && \
      apt-get update
 
-RUN  apt-get install -y libffi-dev libssl-dev postgresql-client-$POSTGRES_CLIENT_VERSION pgpool2=$PGPOOL_VERSION openssh-server
+RUN  apt-get install -y libffi-dev libssl-dev postgresql-client-$POSTGRES_CLIENT_VERSION libpgpool0=$PGPOOL_VERSION pgpool2=$PGPOOL_VERSION openssh-server
 
 RUN  wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
      tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
