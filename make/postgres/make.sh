@@ -12,7 +12,7 @@ for POSTGRES_VERSION in 9.5 9.6; do
     template $FILE_FROM $FILE_TO $VALS
     
     echo ">>> Making v.$POSTGRES_VERSION extended"
-    FILE_TO_EXT="./PostgresExtended/Postgres-$POSTGRES_VERSION.Dockerfile"
+    FILE_TO_EXT="./Postgres-extended-$POSTGRES_VERSION.Dockerfile"
     flush $FILE_TO_EXT
 
     template $FILE_FROM $FILE_TO_EXT $VALS
