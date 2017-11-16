@@ -90,7 +90,8 @@ COPY ./pgsql/configs /var/cluster_configs
 ENV NOTVISIBLE "in users profile"
 
 COPY ./ssh /home/postgres/.ssh
-RUN chown -R postgres:postgres /home/postgres
+RUN chown -R postgres:postgres /home/postgres && \
+    chmod 600 -R /home/postgres/.ssh/id_rsa
 
 EXPOSE 22
 EXPOSE 5432

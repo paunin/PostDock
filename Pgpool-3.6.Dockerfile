@@ -36,7 +36,9 @@ COPY ./ssh /home/postgres/.ssh
 COPY ./pgpool/bin /usr/local/bin/pgpool
 COPY ./pgpool/configs /var/pgpool_configs
 
-RUN chmod +x -R /usr/local/bin/pgpool
+RUN chmod +x -R /usr/local/bin/pgpool && \
+    chown -R postgres:postgres /home/postgres && \
+    chmod 600 -R /home/postgres/.ssh/id_rsa
 
 ENV CHECK_USER replication_user
 ENV CHECK_PASSWORD replication_pass
