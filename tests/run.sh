@@ -1,4 +1,5 @@
 #!/bin/bash
+export COMPOSE_FILE=./docker-compose/latest.yml
 
 if [[ "$NO_COLOURS" != "1" ]]; then
     RESTORE='\033[0m'

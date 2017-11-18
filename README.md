@@ -39,10 +39,10 @@ Postgres streaming replication cluster for any docker environment (Kubernetes, D
 ### What's in the box
 [This project](https://github.com/paunin/postgres-docker-cluster) includes:
 * Dockerfiles for `postgresql` cluster
-    * [postgresql](./Postgres-latest.Dockerfile)
-    * [pgpool](./Pgpool-latest.Dockerfile)
+    * [postgresql](./src/Postgres-latest.Dockerfile)
+    * [pgpool](./src/Pgpool-latest.Dockerfile)
 * Examples of usage(suitable for production environment as architecture has fault protection with auto failover)
-    * example of [docker-compose](./docker-compose.yml) file to start this cluster.
+    * example of [docker-compose](./docker-compose/latest.yml) file to start this cluster.
     * directory [k8s](./k8s) contains information for building this cluster in Kubernetes
 
 ### Docker images tags convention
@@ -79,9 +79,9 @@ Each `postgres` node (`pgmaster`, `pgslaveX`) is managed by `repmgr/repmgrd`. It
 
 ## Start cluster with docker-compose
 
-To start cluster run it as normal `docker-compose` application `docker-compose up -d`
+To start cluster run it as normal `docker-compose` application `docker-compose -f ./docker-compose/latest.yml up -d`
 
-Please check comments for each `ENV` variable in [docker-compose.yml](./docker-compose.yml) file to understand parameter for each cluster node
+Please check comments for each `ENV` variable in [./docker-compose/latest.yml](./docker-compose/latest.yml) file to understand parameter for each cluster node
 
 
 ## Start cluster in Kubernetes
@@ -116,15 +116,15 @@ From any Pgpool pod:
 
 ## Configuring the cluster
 
-You can configure any node of the cluster(`postgres.conf`) or pgpool(`pgpool.conf`) with ENV variable `CONFIGS` (format: `variable1:value1[,variable2:value2[,...]]`). Also see the Dockerfiles and [docker-compose.yml](./docker-compose.yml) files in the root of the repository to understand all available and used configurations!
+You can configure any node of the cluster(`postgres.conf`) or pgpool(`pgpool.conf`) with ENV variable `CONFIGS` (format: `variable1:value1[,variable2:value2[,...]]`). Also see the Dockerfiles and [docker-compose/latest.yml](./docker-compose/latest.yml) files in the root of the repository to understand all available and used configurations!
 
 ### Postgres
 
-For the rest - you better **follow** the advise and look into the [Postgres-latest.Dockerfile](./Postgres-latest.Dockerfile) file - it full of comments :)
+For the rest - you better **follow** the advise and look into the [src/Postgres-latest.Dockerfile](./src/Postgres-latest.Dockerfile) file - it full of comments :)
 
 ### Pgpool
 
-The most important part to configure in Pgpool (apart of general `CONFIGS`) is backends and users which could access these backends. You can configure backends with ENV variable. You can find good example of setting up pgpool in [docker-compose.yml](./docker-compose.yml) file:
+The most important part to configure in Pgpool (apart of general `CONFIGS`) is backends and users which could access these backends. You can configure backends with ENV variable. You can find good example of setting up pgpool in [docker-compose/latest.yml](./docker-compose/latest.yml) file:
 
 ```
 DB_USERS: monkey_user:monkey_pass # in format user:password[,user:password[...]]
@@ -140,7 +140,7 @@ REQUIRE_MIN_BACKENDS: 3 # minimal number of backends to start pgpool (some might
 
 ### Barman
 
-The most important part for barman is to setup access variables. Example can be found in [docker-compose.yml](./docker-compose.yml) file:
+The most important part for barman is to setup access variables. Example can be found in [docker-compose/latest.yml](./docker-compose/latest.yml) file:
 
 ```
 REPLICATION_USER: replication_user # default is replication_user
@@ -153,7 +153,7 @@ POSTGRES_DB: monkey_db
 
 ### Other configurations
 
-**See the Dockerfiles and [docker-compose.yml](./docker-compose.yml) files in the root of the repository to understand all available and used configurations!**
+**See the Dockerfiles and [docker-compose/latest.yml](./docker-compose/latest.yml) files in the root of the repository to understand all available and used configurations!**
 
 
 ## Adaptive mode
@@ -183,12 +183,12 @@ If you want to disable the feature of Postgres>=9.4 - [replication slots](https:
 
 ## Extended version of postgres
 
-Component `postgres-extended` from the section [Docker images tags convention](#docker-images-tags-convention) should be used if you want to have postgres with extensions and libraries. Each directory in [the directory](./PostgresExtended/bin/extensions) represents extension included in the image.
+Component `postgres-extended` from the section [Docker images tags convention](#docker-images-tags-convention) should be used if you want to have postgres with extensions and libraries. Each directory in [the directory](./src/pgsql/extensions) represents extension included in the image.
 
 ## Backups and recovery
 
 [Barman](http://docs.pgbarman.org/) is used to provide real-time backups and Point In Time Recovery (PITR)..
-This image requires connection information(host, port) and 2 sets of credentials, as you can see from [the Dockerfile](./Barman-latest.Dockerfile):
+This image requires connection information(host, port) and 2 sets of credentials, as you can see from [the Dockerfile](./src/Barman-latest.Dockerfile):
 
 * Replication credentials
 * Postgres admin credentials
@@ -204,7 +204,7 @@ Whole backup procedure is performed remotely, but for recovery SSH access is req
  * http://docs.pgbarman.org/release/2.2/index.html
  * https://www.postgresql.org/docs/current/static/continuous-archiving.html
 
-*For Disaster Recovery process see [RECOVERY.md](./RECOVERY.md)*
+*For Disaster Recovery process see [RECOVERY.md](./doc/RECOVERY.md)*
 
 Barman exposes several metrics on `:8080/metrics` for more information see [Barman docs](./barman/README.md)
 
@@ -243,12 +243,12 @@ Any command might be wrapped with `docker-compose` or `kubectl` - `docker-compos
 
 ## Scenarios
 
-Check [the document](./FLOWS.md) to understand different cases of failover, split-brain resistance and recovery
+Check [the document](./doc/FLOWS.md) to understand different cases of failover, split-brain resistance and recovery
 
 
 ## How to contribute
 
-Check [the doc](./tests/CONTRIBUTE.md) to understand how to contribute
+Check [the doc](./doc/CONTRIBUTE.md) to understand how to contribute
 
 ## FAQ
 

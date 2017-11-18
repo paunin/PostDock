@@ -3,7 +3,7 @@ services:
     pgmaster2:
 #        image: paunin/postdock-pgsql
         build:
-            context: .
+            context: ../src
             dockerfile: Postgres-latest.Dockerfile
         environment:
 
@@ -23,9 +23,9 @@ services:
                 aliases:
                     - pgmaster2
     pgpool2:
-#        image: paunin/postdock-pgpool
+#        image: postdock/pgpool:latest-pgpool36
         build:
-            context: .
+            context: ../src
             dockerfile: Pgpool-latest.Dockerfile
         depends_on:
             - pgmaster

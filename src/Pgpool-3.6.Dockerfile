@@ -1,6 +1,6 @@
 
 ##########################################################################
-##   AUTO-GENERATED FILE FROM ./includes.Dockerfile by ./make/make.sh   ##
+##                         AUTO-GENERATED FILE                          ##
 ##########################################################################
 
 FROM debian:jessie

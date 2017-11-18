@@ -1,9 +1,9 @@
 
 ##########################################################################
-##   AUTO-GENERATED FILE FROM ./includes.Dockerfile by ./make/make.sh   ##
+##                         AUTO-GENERATED FILE                          ##
 ##########################################################################
 
-FROM postgres:9.6
+FROM postgres:9.5
 
 RUN apt-get update --fix-missing && \
     apt-get install -y postgresql-server-dev-$PG_MAJOR postgresql-$PG_MAJOR-repmgr wget openssh-server barman-cli

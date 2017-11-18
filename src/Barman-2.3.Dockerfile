@@ -1,12 +1,12 @@
 
 ##########################################################################
-##   AUTO-GENERATED FILE FROM ./includes.Dockerfile by ./make/make.sh   ##
+##                         AUTO-GENERATED FILE                          ##
 ##########################################################################
 
 FROM golang:1.8-jessie
 
 ARG BARMAN_VERSION=2.3-2.pgdg80+1
-ARG PG_CLIENT_VERSION=9.6.5-1.pgdg80+2
+ARG PG_CLIENT_VERSION=9.6.\*
 # grab gosu for easy step-down from root
 ARG GOSU_VERSION=1.7
 RUN set -x \

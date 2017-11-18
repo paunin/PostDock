@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: mysystem-db-node5
-          image: paunin/postdock-pgsql:9.5
+          image: postdock/postgres:latest-postgres95
           imagePullPolicy: Always
           resources:
             requests:
