@@ -5,7 +5,7 @@ function flush {
     FILE="$1"
     echo '
 ##########################################################################
-##   AUTO-GENERATED FILE FROM ./includes.Dockerfile by ./make/make.sh   ##
+##                         AUTO-GENERATED FILE                          ##
 ##########################################################################
 ' > $FILE 
 

@@ -5,9 +5,9 @@ networks:
 
 services:
     pgmaster:
-#        image: paunin/postdock-pgsql
+#        image: postdock/postgres:latest-postgres96
         build:
-            context: .
+            context: ../src
             dockerfile: Postgres-latest.Dockerfile
         environment:
             PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
@@ -40,9 +40,9 @@ services:
                     - pgmaster
 #<<< Branch 1
     pgslave1:
-#        image: paunin/postdock-pgsql
+#        image: postdock/postgres:latest-postgres96
         build:
-            context: .
+            context: ../src
             dockerfile: Postgres-latest.Dockerfile
         environment:
             PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
@@ -63,9 +63,9 @@ services:
 
     # Add more slaves if required
     pgslave2:
-#        image: paunin/postdock-pgsql
+#        image: postdock/postgres:latest-postgres96
         build:
-            context: .
+            context: ../src
             dockerfile: Postgres-latest.Dockerfile
         environment:
             REPLICATION_PRIMARY_HOST: pgslave1 # I want to have cascade Streeming replication
@@ -84,9 +84,9 @@ services:
 #>>> Branch 1
 #<<< Branch 2
     pgslave3:
-#        image: paunin/postdock-pgsql
+#        image: postdock/postgres:latest-postgres96
         build:
-            context: .
+            context: ../src
             dockerfile: Postgres-latest.Dockerfile
         environment:
             PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
@@ -106,9 +106,9 @@ services:
                     - pgslave3
 
     pgslave4:
-#        image: paunin/postdock-pgsql
+#        image: postdock/postgres:latest-postgres96
         build:
-            context: .
+            context: ../src
             dockerfile: Postgres-latest.Dockerfile
         environment:
             REPLICATION_PRIMARY_HOST: pgslave3
@@ -126,9 +126,9 @@ services:
                     - pgslave4
 #>>> Branch 2
     backup:
-#        image: paunin/postdock-barman
+#        image: postdock/barman:latest-barman2
         build:
-            context: .
+            context: ../src
             dockerfile: Barman-latest.Dockerfile
         environment:
             REPLICATION_USER: replication_user # default is replication_user
@@ -146,9 +146,9 @@ services:
                 aliases:
                     - backup
     pgpool:
-#        image: paunin/postdock-pgpool
+#        image: postdock/pgpool:latest-pgpool36
         build:
-            context: .
+            context: ../src
             dockerfile: Pgpool-latest.Dockerfile
         environment:
             PCP_USER: pcp_user

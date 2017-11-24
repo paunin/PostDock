@@ -1,10 +1,10 @@
 # Scenarios
 
-Using only `docker-compose` utility we can run some scenarios to demonstrate the solution behaviour in different situations
+Using only `docker-compose` utility we can run some scenarios to demonstrate the solution behaviour in different situations. Set `COMPOSE_FILE` to `./docker-compose/latest.yml` (`export COMPOSE_FILE=./docker-compose/latest.yml`)
 
 ## Master crash
 
-[Test case](./tests/pgpool-lost-master/run.sh)
+[Test case](../tests/pgpool-lost-master/run.sh)
 
 * Start cluster `docker-compose up -d`
 * Kill master container and in a few moments cluster will define new master node `docker-compose stop pgmaster`
@@ -70,7 +70,7 @@ docker-compose -f docker-compose.yml -f docker-compose/split-brain-pgpool.yml ex
 
 ## Split-brain (isolated standby)
 
-[Test case](./tests/split-brain-isolated-standby/run.sh)
+[Test case](../tests/split-brain-isolated-standby/run.sh)
 
 The flow should proof that one (out of two) standby nodes will not be elected as master in case of lost connection to the rest of cluster
 
@@ -154,7 +154,7 @@ docker-compose exec pgpool bash -c 'PGPASSWORD=$CHECK_PASSWORD psql -U $CHECK_US
 
 ### Split-brain (isolated master)
 
-[Test case](./tests/split-brain-isolated-master/run.sh)
+[Test case](../tests/split-brain-isolated-master/run.sh)
 
 The flow should proof that in case of lost connection to master from standbys but not from pgpools:
 * one of standby becomes master by election
@@ -211,4 +211,4 @@ docker-compose exec pgpool bash -c 'PGPASSWORD=$CHECK_PASSWORD psql -U $CHECK_US
 
 ```
 
-Use health-check in each node to check false-masters [`/usr/local/bin/cluster/healthcheck/is_major_master.sh`](./pgsql/bin/healthcheck/is_major_master.sh)
+Use health-check in each node to check false-masters [`/usr/local/bin/cluster/healthcheck/is_major_master.sh`](../src/pgsql/bin/healthcheck/is_major_master.sh)
