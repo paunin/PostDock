@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+[ "$SYMLINKS" = "" ] && exit 0
+
+for LINK in $(echo $SYMLINKS | tr ',' ' ')
+do
+  TARGET=$(echo $LINK | cut -d ':' -f1)
+  echo "Target = $TARGET"
+  SOURCE=$(echo $LINK | cut -d ':' -f2)
+  echo "Source = $SOURCE"
+  if ! [ -e $SOURCE ]
+  then 
+    echo "$SOURCE does not exist"
+    exit 2
+  fi
+  
+  echo ">>>> Creating link of $SOURCE to \$PGDATA/$TARGET"
+  cd $PGDATA
+  test -d $SOURCE && mkdir -p $TARGET
+  ln -sF $SOURCE $TARGET
+done
