@@ -9,4 +9,5 @@ echo ">>> Creating replication db '$REPLICATION_DB'"
 createdb $REPLICATION_DB -O $REPLICATION_USER
 
 #TODO: make it more flexible, allow set of IPs
+# Why db_name='replication' - https://dba.stackexchange.com/questions/82351/postgresql-doesnt-accept-replication-connection
 echo "host replication $REPLICATION_USER 0.0.0.0/0 md5" >> $PGDATA/pg_hba.conf
