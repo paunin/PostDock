@@ -3,31 +3,34 @@ PRETENDING_MASTER=""
 
 if [ "$PARTNER_NODES" != "" ]; then
     PRETENDING_MASTER=""
-    #  echo ">>> Check all partner nodes for common upstream node..."
+    echo ">>> Check all partner nodes for common upstream node..."  >&2
     IFS=',' read -ra NODES <<< "$PARTNER_NODES"
     for NODE in "${NODES[@]}"
     do
-
-        #  echo ">>>>>> Checking NODE=$NODE..."
-        AM_I_MASTER=`PGCONNECT_TIMEOUT=$CHECK_PGCONNECT_TIMEOUT PGPASSWORD=$REPLICATION_PASSWORD psql -h $NODE -U $REPLICATION_USER $REPLICATION_DB  -tAc "SELECT count(*) FROM repmgr_$CLUSTER_NAME.repl_show_nodes WHERE  cluster='$CLUSTER_NAME' AND conninfo LIKE '%host=$NODE%' AND (upstream_node_name IS  NULL OR upstream_node_name = '') AND active=true"`
+        echo ">>>>>> Checking NODE=$NODE..."  >&2
+        MASTER_CONNINFO=`PGCONNECT_TIMEOUT=$CHECK_PGCONNECT_TIMEOUT PGPASSWORD=$REPLICATION_PASSWORD psql -h $NODE -U $REPLICATION_USER $REPLICATION_DB  -tAc "SELECT conninfo FROM repmgr_$CLUSTER_NAME.repl_show_nodes WHERE  cluster='$CLUSTER_NAME' AND (upstream_node_name IS NULL OR upstream_node_name = '') AND active=true"`
         if [[ "$?" -ne "0" ]]; then
-            #  echo ">>>>>> Skipping: failed to get master from the node!"
+            echo ">>>>>> Skipping: failed to get master from the node!"  >&2
             continue
-        fi
-
-        if [ "$AM_I_MASTER" == "1" ]; then
-            #  echo ">>>>>> May be the node is master..."
-            # was anyone pretending master role before?
+        elif [ "$MASTER_CONNINFO" == "" ]; then
+            echo ">>>>>>>>> Can not get information from the node about masters" >&2
+            continue
+        elif [ `echo "$MASTER_CONNINFO" | wc -l | tr -d ' '` == "1" ]; then
+            SUGGESTED_MASTER=$(echo ${MASTER_CONNINFO} | awk -F 'host=' '{print $2}' | awk '{print $1}')
+            echo ">>>>>>>>> Pretending master role node - ${SUGGESTED_MASTER}" >&2
             if [ "$PRETENDING_MASTER" != "" ]; then
-                #  echo ">>>>>>>>> Conflict of pretending master role nodes (previously: $PRETENDING_MASTER, now: $NODE)"
-                PRETENDING_MASTER=""
-                break
+                if [ "${PRETENDING_MASTER}" != "${SUGGESTED_MASTER}" ]; then
+                    echo ">>>>>>>>> Conflict of pretending master role nodes (previously: $PRETENDING_MASTER, now: $SUGGESTED_MASTER)" >&2
+                    PRETENDING_MASTER="" && break
+                fi
+            else
+                PRETENDING_MASTER="${SUGGESTED_MASTER}"
             fi
-            PRETENDING_MASTER="$NODE"
+        else
+            echo ">>>>>>>>> There're more than 1 masters existing when getting master from node ${NODE}" >&2
+            PRETENDING_MASTER="" && break
         fi
-
     done
-
 fi
 
 if [ "$PRETENDING_MASTER" == "" ]; then
