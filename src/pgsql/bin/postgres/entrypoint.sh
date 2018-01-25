@@ -38,6 +38,9 @@ chown -R postgres $PGDATA && chmod -R 0700 $PGDATA
 
 /usr/local/bin/cluster/repmgr/configure.sh
 
+echo '>>> Creating symlinks'
+create_symlinks
+
 echo ">>> Sending in background postgres start..."
 if [[ "$CURRENT_REPLICATION_PRIMARY_HOST" == "" ]]; then
     cp -f /usr/local/bin/cluster/postgres/primary/entrypoint.sh /docker-entrypoint-initdb.d/

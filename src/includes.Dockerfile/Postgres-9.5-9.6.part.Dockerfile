@@ -76,6 +76,11 @@ ENV CLEAN_OVER_REWIND 0
                         # Clean $PGDATA directory before start standby and not try to rewind
 ENV SSH_ENABLE 0
                         # If you need SSH server running on the node
+ENV SYMLINKS ""
+                        # Coma separated list of symlinks to be created in $PGDATA directory 
+                        # which is usefull for moving xlog to different filesystem 
+                        # Format is <target_in_$PGDATA>:<Source_full_path>[,<target_in_$PGDATA>:<Source_full_path>]
+                        # Ie SYMLINKS=pg_xlog:/var/dir1,base/pgsql_tmp:/var/dir2
 
 #### Advanced options ####
 ENV REPMGR_PID_FILE /tmp/repmgrd.pid

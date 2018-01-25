@@ -12,6 +12,9 @@ if [ `ls $PGDATA/ | wc -l` != "0" ]; then
     fi
 fi
 
+echo '>>> Creating symlinks'
+create_symlinks
+
 echo ">>> Starting standby node..."
 if ! has_pg_cluster; then
     echo ">>> Instance hasn't been set up yet."
