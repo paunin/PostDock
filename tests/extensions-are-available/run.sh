@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
-cd ./tests/extensions-are-available/
+OLD_COMPOSE_FILE=$COMPOSE_FILE
+export COMPOSE_FILE=./tests/extensions-are-available/docker-compose.yml
+
 docker-compose down
 docker-compose build
 docker-compose up -d postgres
-sleep 20
+sleep 30
 set -e
 
 for EXTENSION in postgis;
@@ -20,4 +22,4 @@ done
 
 #I can create extension in the running container
 docker-compose down
-cd ../..
+export COMPOSE_FILE=$OLD_COMPOSE_FILE

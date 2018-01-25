@@ -11,10 +11,10 @@ else
     echo ">>>>>> Will add configs to exists file"
 fi
 
-IFS=',' read -ra CONFIG_PAIRS <<< "$CONFIGS"
+IFS=$CONFIGS_DELIMITER_SYMBOL read -ra CONFIG_PAIRS <<< "$CONFIGS"
 for CONFIG_PAIR in "${CONFIG_PAIRS[@]}"
 do
-    IFS=':' read -ra CONFIG <<< "$CONFIG_PAIR"
+    IFS="$CONFIGS_ASSIGNMENT_SYMBOL" read -ra CONFIG <<< "$CONFIG_PAIR"
     VAR="${CONFIG[0]}"
     VAL="${CONFIG[1]}"
     sed -e "s/\(^\ *$VAR\(.*\)$\)//g" $CONFIG_FILE > /tmp/config.tmp && mv -f /tmp/config.tmp $CONFIG_FILE
