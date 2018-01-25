@@ -41,6 +41,12 @@ ENV REQUIRE_MIN_BACKENDS 0
 ENV SSH_ENABLE 0
 ENV NOTVISIBLE "in users profile"
 
+ENV CONFIGS_DELIMITER_SYMBOL ,
+ENV CONFIGS_ASSIGNMENT_SYMBOL :
+                                #CONFIGS_DELIMITER_SYMBOL and CONFIGS_ASSIGNMENT_SYMBOL are used to parse CONFIGS variable
+                                # if CONFIGS_DELIMITER_SYMBOL=| and CONFIGS_ASSIGNMENT_SYMBOL=>, valid configuration string is var1>val1|var2>val2
+
+
 EXPOSE 22
 EXPOSE 5432
 EXPOSE 9898

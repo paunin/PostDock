@@ -22,7 +22,7 @@ services:
             POSTGRES_DB: monkey_db
             CLEAN_OVER_REWIND: 0
             CONFIGS: "listen_addresses:'*',max_replication_slots:5"
-                                  # in format variable1:value1[,variable2:value2[,...]]
+                                  # in format variable1:value1[,variable2:value2[,...]] if CONFIGS_DELIMITER_SYMBOL=, and CONFIGS_ASSIGNMENT_SYMBOL=:
                                   # used for pgpool.conf file
             #defaults:
             CLUSTER_NAME: pg_cluster # default is pg_cluster
@@ -169,7 +169,7 @@ services:
                       #   flag: ALLOW_TO_FAILOVER
             REQUIRE_MIN_BACKENDS: 3 # minimal number of backends to start pgpool (some might be unreachable)
             CONFIGS: "num_init_children:250,max_pool:4"
-                      # in format variable1:value1[,variable2:value2[,...]]
+                      # in format variable1:value1[,variable2:value2[,...]] if CONFIGS_DELIMITER_SYMBOL=, and CONFIGS_ASSIGNMENT_SYMBOL=:
                       # used for pgpool.conf file
         ports:
             - 5430:5432

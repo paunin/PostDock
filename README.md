@@ -116,7 +116,7 @@ From any Pgpool pod:
 
 ## Configuring the cluster
 
-You can configure any node of the cluster(`postgres.conf`) or pgpool(`pgpool.conf`) with ENV variable `CONFIGS` (format: `variable1:value1[,variable2:value2[,...]]`). Also see the Dockerfiles and [docker-compose/latest.yml](./docker-compose/latest.yml) files in the root of the repository to understand all available and used configurations!
+You can configure any node of the cluster(`postgres.conf`) or pgpool(`pgpool.conf`) with ENV variable `CONFIGS` (format: `variable1:value1[,variable2:value2[,...]]`, you can redefine delimiter and assignment symbols by using variables `CONFIGS_DELIMITER_SYMBOL`, `CONFIGS_ASSIGNMENT_SYMBOL`). Also see the Dockerfiles and [docker-compose/latest.yml](./docker-compose/latest.yml) files in the root of the repository to understand all available and used configurations!
 
 ### Postgres
 
