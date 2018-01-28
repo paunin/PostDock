@@ -1,6 +1,6 @@
 echo ">>> Making pgpool"
 
-FILE_FROM='./src/includes.Dockerfile/Pgpool-3.3-3.6.part.Dockerfile'
+FILE_FROM='./src/includes/dockerfile/Pgpool-3.3-3.6.part.Dockerfile'
 
 echo ">>>>>> Making v3.3"
 FILE_TO="./src/Pgpool-3.3.Dockerfile"

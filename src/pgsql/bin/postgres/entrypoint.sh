@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
+echo '>>> SETTING UP POLYMORPHIC VARIABLES (repmgr=3+postgres=9 | repmgr=4, postgres=10)... '
+source postdock_polymorphic
+
 echo '>>> TUNING UP POSTGRES...'
 echo "*:$REPLICATION_PRIMARY_PORT:*:$REPLICATION_USER:$REPLICATION_PASSWORD" >> /home/postgres/.pgpass
 chmod 0600 /home/postgres/.pgpass
@@ -36,7 +39,7 @@ fi
 
 chown -R postgres $PGDATA && chmod -R 0700 $PGDATA
 
-/usr/local/bin/cluster/repmgr/configure.sh
+source /usr/local/bin/cluster/repmgr/configure.sh
 
 echo ">>> Sending in background postgres start..."
 if [[ "$CURRENT_REPLICATION_PRIMARY_HOST" == "" ]]; then

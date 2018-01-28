@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+if [ "$REPMGR_MAJOR" == "3" ]; then
+    echo "repmgr_$CLUSTER_NAME"
+elif [ "$REPMGR_MAJOR" == "4" ]; then   
+    echo "repmgr"
+fi
