@@ -9,6 +9,6 @@ Here you can see short list of actions you need to do
 
 ## Developer tips
 
-* Don't modify Dockerfile-s directly - use [make.sh](../make/make.sh) to build them from [the templates](../src/includes.Dockerfile)
+* Don't modify Dockerfile-s directly - use [make.sh](../make/make.sh) to build them from [the templates](../src/includes/dockerfile)
 * Run tests before submitting a new pull request
 * Check issues page on github and google before creating a new issue

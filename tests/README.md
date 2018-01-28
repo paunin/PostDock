@@ -12,6 +12,7 @@ You can pass only one argument - string with names of the tests you want to run(
 
 Some binary ENV variables for tests runner(By default everything is `0`, you can set it to `1` or any non-zero value):
 
+* `TEST_COMBINATIONS` - array of combinations to run (e.g. `postgres-9.6_pgpool-3.3_barman-2.3 postgres-10.1_pgpool-3.6_barman-2.3`) should be one or set of filenames from directory [docker-compose](../docker-compose) (without extension `.yml`)
 * `NO_COLOURS` - disable fancy coloured output
 * `DEBUG` - will output everything from tests scripts
 * `NO_CLEANUP` - will not destroy `docker-compose` environment after each test

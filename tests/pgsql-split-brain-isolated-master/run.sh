@@ -7,6 +7,7 @@ docker-compose exec  -T pgslave1 wait_local_postgres
 docker-compose exec  -T pgslave3 wait_local_postgres
 sleep 10
 
+echo ">>> Isolating pgmaster..."
 docker-compose exec -T pgslave1 bash -c "echo 1.1.1.1 pgmaster >> /etc/hosts"
 docker-compose exec -T pgslave3 bash -c "echo 1.1.1.1 pgmaster >> /etc/hosts"
 docker-compose exec -T pgmaster bash -c "echo 1.1.1.1 pgslave1 >> /etc/hosts && echo 1.1.1.1 pgslave3 >> /etc/hosts "

@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+export REPMGR_CONFIG_FILE="/etc/repmgr.conf"
+touch $REPMGR_CONFIG_FILE
+
+
+# repmgr3                   | repmgr4
+# ====================================================
+# node                      | node_id
+# loglevel                  | log_level
+# logfacility	            | log_facility
+# logfile                   | log_file
+# barman_server             | barman_host
+# master_reponse_timeout    | async_query_timeout
+
+if [ "$REPMGR_MAJOR" == "3" ]; then
+    PRELOAD_LIBS_CONFIG="shared_preload_libraries${CONFIGS_ASSIGNMENT_SYMBOL}repmgr_funcs"
+    # deprecated for v4 params
+    echo "cluster=$CLUSTER_NAME" >> $REPMGR_CONFIG_FILE
+elif [ "$REPMGR_MAJOR" == "4" ]; then   
+    PRELOAD_LIBS_CONFIG="shared_preload_libraries${CONFIGS_ASSIGNMENT_SYMBOL}repmgr"
+    # new required params
+    echo "degraded_monitoring_timeout=$REPMGR_DEGRADED_MONITORING_TIMEOUT" >> $REPMGR_CONFIG_FILE
+    echo "data_directory=$PGDATA" >> $REPMGR_CONFIG_FILE
+    echo "async_query_timeout=$MASTER_RESPONSE_TIMEOUT" >> $REPMGR_CONFIG_FILE
+fi
+
+if [ "$CONFIGS" != "" ]; then
+    DELIMITER="${CONFIGS_DELIMITER_SYMBOL}"
+fi
+export CONFIGS="${CONFIGS}${DELIMITER}${PRELOAD_LIBS_CONFIG}"
+
+function set_repmgr_upstream_node {
+    if [ "$REPMGR_MAJOR" == "3" ]; then
+        echo "upstream_node=$REPLICATION_UPSTREAM_NODE_ID" >> $REPMGR_CONFIG_FILE
+    elif [ "$REPMGR_MAJOR" == "4" ]; then
+        export REPMGR_START_OPTIONS="$REPMGR_START_OPTIONS --upstream-node-id=$REPLICATION_UPSTREAM_NODE_ID"
+    fi
+}
