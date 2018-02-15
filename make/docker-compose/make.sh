@@ -1,7 +1,7 @@
 echo ">>> Making postgres"
 
 FILE_FROM='./src/includes/docker-compose/docker-compose.yml'
-for POSTGRES_VERSION in 9.5 9.6 10.1; do
+for POSTGRES_VERSION in 9.5 9.6 10.2; do
     for PGPOOL_VERSION in 3.3 3.6; do
         for BARMAN_VERSION in 2.3; do
             echo ">>> Making POSTGRES_VERSION=$POSTGRES_VERSION PGPOOL_VERSION = $PGPOOL_VERSION BARMAN_VERSION=$BARMAN_VERSION"

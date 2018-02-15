@@ -21,7 +21,7 @@ services:
 #        image: postdock/postgres:latest-postgres?
         build:
             context: ../src
-            dockerfile: Postgres-10.1-Repmgr-3.2.Dockerfile
+            dockerfile: Postgres-10.2-Repmgr-3.2.Dockerfile
         environment:
             PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
             NODE_ID: 1 # Integer number of node
@@ -56,7 +56,7 @@ services:
 #        image: postdock/postgres:latest-postgres?
         build:
             context: ../src
-            dockerfile: Postgres-10.1-Repmgr-3.2.Dockerfile
+            dockerfile: Postgres-10.2-Repmgr-3.2.Dockerfile
         environment:
             PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
             REPLICATION_PRIMARY_HOST: pgmaster
@@ -79,7 +79,7 @@ services:
 #        image: postdock/postgres:latest-postgres?
         build:
             context: ../src
-            dockerfile: Postgres-10.1-Repmgr-3.2.Dockerfile
+            dockerfile: Postgres-10.2-Repmgr-3.2.Dockerfile
         environment:
             REPLICATION_PRIMARY_HOST: pgslave1 # I want to have cascade Streeming replication
             NODE_ID: 3
@@ -100,7 +100,7 @@ services:
 #        image: postdock/postgres:latest-postgres?
         build:
             context: ../src
-            dockerfile: Postgres-10.1-Repmgr-3.2.Dockerfile
+            dockerfile: Postgres-10.2-Repmgr-3.2.Dockerfile
         environment:
             PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
             REPLICATION_PRIMARY_HOST: pgmaster
@@ -122,7 +122,7 @@ services:
 #        image: postdock/postgres:latest-postgres?
         build:
             context: ../src
-            dockerfile: Postgres-10.1-Repmgr-3.2.Dockerfile
+            dockerfile: Postgres-10.2-Repmgr-3.2.Dockerfile
         environment:
             REPLICATION_PRIMARY_HOST: pgslave3
             NODE_ID: 5
@@ -142,7 +142,7 @@ services:
 #        image: postdock/barman:latest-barman?
         build:
             context: ../src
-            dockerfile: Barman-2.3-Postgres-10.1.Dockerfile
+            dockerfile: Barman-2.3-Postgres-10.2.Dockerfile
         environment:
             REPLICATION_USER: replication_user # default is replication_user
             REPLICATION_PASSWORD: replication_pass # default is replication_pass
@@ -195,7 +195,7 @@ services:
     postgres_ext:
         build:
             context: ../src
-            dockerfile: Postgres-extended-10.1-Repmgr-3.2.Dockerfile
+            dockerfile: Postgres-extended-10.2-Repmgr-3.2.Dockerfile
         environment:
           NODE_ID: 101 
           NODE_NAME: node101 # Node name
@@ -208,7 +208,7 @@ services:
     postgres_conf:
         build:
           context: ../src/
-          dockerfile: Postgres-10.1-Repmgr-3.2.Dockerfile
+          dockerfile: Postgres-10.2-Repmgr-3.2.Dockerfile
         environment:
           NODE_ID: 102 # Integer number of node
           NODE_NAME: node102 # Node name

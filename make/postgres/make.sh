@@ -1,6 +1,6 @@
 echo ">>> Making postgres"
 
-for POSTGRES_VERSION in 9.5 9.6 10.1; do
+for POSTGRES_VERSION in 9.5 9.6 10.2; do
     for REPMGR_VERSION in 3.2; do
         echo ">>> Making v.$POSTGRES_VERSION"
         FILE_FROM="./src/includes/dockerfile/Postgres-$POSTGRES_VERSION-Repmgr-$REPMGR_VERSION.part.Dockerfile"

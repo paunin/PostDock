@@ -15,6 +15,7 @@ Some binary ENV variables for tests runner(By default everything is `0`, you can
 * `NO_COLOURS` - disable fancy coloured output
 * `DEBUG` - will output everything from tests scripts
 * `NO_CLEANUP` - will not destroy `docker-compose` environment after each test
+* ``
 
 ## How to create a new test
 

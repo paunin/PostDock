@@ -1,7 +1,7 @@
 echo ">>> Making barman"
 FILE_FROM="./src/includes/dockerfile/Barman-2.3.part.Dockerfile"
 
-for VALS in "PG_CLIENT_VERSION=9.6;PG_CLIENT_PACKAGE_VERSION=9.6" "PG_CLIENT_VERSION=10;PG_CLIENT_PACKAGE_VERSION=10.1"; do
+for VALS in "PG_CLIENT_VERSION=9.6;PG_CLIENT_PACKAGE_VERSION=9.6" "PG_CLIENT_VERSION=10;PG_CLIENT_PACKAGE_VERSION=10.2"; do
 
     PG_CLIENT_VERSION=`echo $VALS | cut -d ";" -f2 | cut -d '=' -f2`
     
