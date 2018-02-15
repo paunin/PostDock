@@ -13,7 +13,6 @@ volumes:
 
 services:
     pgmaster:
-#        image: postdock/postgres:latest-postgres?
         build:
             context: ../src
             dockerfile: Postgres-{{ POSTGRES_VERSION }}-Repmgr-{{ REPMGR_VERSION }}.Dockerfile
@@ -48,7 +47,6 @@ services:
                     - pgmaster
 #<<< Branch 1
     pgslave1:
-#        image: postdock/postgres:latest-postgres?
         build:
             context: ../src
             dockerfile: Postgres-{{ POSTGRES_VERSION }}-Repmgr-{{ REPMGR_VERSION }}.Dockerfile
@@ -71,7 +69,6 @@ services:
 
     # Add more slaves if required
     pgslave2:
-#        image: postdock/postgres:latest-postgres?
         build:
             context: ../src
             dockerfile: Postgres-{{ POSTGRES_VERSION }}-Repmgr-{{ REPMGR_VERSION }}.Dockerfile
@@ -92,7 +89,6 @@ services:
 #>>> Branch 1
 #<<< Branch 2
     pgslave3:
-#        image: postdock/postgres:latest-postgres?
         build:
             context: ../src
             dockerfile: Postgres-{{ POSTGRES_VERSION }}-Repmgr-{{ REPMGR_VERSION }}.Dockerfile
@@ -114,7 +110,6 @@ services:
                     - pgslave3
 
     pgslave4:
-#        image: postdock/postgres:latest-postgres?
         build:
             context: ../src
             dockerfile: Postgres-{{ POSTGRES_VERSION }}-Repmgr-{{ REPMGR_VERSION }}.Dockerfile
@@ -134,7 +129,6 @@ services:
                     - pgslave4
 #>>> Branch 2
     backup:
-#        image: postdock/barman:latest-barman?
         build:
             context: ../src
             dockerfile: Barman-{{ BARMAN_VERSION }}-Postgres-{{ POSTGRES_VERSION }}.Dockerfile
@@ -154,7 +148,6 @@ services:
                 aliases:
                     - backup
     pgpool:
-#        image: postdock/pgpool:latest-pgpool?
         build:
             context: ../src
             dockerfile: Pgpool-{{ PGPOOL_VERSION }}.Dockerfile
@@ -224,3 +217,48 @@ services:
             CONFIGS: "num_init_children)12|max_pool)'13'"
             CONFIGS_DELIMITER_SYMBOL: "|"
             CONFIGS_ASSIGNMENT_SYMBOL: ")"
+    pgmaster2:
+        build:
+            context: ../src
+            dockerfile: Postgres-{{ POSTGRES_VERSION }}-Repmgr-{{ REPMGR_VERSION }}.Dockerfile
+        environment:
+
+            NODE_ID: 1
+            NODE_NAME: node1
+            CLUSTER_NODE_NETWORK_NAME: pgmaster2
+
+            POSTGRES_PASSWORD: monkey_pass
+            POSTGRES_USER: monkey_user
+            POSTGRES_DB: monkey_db
+
+            CONFIGS: "listen_addresses:'*'"
+        ports:
+            - 5439:5432
+        networks:
+            cluster:
+                aliases:
+                    - pgmaster2
+    pgpool2:
+        build:
+            context: ../src
+            dockerfile: Pgpool-{{ PGPOOL_VERSION }}.Dockerfile
+        depends_on:
+            - pgmaster
+            - pgmaster2
+        environment:
+            PCP_USER: pcp_user
+            PCP_PASSWORD: pcp_pass
+
+            CHECK_USER: monkey_user
+            CHECK_PASSWORD: monkey_pass
+            CHECK_PGCONNECT_TIMEOUT: 3 #timout for checking if primary node is healthy
+
+            DB_USERS: monkey_user:monkey_pass # in format user:password[,user:password[...]]
+            BACKENDS: "0:pgmaster::::,1:pgmaster2::::"
+        ports:
+            - 5431:5432
+            - 9899:9898 # PCP
+        networks:
+            cluster:
+                aliases:
+                    - pgpool2

@@ -1,5 +1,4 @@
 #!/bin/bash
-export COMPOSE_FILE=./docker-compose/latest.yml
 
 if [[ "$NO_COLOURS" != "1" ]]; then
     RESTORE='\033[0m'
@@ -18,38 +17,50 @@ if [[ "$TESTS_NAMES" != "" ]]; then
 else
     TESTS=`ls -d ./tests/*/run.sh | cut -f3 -d'/'`
 fi
+if [[ "$TEST_COMBINATIONS" == "" ]]; then
+    TEST_COMBINATIONS=`ls docker-compose | grep '.yml' | grep -v '^latest.yml$' | xargs -I % basename % '.yml'`
+fi
 
 echo -e "${BLUE}=====================PostDock tests======================${RESTORE}"
-
-for TEST in $TESTS; do
-    echo ">>> Preparing environment:"
-    docker-compose down -v && docker-compose build
-    echo -n ">>> Running test $TEST:"
-    
-    if [[ "$DEBUG" == "1"  ]]; then
-        echo -e " ${BLUE}>>>>>>${RESTORE}"
-        ./tests/$TEST/run.sh
-        TEST_EXIT_CODE=$?
-        echo -ne "${BLUE}<<<<<<${RESTORE}"
-    else
-        TEST_OUTPUT=$(./tests/$TEST/run.sh 2>&1)
-        TEST_EXIT_CODE=$?
+for TEST_COMBINATION in $TEST_COMBINATIONS; do
+    echo -e "${CYAN}[$TEST_COMBINATION]${RESTORE}"
+    COMPOSE_FILE="./docker-compose/$TEST_COMBINATION.yml"
+    if [[ ! -f $COMPOSE_FILE ]]; then
+        echo -e "${YELLOW}File for combination $TEST_COMBINATION ($COMPOSE_FILE) can't be found! Skipping combination!${RESTORE}"
+        TESTS_SKIPPED=$((TESTS_SKIPPED+1))
     fi
+    export COMPOSE_FILE
 
-    case "$TEST_EXIT_CODE" in
-        "0" )
-            echo -e "${GREEN} Passed ${RESTORE}"
-            TESTS_SUCCEED=$((TESTS_SUCCEED+1))
-            ;;
-        * )
-            echo -e "${RED} Failed ${RESTORE}" "(Output: '${RED}$TEST_OUTPUT${RESTORE}')" 
-            TESTS_FAILED=$((TESTS_FAILED+1))
-    esac
+    for TEST in $TESTS; do
+        echo ">>> Preparing environment:"
+        docker-compose down -v && docker-compose build
+        echo -n ">>> Running test $TEST:"
+        
+        if [[ "$DEBUG" == "1"  ]]; then
+            echo -e " ${BLUE}>>>>>>${RESTORE}"
+            ./tests/$TEST/run.sh
+            TEST_EXIT_CODE=$?
+            echo -ne "${BLUE}<<<<<<${RESTORE}"
+        else
+            TEST_OUTPUT=$(./tests/$TEST/run.sh 2>&1)
+            TEST_EXIT_CODE=$?
+        fi
 
-    if [[ "$NO_CLEANUP" != "1" ]]; then
-        echo ">>> Tear down environment:"
-        docker-compose down -v
-    fi
+        case "$TEST_EXIT_CODE" in
+            "0" )
+                echo -e "${GREEN} Passed ${RESTORE}"
+                TESTS_SUCCEED=$((TESTS_SUCCEED+1))
+                ;;
+            * )
+                echo -e "${RED} Failed ${RESTORE}" "(Output: '${RED}$TEST_OUTPUT${RESTORE}')" 
+                TESTS_FAILED=$((TESTS_FAILED+1))
+        esac
+
+        if [[ "$NO_CLEANUP" != "1" ]]; then
+            echo ">>> Tear down environment:"
+            docker-compose down -v
+        fi
+    done
 done
 
 echo -e "${BLUE}=========================================================${RESTORE}"
