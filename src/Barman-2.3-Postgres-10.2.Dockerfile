@@ -21,7 +21,7 @@ RUN set -x \
 RUN  wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key add - && \
      sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" >> /etc/apt/sources.list.d/pgdg.list' && \
      apt-get update && \
-     apt-get install -y libffi-dev libssl-dev postgresql-client-10=10.1\* barman=2.3-2.pgdg80+1 openssh-server
+     apt-get install -y libffi-dev libssl-dev postgresql-client-10=10.2\* barman=2.3-2.pgdg80+1 openssh-server
 
 RUN apt-get -y install cron
 ADD barman/crontab /etc/cron.d/barman

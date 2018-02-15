@@ -18,10 +18,9 @@ volumes:
 
 services:
     pgmaster:
-#        image: postdock/postgres:latest-postgres?
         build:
             context: ../src
-            dockerfile: Postgres-10.1-Repmgr-3.2.Dockerfile
+            dockerfile: Postgres-10.2-Repmgr-3.2.Dockerfile
         environment:
             PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
             NODE_ID: 1 # Integer number of node
@@ -53,10 +52,9 @@ services:
                     - pgmaster
 #<<< Branch 1
     pgslave1:
-#        image: postdock/postgres:latest-postgres?
         build:
             context: ../src
-            dockerfile: Postgres-10.1-Repmgr-3.2.Dockerfile
+            dockerfile: Postgres-10.2-Repmgr-3.2.Dockerfile
         environment:
             PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
             REPLICATION_PRIMARY_HOST: pgmaster
@@ -76,10 +74,9 @@ services:
 
     # Add more slaves if required
     pgslave2:
-#        image: postdock/postgres:latest-postgres?
         build:
             context: ../src
-            dockerfile: Postgres-10.1-Repmgr-3.2.Dockerfile
+            dockerfile: Postgres-10.2-Repmgr-3.2.Dockerfile
         environment:
             REPLICATION_PRIMARY_HOST: pgslave1 # I want to have cascade Streeming replication
             NODE_ID: 3
@@ -97,10 +94,9 @@ services:
 #>>> Branch 1
 #<<< Branch 2
     pgslave3:
-#        image: postdock/postgres:latest-postgres?
         build:
             context: ../src
-            dockerfile: Postgres-10.1-Repmgr-3.2.Dockerfile
+            dockerfile: Postgres-10.2-Repmgr-3.2.Dockerfile
         environment:
             PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
             REPLICATION_PRIMARY_HOST: pgmaster
@@ -119,10 +115,9 @@ services:
                     - pgslave3
 
     pgslave4:
-#        image: postdock/postgres:latest-postgres?
         build:
             context: ../src
-            dockerfile: Postgres-10.1-Repmgr-3.2.Dockerfile
+            dockerfile: Postgres-10.2-Repmgr-3.2.Dockerfile
         environment:
             REPLICATION_PRIMARY_HOST: pgslave3
             NODE_ID: 5
@@ -139,10 +134,9 @@ services:
                     - pgslave4
 #>>> Branch 2
     backup:
-#        image: postdock/barman:latest-barman?
         build:
             context: ../src
-            dockerfile: Barman-2.3-Postgres-10.1.Dockerfile
+            dockerfile: Barman-2.3-Postgres-10.2.Dockerfile
         environment:
             REPLICATION_USER: replication_user # default is replication_user
             REPLICATION_PASSWORD: replication_pass # default is replication_pass
@@ -159,10 +153,9 @@ services:
                 aliases:
                     - backup
     pgpool:
-#        image: postdock/pgpool:latest-pgpool?
         build:
             context: ../src
-            dockerfile: Pgpool-3.3.Dockerfile
+            dockerfile: Pgpool-3.6.Dockerfile
         environment:
             PCP_USER: pcp_user
             PCP_PASSWORD: pcp_pass
@@ -195,7 +188,7 @@ services:
     postgres_ext:
         build:
             context: ../src
-            dockerfile: Postgres-extended-10.1-Repmgr-3.2.Dockerfile
+            dockerfile: Postgres-extended-10.2-Repmgr-3.2.Dockerfile
         environment:
           NODE_ID: 101 
           NODE_NAME: node101 # Node name
@@ -208,7 +201,7 @@ services:
     postgres_conf:
         build:
           context: ../src/
-          dockerfile: Postgres-10.1-Repmgr-3.2.Dockerfile
+          dockerfile: Postgres-10.2-Repmgr-3.2.Dockerfile
         environment:
           NODE_ID: 102 # Integer number of node
           NODE_NAME: node102 # Node name
@@ -223,9 +216,54 @@ services:
     pgpool_conf:
         build:
             context: ../src
-            dockerfile: Pgpool-3.3.Dockerfile
+            dockerfile: Pgpool-3.6.Dockerfile
         environment:
             DB_USERS: monkey_user:monkey_pass # in format user:password[,user:password[...]]
             CONFIGS: "num_init_children)12|max_pool)'13'"
             CONFIGS_DELIMITER_SYMBOL: "|"
             CONFIGS_ASSIGNMENT_SYMBOL: ")"
+    pgmaster2:
+        build:
+            context: ../src
+            dockerfile: Postgres-10.2-Repmgr-3.2.Dockerfile
+        environment:
+
+            NODE_ID: 1
+            NODE_NAME: node1
+            CLUSTER_NODE_NETWORK_NAME: pgmaster2
+
+            POSTGRES_PASSWORD: monkey_pass
+            POSTGRES_USER: monkey_user
+            POSTGRES_DB: monkey_db
+
+            CONFIGS: "listen_addresses:'*'"
+        ports:
+            - 5439:5432
+        networks:
+            cluster:
+                aliases:
+                    - pgmaster2
+    pgpool2:
+        build:
+            context: ../src
+            dockerfile: Pgpool-3.6.Dockerfile
+        depends_on:
+            - pgmaster
+            - pgmaster2
+        environment:
+            PCP_USER: pcp_user
+            PCP_PASSWORD: pcp_pass
+
+            CHECK_USER: monkey_user
+            CHECK_PASSWORD: monkey_pass
+            CHECK_PGCONNECT_TIMEOUT: 3 #timout for checking if primary node is healthy
+
+            DB_USERS: monkey_user:monkey_pass # in format user:password[,user:password[...]]
+            BACKENDS: "0:pgmaster::::,1:pgmaster2::::"
+        ports:
+            - 5431:5432
+            - 9899:9898 # PCP
+        networks:
+            cluster:
+                aliases:
+                    - pgpool2

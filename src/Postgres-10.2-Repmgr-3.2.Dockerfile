@@ -1,4 +1,9 @@
-FROM postgres:10.1
+
+##########################################################################
+##                         AUTO-GENERATED FILE                          ##
+##########################################################################
+
+FROM postgres:10.2
 
 RUN apt-get update --fix-missing && \
     apt-get install -y postgresql-server-dev-$PG_MAJOR wget openssh-server barman-cli
@@ -55,7 +60,7 @@ ENV REPMGR_SHOW_NODES_TABLE repl_show_nodes
 ENV REPMGR_NODE_ID_PARAM_NAME node
 ENV REPMGR_LOG_LEVEL_PARAM_NAME loglevel
 ENV REPMGR_MASTER_RESPONSE_TIMEOUT_PARAM_NAME master_reponse_timeout
-#ENV CONFIGS "listen_addresses:'*'"
+# ENV CONFIGS "listen_addresses:'*'"
                                     # in format variable1:value1[,variable2:value2[,...]] if CONFIGS_DELIMITER_SYMBOL=, and CONFIGS_ASSIGNMENT_SYMBOL=:
                                     # used for pgpool.conf file
 

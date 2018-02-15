@@ -3,19 +3,10 @@
 ##                         AUTO-GENERATED FILE                          ##
 ##########################################################################
 
-FROM postgres:10.1
+FROM postgres:10.2
 
 RUN apt-get update --fix-missing && \
-    apt-get install -y postgresql-server-dev-$PG_MAJOR wget openssh-server barman-cli
-
-#<<< Hack to support initial version of Repmgr (https://github.com/paunin/PostDock/issues/97)
-RUN TEMP_DEB="$(mktemp)" && \
-    wget -O "$TEMP_DEB" "http://atalia.postgresql.org/morgue/r/repmgr/repmgr-common_3.3.2-1.pgdg80%2b1_all.deb" && \
-    dpkg -i "$TEMP_DEB" && rm -f "$TEMP_DEB" && \
-    TEMP_DEB="$(mktemp)" && \
-    wget -O "$TEMP_DEB" "http://atalia.postgresql.org/morgue/r/repmgr/postgresql-$PG_MAJOR-repmgr_3.3.2-1.pgdg80%2b1_amd64.deb" && \
-    dpkg -i "$TEMP_DEB" && apt-get install -f && rm -f "$TEMP_DEB"
-# >>> Hack
+    apt-get install -y postgresql-server-dev-$PG_MAJOR wget openssh-server barman-cli postgresql-$PG_MAJOR-repmgr=4.0.2-1.pgdg90+1
 
 # Inherited variables
 # ENV POSTGRES_PASSWORD monkey_pass
@@ -51,15 +42,15 @@ ENV CONFIGS_DELIMITER_SYMBOL ,
 ENV CONFIGS_ASSIGNMENT_SYMBOL :
                                 #CONFIGS_DELIMITER_SYMBOL and CONFIGS_ASSIGNMENT_SYMBOL are used to parse CONFIGS variable
                                 # if CONFIGS_DELIMITER_SYMBOL=| and CONFIGS_ASSIGNMENT_SYMBOL=>, valid configuration string is var1>val1|var2>val2
-ENV REPMGR_MAJOR 3
-ENV REPMGR_NODES_TABLE repl_nodes
-ENV REPMGR_NODE_ID_COLUMN id
-ENV REPMGR_NODE_NAME_COLUMN name
-ENV REPMGR_CLUSTER_SHOW_MASTER_PATTERN * master
-ENV REPMGR_SHOW_NODES_TABLE repl_show_nodes
-ENV REPMGR_NODE_ID_PARAM_NAME node
-ENV REPMGR_LOG_LEVEL_PARAM_NAME loglevel
-ENV REPMGR_MASTER_RESPONSE_TIMEOUT_PARAM_NAME master_reponse_timeout
+ENV REPMGR_MAJOR 4
+ENV REPMGR_NODES_TABLE nodes
+ENV REPMGR_NODE_ID_COLUMN node_id
+ENV REPMGR_NODE_NAME_COLUMN node_name
+ENV REPMGR_CLUSTER_SHOW_MASTER_PATTERN primary
+ENV REPMGR_SHOW_NODES_TABLE show_nodes
+ENV REPMGR_NODE_ID_PARAM_NAME node_id
+ENV REPMGR_LOG_LEVEL_PARAM_NAME log_level
+ENV REPMGR_MASTER_RESPONSE_TIMEOUT_PARAM_NAME async_query_timeout
 #ENV CONFIGS "listen_addresses:'*'"
                                     # in format variable1:value1[,variable2:value2[,...]] if CONFIGS_DELIMITER_SYMBOL=, and CONFIGS_ASSIGNMENT_SYMBOL=:
                                     # used for pgpool.conf file
@@ -122,6 +113,3 @@ VOLUME /var/lib/postgresql/data
 USER root
 
 CMD ["/usr/local/bin/cluster/entrypoint.sh"]
-ARG EXTENSIONS="pgosm postgis nominatim"
-COPY ./pgsql/extensions/bin/ /extensions_installer/
-RUN chmod -R +x /extensions_installer/ && bash /extensions_installer/install.sh "$EXTENSIONS"
