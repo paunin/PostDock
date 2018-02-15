@@ -47,19 +47,24 @@ Postgres streaming replication cluster for any docker environment (Kubernetes, D
 
 ### Docker images tags convention
 
-Taking into account that PostDock project itself has versioning schema, all docker images produced by the repository have schema - `postdock/<component>:<postdock_version>-<component><component_version>`, where:
+Taking into account that PostDock project itself has versioning schema, all docker images produced by the repository have schema - `postdock/<component>:<postdock_version>-<component><component_version>[-<sub_component><sub_component_version>[...]]`, where:
 
-* `<component>` - can be one of the value from the set `postgres`, `postgres-extended`, `pgpool`, `barman`
 * `<postdock_version>` - semantic version(without `bug-fix` component)
+* `<component>` - can be one of the value from the set `postgres`, `postgres-extended`, `pgpool`, `barman`
 * `<component_version>` - depends on component:
-    * `postgres` - major and minor version without dot in between(can be `95`,`96`,`100`,101)
-    * `pgpool` - major and minor version without dot in between(can be `33`,`36`)
+    * `postgres` - major and minor version without dot in between(can be `95`,`96`,`101`)
+    * `pgpool` - major and minor version of component without dot in between(can be `33`,`36`)
     * `barman` - major version (can be `2`,`3`)
+* `<sub_component>` - depends on component:
+    * for `postgres` - `repmgr`
+    * for `barman` - `postgres`
+* `<sub_component_version>` - major and minor version of sub-component without dot in between(can be `33`,`36`)
 
-Aliases are available:
+Aliases are available **(not recommended to use for production)**:
 
-* `postdock/<component>:latest-<component><component_version>` - refers to the latest release of the postdock and certain version of the component
-* `postdock/<component>:latest` - refers to the latest release of the postdock and the component
+* `postdock/<component>:latest-<component><component_version>[-<sub_component><sub_component_version>[...]]` - refers to the latest release of the postdock, certain version of the component, certain version of the sub-components(e.g. `postdock/postgres:latest-postgres101-repmgr32`,`postdock/postgres:latest-barman23-postgres101`)
+* `postdock/<component>:latest` - refers to the latest release of the postdock and the latest versions of all the components and sub-components (e.g. `postdock/postgres:latest`)
+* `postdock/<component>:edge` - refers to build of postdock from master with the latest version the component, and all sub-components (e.g. `postdock/postgres:edge`)
 
 **There is no alias for `master` branch build**
 
@@ -233,8 +238,8 @@ Role      | Name  | Upstream | Connection String
 ## Useful commands
 
 * Get map of current cluster(on any `postgres` node): 
-    * `gosu postgres repmgr cluster show` - tries to connect to all nodes on request ignore status of node in `repmgr_$CLUSTER_NAME.repl_nodes`
-    * `gosu postgres psql $REPLICATION_DB -c "SELECT * FROM repmgr_$CLUSTER_NAME.repl_nodes"` - just select data from tables
+    * `gosu postgres repmgr cluster show` - tries to connect to all nodes on request ignore status of node in `$(get_repmgr_schema).$REPMGR_NODES_TABLE`
+    * `gosu postgres psql $REPLICATION_DB -c "SELECT * FROM $(get_repmgr_schema).$REPMGR_NODES_TABLE"` - just select data from tables
 * Get `pgpool` status (on any `pgpool` node): `PGPASSWORD=$CHECK_PASSWORD psql -U $CHECK_USER -h localhost template1 -c "show pool_nodes"`
 * In `pgpool` container check if primary node exists: `/usr/local/bin/pgpool/has_write_node.sh` 
 
