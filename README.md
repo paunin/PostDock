@@ -47,18 +47,17 @@ Postgres streaming replication cluster for any docker environment (Kubernetes, D
 
 ### Docker images tags convention
 
-Taking into account that PostDock project itself has versioning schema, all docker images produced by the repository have schema - `postdock/<component>:<postdock_version>-<component><component_version>[-<sub_component><sub_component_version>[...]]`, where:
+Taking into account that PostDock project itself has versioning schema, all docker images produced by the repository have schema - `postdock/<component>:<postdock_version>-<component><component_version>-<sub_component><sub_component_version>[...]`, where:
 
-* `<postdock_version>` - semantic version(without `bug-fix` component)
-* `<component>` - can be one of the value from the set `postgres`, `postgres-extended`, `pgpool`, `barman`
-* `<component_version>` - depends on component:
-    * `postgres` - major and minor version without dot in between(can be `95`,`96`,`101`)
+* `<postdock_version>` - semantic version without `bug-fix` component (can be `1.1`,`1.2`,...)
+* `<component>`, `<component_version>` - depends on component:
+    * `postgres`,`postgres-extended` - major and minor version without dot in between(can be `95`,`96`,`102`)
     * `pgpool` - major and minor version of component without dot in between(can be `33`,`36`)
-    * `barman` - major version (can be `2`,`3`)
-* `<sub_component>` - depends on component:
-    * for `postgres` - `repmgr`
-    * for `barman` - `postgres`
-* `<sub_component_version>` - major and minor version of sub-component without dot in between(can be `33`,`36`)
+    * `barman` - major version only (can be `2`)
+* `<sub_component>`, `<sub_component_version>` - depends on component:
+    * for `postgres` - `repmgr` can be `3.2`
+    * for `barman` - `postgres` can be `9.6`, `10.2`
+    * for `pgpool` - `postgres` can be `9.6`, `10.2`
 
 Aliases are available **(not recommended to use for production)**:
 
