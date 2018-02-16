@@ -6,11 +6,15 @@ echo ">>> Create a test table and fill some data"
 docker-compose exec pgmaster psql -U postgres monkey_db -c " create table t (time timestamp);";
 for i in `seq 1 15`; do
   sleep 1
-  for j in `seq 1 3`; do
+  for j in `seq 1 5`; do
     docker-compose exec -T pgmaster psql -U postgres monkey_db -c "insert into t values(now());";
   done
 done
-sleep 10
+sleep 30
+echo ">>> Start WAL receiver"
+docker-compose exec -T backup /usr/local/bin/barman_docker/wal-receiver.sh
+echo ">>> Show barman status"
+docker-compose exec -T backup barman check pg_cluster
 echo ">>> Make a backup"
 docker-compose exec -T backup barman switch-xlog --force --archive all
 docker-compose exec -T backup barman backup all

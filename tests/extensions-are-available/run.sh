@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-docker-compose down
-docker-compose build
 docker-compose up -d postgres_ext
 sleep 30
 set -e

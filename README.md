@@ -1,10 +1,11 @@
 # PostDock - Postgres + Docker
 
-Postgres streaming replication cluster for any docker environment (Kubernetes, Docker Compose, Docker Swarm, Apache Mesos)
+PostgreSQL cluster with **High Availability** and **Self Healing** features for any cloud and docker environment (Amazon, Google Cloud, Kubernetes, Docker Compose, Docker Swarm, Apache Mesos)
 
 <img align="right" width="400" src="https://github.com/paunin/PostDock/blob/master/artwork/logo.png?raw=true">
 
 - [Info](#info)
+  * [Features](#features)
   * [Publications](#publications)
   * [What's in the box](#what-s-in-the-box)
   * [Docker images tags convention](#docker-images-tags-convention)
@@ -30,7 +31,19 @@ Postgres streaming replication cluster for any docker environment (Kubernetes, D
 
 -------
 
+[![Build Status](https://travis-ci.org/paunin/PostDock.svg?branch=master)](https://travis-ci.org/paunin/PostDock)
+
 ## Info
+
+### Features
+* High Availability
+* Self Healing and Automated Reconstruction
+* [Split Brain](https://en.wikipedia.org/wiki/Split-brain_(computing)) Tolerance
+* Eventually/Partially Strict/Strict Consistency modes
+* Reads Load Balancing and Connection Pool
+* Incremental backup (with optional zero data loss, [RPO=0](https://en.wikipedia.org/wiki/Recovery_point_objective))
+* Semi-automated Point In Time Recovery Procedure
+* Monitoring exporters for all the components(nodes, balancers, backup)
 
 ### Publications
 * [Article on Medium.com](https://medium.com/@dpaunin/postgresql-cluster-into-kubernetes-cluster-f353cde212de)
@@ -64,8 +77,6 @@ Aliases are available **(not recommended to use for production)**:
 * `postdock/<component>:latest-<component><component_version>[-<sub_component><sub_component_version>[...]]` - refers to the latest release of the postdock, certain version of the component, certain version of the sub-components(e.g. `postdock/postgres:latest-postgres101-repmgr32`,`postdock/postgres:latest-barman23-postgres101`)
 * `postdock/<component>:latest` - refers to the latest release of the postdock and the latest versions of all the components and sub-components (e.g. `postdock/postgres:latest`)
 * `postdock/<component>:edge` - refers to build of postdock from master with the latest version the component, and all sub-components (e.g. `postdock/postgres:edge`)
-
-**There is no alias for `master` branch build**
 
 
 ## Schema of the example cluster
@@ -187,7 +198,7 @@ If you want to disable the feature of Postgres>=9.4 - [replication slots](https:
 
 ## Extended version of postgres
 
-Component `postgres-extended` from the section [Docker images tags convention](#docker-images-tags-convention) should be used if you want to have postgres with extensions and libraries. Each directory in [the directory](./src/pgsql/extensions) represents extension included in the image.
+Component `postgres-extended` from the section [Docker images tags convention](#docker-images-tags-convention) should be used if you want to have postgres with extensions and libraries. Each directory [here](./src/pgsql/extensions/bin/extensions) represents extension included in the image.
 
 ## Backups and recovery
 

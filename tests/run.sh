@@ -21,6 +21,7 @@ if [[ "$TEST_COMBINATIONS" == "" ]]; then
     TEST_COMBINATIONS=`ls docker-compose | grep '.yml' | grep -v '^latest.yml$' | xargs -I % basename % '.yml'`
 fi
 
+FAILED_TESTS=()
 echo -e "${BLUE}=====================PostDock tests======================${RESTORE}"
 for TEST_COMBINATION in $TEST_COMBINATIONS; do
     echo -e "${CYAN}[$TEST_COMBINATION]${RESTORE}"
@@ -30,10 +31,9 @@ for TEST_COMBINATION in $TEST_COMBINATIONS; do
         TESTS_SKIPPED=$((TESTS_SKIPPED+1))
     fi
     export COMPOSE_FILE
-
+    echo ">>> Preparing environment:"
+    docker-compose down -v && docker-compose build --no-cache > /dev/null
     for TEST in $TESTS; do
-        echo ">>> Preparing environment:"
-        docker-compose down -v && docker-compose build
         echo -n ">>> Running test $TEST:"
         
         if [[ "$DEBUG" == "1"  ]]; then
@@ -54,18 +54,21 @@ for TEST_COMBINATION in $TEST_COMBINATIONS; do
             * )
                 echo -e "${RED} Failed ${RESTORE}" "(Output: '${RED}$TEST_OUTPUT${RESTORE}')" 
                 TESTS_FAILED=$((TESTS_FAILED+1))
+                FAILED_TESTS+=("$TEST_COMBINATION > $TEST")
         esac
 
         if [[ "$NO_CLEANUP" != "1" ]]; then
             echo ">>> Tear down environment:"
             docker-compose down -v
+            sleep 10
         fi
     done
 done
 
 echo -e "${BLUE}=========================================================${RESTORE}"
 echo -e "${GREEN}>>> Passed: $TESTS_SUCCEED${RESTORE}"
-echo -e "${YELLOW}>>> Skipped: $TESTS_SKIPPED${RESTORE}"
 echo -e "${RED}>>> Failed: $TESTS_FAILED${RESTORE}"
+printf '   >>> %s\n' "${FAILED_TESTS[@]}"
+echo -e "${BLUE}=========================================================${RESTORE}"
 
 exit $TESTS_FAILED
