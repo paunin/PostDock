@@ -155,7 +155,7 @@ services:
     pgpool:
         build:
             context: ../src
-            dockerfile: Pgpool-3.3.Dockerfile
+            dockerfile: Pgpool-3.3-Postgres-9.6.Dockerfile
         environment:
             PCP_USER: pcp_user
             PCP_PASSWORD: pcp_pass
@@ -216,7 +216,7 @@ services:
     pgpool_conf:
         build:
             context: ../src
-            dockerfile: Pgpool-3.3.Dockerfile
+            dockerfile: Pgpool-3.3-Postgres-9.6.Dockerfile
         environment:
             DB_USERS: monkey_user:monkey_pass # in format user:password[,user:password[...]]
             CONFIGS: "num_init_children)12|max_pool)'13'"
@@ -246,7 +246,7 @@ services:
     pgpool2:
         build:
             context: ../src
-            dockerfile: Pgpool-3.3.Dockerfile
+            dockerfile: Pgpool-3.3-Postgres-9.6.Dockerfile
         depends_on:
             - pgmaster
             - pgmaster2

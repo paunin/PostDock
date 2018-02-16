@@ -131,7 +131,7 @@ services:
     backup:
         build:
             context: ../src
-            dockerfile: Barman-{{ BARMAN_VERSION }}-Postgres-{{ POSTGRES_VERSION }}.Dockerfile
+            dockerfile: Barman-{{ BARMAN_VERSION }}-Postgres-{{ BARMAN_POSTGRES_CLIENT_VERSION }}.Dockerfile
         environment:
             REPLICATION_USER: replication_user # default is replication_user
             REPLICATION_PASSWORD: replication_pass # default is replication_pass
@@ -150,7 +150,7 @@ services:
     pgpool:
         build:
             context: ../src
-            dockerfile: Pgpool-{{ PGPOOL_VERSION }}.Dockerfile
+            dockerfile: Pgpool-{{ PGPOOL_VERSION }}-Postgres-{{ PGPOOL_POSTGRES_CLIENT_VERSION }}.Dockerfile
         environment:
             PCP_USER: pcp_user
             PCP_PASSWORD: pcp_pass
@@ -211,7 +211,7 @@ services:
     pgpool_conf:
         build:
             context: ../src
-            dockerfile: Pgpool-{{ PGPOOL_VERSION }}.Dockerfile
+            dockerfile: Pgpool-{{ PGPOOL_VERSION }}-Postgres-{{ PGPOOL_POSTGRES_CLIENT_VERSION }}.Dockerfile
         environment:
             DB_USERS: monkey_user:monkey_pass # in format user:password[,user:password[...]]
             CONFIGS: "num_init_children)12|max_pool)'13'"
@@ -241,7 +241,7 @@ services:
     pgpool2:
         build:
             context: ../src
-            dockerfile: Pgpool-{{ PGPOOL_VERSION }}.Dockerfile
+            dockerfile: Pgpool-{{ PGPOOL_VERSION }}-Postgres-{{ PGPOOL_POSTGRES_CLIENT_VERSION }}.Dockerfile
         depends_on:
             - pgmaster
             - pgmaster2

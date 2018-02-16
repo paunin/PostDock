@@ -1,6 +1,11 @@
+
+##########################################################################
+##                         AUTO-GENERATED FILE                          ##
+##########################################################################
+
 FROM debian:jessie
 ARG DOCKERIZE_VERSION=v0.2.0
-ARG PGPOOL_PACKAGE_VERSION={{ PGPOOL_PACKAGE_VERSION }}\*
+ARG PGPOOL_PACKAGE_VERSION=3.3.4\*
 
 RUN groupadd -r postgres --gid=999 && useradd -r -g postgres -d /home/postgres  --uid=999 postgres
 
@@ -21,7 +26,7 @@ RUN  wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key a
      sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" >> /etc/apt/sources.list.d/pgdg.list' && \
      apt-get update
 
-RUN  apt-get install -y libffi-dev libssl-dev postgresql-client-{{ PG_CLIENT_VERSION }}={{ PG_CLIENT_PACKAGE_VERSION }}\* libpgpool0=$PGPOOL_PACKAGE_VERSION pgpool2=$PGPOOL_PACKAGE_VERSION openssh-server
+RUN  apt-get install -y libffi-dev libssl-dev postgresql-client-10=10.2\* libpgpool0=$PGPOOL_PACKAGE_VERSION pgpool2=$PGPOOL_PACKAGE_VERSION openssh-server
 
 RUN  wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
      tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
