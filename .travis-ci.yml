@@ -1,0 +1,7 @@
+sudo: required
+
+services:
+  - docker
+
+script:
+- NO_COLOURS=1 DEBUG=1 ./tests/run.sh
