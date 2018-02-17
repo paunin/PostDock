@@ -1,39 +1,42 @@
 # Script to build final Dockerfile-s for different versions of components
 set -e
 
+BUILD_NUMBER=`date`
+
 function flush {
+    MARKER_LINE="BUILD_NUMBER=$BUILD_NUMBER"
     FILE="$1"
-    echo '
+    if [[ `grep "$MARKER_LINE" $FILE | wc -l | tr -d ' '` == "0" ]]; then
+        echo "
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
+##               $MARKER_LINE              ##
 ##########################################################################
-' > $FILE 
-
+" > $FILE 
+    fi
 }
 
 function template {
     TEMPLATE_FILE_FROM="$1"
     TEMPLATE_FILE_TO="$2"
-    CONFIGS="$3"
-    TMP_FILE="/tmp/make.postdock.tmp"
-    TMP_FILE_PART="/tmp/make.postdock.tmp.part"
-    
-    cp -f $TEMPLATE_FILE_FROM $TMP_FILE
+    CONFIGS="${@:3}"
+    flush $TEMPLATE_FILE_TO
 
-    IFS=';' read -ra CONFIG_PAIRS <<< "$CONFIGS"
-    for CONFIG_PAIR in "${CONFIG_PAIRS[@]}"
-    do
-        IFS='=' read -ra CONFIG <<< "$CONFIG_PAIR"
-        VAR="${CONFIG[0]}"
-        VAL="${CONFIG[1]}"
-        sed -e "s/{{\ *$VAR\ *}}/$VAL/g" $TMP_FILE > $TMP_FILE_PART
-        mv -f $TMP_FILE_PART ${TMP_FILE}
-    done
-
-    cat $TMP_FILE >> $TEMPLATE_FILE_TO
-    rm -f $TMP_FILE 
+    echo ">>>>>> $CONFIGS"
+    eval "$CONFIGS" ./tmp/mo $TEMPLATE_FILE_FROM >> $TEMPLATE_FILE_TO
 }
+    
+# Getting templates processor
+if [ ! -f "tmp/mo" ]; then
+    echo "> Getting Mustache template processor Mo"
+    mkdir tmp
+    curl -sSL https://git.io/get-mo > tmp/mo
+    chmod +x tmp/mo
+    . ./tmp/mo
+fi
 
+# Making
 for SYSTEM in `find ./make/* -maxdepth 1 -type d`; do
+    echo "> Processing $SYSTEM"
     source $SYSTEM/make.sh
 done
