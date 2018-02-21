@@ -2,25 +2,25 @@ apiVersion: apps/v1beta1
 kind: StatefulSet
 metadata:
   namespace: mysystem
-  name: mysystem-db-node4
+  name: mysystem-db-node2
   labels:
     name: database
-    node: node4
+    node: node2
     system: mysystem
     app: mysystem
 spec:
   replicas: 1
-  serviceName: "mysystem-db-node4"
+  serviceName: "mysystem-db-node2"
   template:
     metadata:
       labels:
         name: database
-        node: node4
+        node: node2
         system: mysystem
         app: mysystem
     spec:
       containers:
-        - name: mysystem-db-node4
+        - name: mysystem-db-node2
           image: postdock/postgres:latest-postgres95
           imagePullPolicy: Always
           resources:
@@ -35,13 +35,11 @@ spec:
             - name: "REPLICATION_PRIMARY_HOST"
               value: "mysystem-db-node1-service"
             - name: "NODE_ID"
-              value: "4"
+              value: "2"
             - name: "NODE_NAME"
-              value: "node4"
+              value: "node2"
             - name: "CLUSTER_NODE_NETWORK_NAME"
-              value: "mysystem-db-node4-service"
-            - name: "REPLICATION_UPSTREAM_NODE_ID"
-              value: "1"
+              value: "mysystem-db-node2-service"
 
             # Cluster configs
             - name: "CLUSTER_NAME"
@@ -72,4 +70,4 @@ spec:
 #      volumes:
 #        - name: pg-data-volume
 #          persistentVolumeClaim:
-#            claimName: application-db-node4-claim
+#            claimName: application-db-node2-claim

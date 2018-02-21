@@ -65,7 +65,7 @@ Taking into account that PostDock project itself has versioning schema, all dock
 * `<postdock_version>` - semantic version without `bug-fix` component (can be `1.1`,`1.2`,...)
 * `<component>`, `<component_version>` - depends on component:
     * `postgres`,`postgres-extended` - major and minor version without dot in between(can be `95`,`96`,`102`)
-    * `pgpool` - major and minor version of component without dot in between(can be `33`,`36`)
+    * `pgpool` - major and minor version of component without dot in between(can be `33`,`36`,`37`)
     * `barman` - major version only (can be `2`)
 * `<sub_component>`, `<sub_component_version>` - depends on component:
     * for `postgres` - `repmgr` can be `3.2`
@@ -102,7 +102,7 @@ Please check comments for each `ENV` variable in [./docker-compose/latest.yml](.
 ## Start cluster in Kubernetes
 
 To make it easier repository contains services' objects under `k8s` dir.
-Setup `PostgreSQL` cluster following the steps in [the example](./k8s/example1/README.md)
+Setup `PostgreSQL` cluster following the steps in [the example](./k8s/README.md)
 It also has information how to check cluster state, so you will be able to see something like this:
 
 From any DB node pod:

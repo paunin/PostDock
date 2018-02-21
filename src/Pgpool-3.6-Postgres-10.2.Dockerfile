@@ -1,12 +1,11 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Sat Feb 17 16:37:30 +07 2018              ##
+##               BUILD_NUMBER=Thu Feb 22 16:50:58 +07 2018              ##
 ##########################################################################
 
 FROM debian:jessie
 ARG DOCKERIZE_VERSION=v0.2.0
-ARG PGPOOL_PACKAGE_VERSION=3.6\*
 
 RUN groupadd -r postgres --gid=999 && useradd -r -g postgres -d /home/postgres  --uid=999 postgres
 
@@ -27,7 +26,12 @@ RUN  wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key a
      sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" >> /etc/apt/sources.list.d/pgdg.list' && \
      apt-get update
 
-RUN  apt-get install -y libffi-dev libssl-dev postgresql-client-10=10.2\* libpgpool0=$PGPOOL_PACKAGE_VERSION pgpool2=$PGPOOL_PACKAGE_VERSION openssh-server
+RUN  apt-get install -y libffi-dev libssl-dev postgresql-client-10=10.2\* openssh-server
+
+RUN TEMP_DEB="$(mktemp)" && \
+    wget -O "$TEMP_DEB" "http://atalia.postgresql.org/morgue/p/pgpool2/pgpool2_3.6.7-1.pgdg90+1_amd64.deb" && \
+    (dpkg -i "$TEMP_DEB" || apt-get install -y -f) && rm -f "$TEMP_DEB"
+
 
 RUN  wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
      tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz

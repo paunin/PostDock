@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: mysystem
+  name: mysystem-config
+  labels:
+    app: mysystem
+data:
+  app.db.database: "mysystem.mysystem"
+  app.db.cluster.name: "mysystem_cluster"
+  app.db.cluster.replication.db: "replica_db"
+  app.db.pool.backends: "0:mysystem-db-node-0.mysystem-db::::,1:mysystem-db-node-1.mysystem-db::::,2:mysystem-db-node-2.mysystem-db::::"
+

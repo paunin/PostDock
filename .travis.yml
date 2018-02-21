@@ -7,8 +7,11 @@ jobs:
   include:
     - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.5_pgpool-3.3_barman-2.3 ./tests/run.sh
     - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.5_pgpool-3.6_barman-2.3 ./tests/run.sh
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.5_pgpool-3.7_barman-2.3 ./tests/run.sh
     - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.6_pgpool-3.3_barman-2.3 ./tests/run.sh
     - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.6_pgpool-3.6_barman-2.3 ./tests/run.sh
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.6_pgpool-3.7_barman-2.3 ./tests/run.sh
     - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-10.2_pgpool-3.3_barman-2.3 ./tests/run.sh
     - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-10.2_pgpool-3.6_barman-2.3 ./tests/run.sh
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-10.2_pgpool-3.7_barman-2.3 ./tests/run.sh
     - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=latest ./tests/run.sh

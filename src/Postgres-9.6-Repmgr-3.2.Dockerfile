@@ -1,7 +1,7 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Sat Feb 17 16:37:30 +07 2018              ##
+##               BUILD_NUMBER=Thu Feb 22 16:50:58 +07 2018              ##
 ##########################################################################
 
 FROM postgres:9.6
@@ -36,11 +36,13 @@ ENV REPLICATION_PRIMARY_PORT 5432
 # Host for replication (REQUIRED, NO DEFAULT)
 # ENV REPLICATION_PRIMARY_HOST
 
-# Integer number of node (REQUIRED, NO DEFAULT)
+# Integer number of node (NO DEFAULT) 
 # ENV NODE_ID 1
+                # if not defined, will be generated from the last number in NODE_NAME variable
+                # e.g. NODE_NAME=node-1 will give node identifier 1002
 
 # Node name (REQUIRED, NO DEFAULT)
-# ENV NODE_NAME node1
+# ENV NODE_NAME node-1
 
 # (default: `hostname` of the node)
 # ENV CLUSTER_NODE_NETWORK_NAME null

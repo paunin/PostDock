@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: db-data-mysystem-db-node-0
+  labels:
+    system: mysystem-db
+    node: node-0
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 100Gi
+  persistentVolumeReclaimPolicy: Delete
+  hostPath:
+    path: /tmp/db-data-mysystem-db-node-0
+  # awsElasticBlockStore:
+  #   fsType: ext4
+  #   volumeID: vol-xxxxxxx

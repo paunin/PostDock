@@ -8,6 +8,7 @@
 
 * Create namespace by `kubectl create -f ./namespace/`
 * Create configs: `kubectl create -f ./configs/`
+* Create services `kubectl create -f ./volumes/`
 * Create services `kubectl create -f ./services/`
 * Create tnodes `kubectl create -f ./nodes/`
 * Create pgpool `kubectl create -f ./pgpool/`
@@ -24,19 +25,5 @@ kubectl get pod | grep pgpool | awk '{print $1 }' | while read pod; do echo "$po
 
 ## Persistence in the cluster (AWS example)
 
-Instead of having `emptyDir` in configurations for nodes in files `nodes/*.yml` you should uncomment lines in the end of the files
-and also setup claims and volumes by command `kubectl create -f ./volumes/` right after creation of namespace
-
-## Version  k8s <1.5
-For k8s <1.5 you might want to use `petset` objects instead of `StatefulSet` - so simply replace block:
-```
-apiVersion: apps/v1beta1
-kind: StatefulSet
-```
-by block:
-```
-apiVersion: apps/v1alpha1
-kind: PetSet
-```
-in all files `nodes/*.yml`
-
+* **Example1:** Modify volume objects in the files `./volumes/volume-*.yml` and un-comment section about EBS
+* **Example2:** Instead of having `emptyDir` in configurations for nodes in files `nodes/*.yml` you should un-comment lines in the end of the files

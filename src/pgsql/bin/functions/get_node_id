@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+if [ "$NODE_ID" != "" ]; then
+    echo "$NODE_ID"
+else
+    NUM="${NODE_NAME##*-}"
+    if [ "$NUM" != "" ]; then
+        NUM=$((NUM+1000))
+        echo "$NUM"
+    fi
+fi

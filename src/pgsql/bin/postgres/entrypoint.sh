@@ -14,6 +14,8 @@ if ! has_pg_cluster; then
     rm -rf $PGDATA/*
 fi
 
+
+export CURRENT_REPLICATION_PRIMARY_HOST=""
 CURRENT_MASTER=`cluster_master || echo ''`
 echo ">>> Auto-detected master name: '$CURRENT_MASTER'"
 
@@ -22,7 +24,6 @@ if [ -f "$MASTER_ROLE_LOCK_FILE_NAME" ]; then
 
     if [[ "$CURRENT_MASTER" == "" ]]; then
         echo ">>> Can not find new master. Will keep starting postgres normally..."
-        export CURRENT_REPLICATION_PRIMARY_HOST=""
     else
         echo ">>> Current master is $CURRENT_MASTER. Will clone/rewind it and act as a standby node..."
         rm -f "$MASTER_ROLE_LOCK_FILE_NAME"
@@ -31,7 +32,9 @@ if [ -f "$MASTER_ROLE_LOCK_FILE_NAME" ]; then
     fi
 else
     if [[ "$CURRENT_MASTER" == "" ]]; then
-        export CURRENT_REPLICATION_PRIMARY_HOST="$REPLICATION_PRIMARY_HOST"
+        if [[ "$REPLICATION_PRIMARY_HOST" != "$CLUSTER_NODE_NETWORK_NAME" ]]; then
+            export CURRENT_REPLICATION_PRIMARY_HOST="$REPLICATION_PRIMARY_HOST"
+        fi
     else
         export CURRENT_REPLICATION_PRIMARY_HOST="$CURRENT_MASTER"
     fi

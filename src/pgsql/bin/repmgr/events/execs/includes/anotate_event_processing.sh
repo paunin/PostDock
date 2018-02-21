@@ -9,7 +9,7 @@ if [[ "$3" != "1" ]];then
     exit 1
 fi
 
-if [[ "$1" != "$NODE_ID" ]]; then
+if [[ "$1" != "$(get_node_id)" ]]; then
     echo "$BAR The event did not happen on me! No need to do anything."
     exit 1
 fi
