@@ -38,8 +38,6 @@ spec:
               value: "node5"
             - name: "CLUSTER_NODE_NETWORK_NAME"
               value: "mysystem-db-node5-service"
-            - name: "REPLICATION_UPSTREAM_NODE_ID"
-              value: "4"
 
             # Cluster configs
             - name: "CLUSTER_NAME"

@@ -1,7 +1,7 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Sat Feb 17 16:37:30 +07 2018              ##
+##               BUILD_NUMBER=Thu Feb 22 16:50:58 +07 2018              ##
 ##########################################################################
 
 version: '2'
@@ -23,10 +23,13 @@ services:
             context: ../src
             dockerfile: Postgres-9.5-Repmgr-3.2.Dockerfile
         environment:
-            PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
-            NODE_ID: 1 # Integer number of node
+            NODE_ID: 1 # Integer number of node (not required if can be extracted from NODE_NAME var, e.g. node-45 => 1045)
             NODE_NAME: node1 # Node name
             CLUSTER_NODE_NETWORK_NAME: pgmaster # (default: hostname of the node)
+            
+            PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
+            REPLICATION_PRIMARY_HOST: pgmaster # That should be ignored on the same node
+            
             NODE_PRIORITY: 100  # (default: 100)
             SSH_ENABLE: 1
             #database we want to use for application
@@ -57,11 +60,12 @@ services:
             context: ../src
             dockerfile: Postgres-9.5-Repmgr-3.2.Dockerfile
         environment:
-            PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
-            REPLICATION_PRIMARY_HOST: pgmaster
             NODE_ID: 2
             NODE_NAME: node2
             CLUSTER_NODE_NETWORK_NAME: pgslave1 # (default: hostname of the node)
+            
+            PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
+            REPLICATION_PRIMARY_HOST: pgmaster
             CLEAN_OVER_REWIND: 1
             CONFIGS: "max_replication_slots:10" #some overrides
         ports:
@@ -79,10 +83,11 @@ services:
             context: ../src
             dockerfile: Postgres-9.5-Repmgr-3.2.Dockerfile
         environment:
-            REPLICATION_PRIMARY_HOST: pgslave1 # I want to have cascade Streeming replication
             NODE_ID: 3
             NODE_NAME: node3
             CLUSTER_NODE_NETWORK_NAME: pgslave2 # (default: hostname of the node)
+
+            REPLICATION_PRIMARY_HOST: pgslave1 # I want to have cascade Streeming replication
             #USE_REPLICATION_SLOTS: 0
         ports:
             - 5442:5432
@@ -99,11 +104,12 @@ services:
             context: ../src
             dockerfile: Postgres-9.5-Repmgr-3.2.Dockerfile
         environment:
-            PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
-            REPLICATION_PRIMARY_HOST: pgmaster
             NODE_ID: 4
             NODE_NAME: node4
             CLUSTER_NODE_NETWORK_NAME: pgslave3 # (default: hostname of the node)
+
+            PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
+            REPLICATION_PRIMARY_HOST: pgmaster
             NODE_PRIORITY: 200  # (default: 100)
             CLEAN_OVER_REWIND: 1
         ports:
@@ -120,10 +126,11 @@ services:
             context: ../src
             dockerfile: Postgres-9.5-Repmgr-3.2.Dockerfile
         environment:
-            REPLICATION_PRIMARY_HOST: pgslave3
             NODE_ID: 5
             NODE_NAME: node5
             CLUSTER_NODE_NETWORK_NAME: pgslave4 # (default: hostname of the node)
+
+            REPLICATION_PRIMARY_HOST: pgslave3
             #USE_REPLICATION_SLOTS: 0
         ports:
             - 5444:5432
@@ -204,8 +211,7 @@ services:
           context: ../src/
           dockerfile: Postgres-9.5-Repmgr-3.2.Dockerfile
         environment:
-          NODE_ID: 102 # Integer number of node
-          NODE_NAME: node102 # Node name
+          NODE_NAME: node-102 # Node name
           CLUSTER_NODE_NETWORK_NAME: postgres_conf # (default: hostname of the node)
           POSTGRES_PASSWORD: monkey_pass
           POSTGRES_USER: monkey_user

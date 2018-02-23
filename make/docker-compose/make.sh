@@ -3,7 +3,7 @@ echo ">>> Making docker-compose"
 FILE_FROM='./src/includes/docker-compose/docker-compose.yml'
 for POSTGRES_VERSION in 9.5 9.6 10.2; do
     for REPMGR_VERSION in 3.2; do
-        for PGPOOL_VERSION in 3.3 3.6; do
+        for PGPOOL_VERSION in 3.3 3.6 3.7; do
             for BARMAN_VERSION in 2.3; do
                 # For postgres 9.5 we can use client 9.6
                 if [[ "$POSTGRES_VERSION" = "9.5" ]];then 

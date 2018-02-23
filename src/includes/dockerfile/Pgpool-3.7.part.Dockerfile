@@ -20,12 +20,7 @@ RUN  wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key a
      sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" >> /etc/apt/sources.list.d/pgdg.list' && \
      apt-get update
 
-RUN  apt-get install -y libffi-dev libssl-dev postgresql-client-{{ PG_CLIENT_VERSION }}={{ PG_CLIENT_PACKAGE_VERSION }}\* openssh-server
-
-RUN TEMP_DEB="$(mktemp)" && \
-    wget -O "$TEMP_DEB" "http://atalia.postgresql.org/morgue/p/pgpool2/pgpool2_{{ PGPOOL_PACKAGE_VERSION }}_amd64.deb" && \
-    (dpkg -i "$TEMP_DEB" || apt-get install -y -f) && rm -f "$TEMP_DEB"
-
+RUN  apt-get install -y libffi-dev libssl-dev postgresql-client-{{ PG_CLIENT_VERSION }}={{ PG_CLIENT_PACKAGE_VERSION }}\* libpgpool0={{ PGPOOL_PACKAGE_VERSION }}\* pgpool2={{ PGPOOL_PACKAGE_VERSION }}\* openssh-server
 
 RUN  wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
      tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
