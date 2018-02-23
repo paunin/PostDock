@@ -1,1 +1,1 @@
-Pgpool-3.3-3.6.part.Dockerfile
+Pgpool-3.3-3.7.part.Dockerfile

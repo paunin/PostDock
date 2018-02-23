@@ -1,7 +1,7 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Thu Feb 22 16:50:58 +07 2018              ##
+##               BUILD_NUMBER=Fri Feb 23 10:37:06 +07 2018              ##
 ##########################################################################
 
 FROM debian:jessie
@@ -28,10 +28,10 @@ RUN  wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key a
 
 RUN  apt-get install -y libffi-dev libssl-dev postgresql-client-9.6=9.6\* openssh-server
 
+
 RUN TEMP_DEB="$(mktemp)" && \
     wget -O "$TEMP_DEB" "http://atalia.postgresql.org/morgue/p/pgpool2/pgpool2_3.6.7-1.pgdg90+1_amd64.deb" && \
     (dpkg -i "$TEMP_DEB" || apt-get install -y -f) && rm -f "$TEMP_DEB"
-
 
 RUN  wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
      tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
