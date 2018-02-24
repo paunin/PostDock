@@ -232,7 +232,7 @@ services:
             CONFIGS_ASSIGNMENT_SYMBOL: ")"
         ports:
             - 5440:5432
-            - 9898:9898 # PCP
+            - 9897:9898 # PCP
     pgmaster2:
         build:
             context: ../src

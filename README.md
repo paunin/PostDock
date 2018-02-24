@@ -6,10 +6,8 @@ PostgreSQL cluster with **High Availability** and **Self Healing** features for 
 
 - [Info](#info)
   * [Features](#features)
-  * [Publications](#publications)
-  * [What's in the box](#what-s-in-the-box)
+  * [What's in the box](#whats-in-the-box)
   * [Docker images tags convention](#docker-images-tags-convention)
-- [Schema of the example cluster](#schema-of-the-example-cluster)
 - [Start cluster with docker-compose](#start-cluster-with-docker-compose)
 - [Start cluster in Kubernetes](#start-cluster-in-kubernetes)
 - [Adaptive mode](#adaptive-mode)
@@ -24,6 +22,7 @@ PostgreSQL cluster with **High Availability** and **Self Healing** features for 
 - [Backups and recovery](#backups-and-recovery)
 - [Health-checks](#health-checks)
 - [Useful commands](#useful-commands)
+- [Publications](#publications)
 - [Scenarios](#scenarios)
 - [How to contribute](#how-to-contribute)
 - [FAQ](#faq)
@@ -34,7 +33,6 @@ PostgreSQL cluster with **High Availability** and **Self Healing** features for 
 [![Build Status](https://travis-ci.org/paunin/PostDock.svg?branch=master)](https://travis-ci.org/paunin/PostDock)
 
 ## Info
-
 ### Features
 * High Availability
 * Self Healing and Automated Reconstruction
@@ -44,10 +42,6 @@ PostgreSQL cluster with **High Availability** and **Self Healing** features for 
 * Incremental backup (with optional zero data loss, [RPO=0](https://en.wikipedia.org/wiki/Recovery_point_objective))
 * Semi-automated Point In Time Recovery Procedure
 * Monitoring exporters for all the components(nodes, balancers, backup)
-
-### Publications
-* [Article on Medium.com](https://medium.com/@dpaunin/postgresql-cluster-into-kubernetes-cluster-f353cde212de)
-* [Статья на habr-e](https://habrahabr.ru/post/301370/)
 
 ### What's in the box
 [This project](https://github.com/paunin/postgres-docker-cluster) includes:
@@ -79,7 +73,11 @@ Aliases are available **(not recommended to use for production)**:
 * `postdock/<component>:edge` - refers to build of postdock from master with the latest version the component, and all sub-components (e.g. `postdock/postgres:edge`)
 
 
-## Schema of the example cluster
+## Start cluster with docker-compose
+
+To start cluster run it as normal `docker-compose` application `docker-compose -f ./docker-compose/latest.yml up -d pgmaster pgslave1 pgslave2 pgslave3 pgslave4 pgpool backup`
+
+Schema of the example cluster:
 
 ```
 pgmaster (primary node1)  --|
@@ -91,43 +89,12 @@ pgmaster (primary node1)  --|
 
 Each `postgres` node (`pgmaster`, `pgslaveX`) is managed by `repmgr/repmgrd`. It allows to use automatic `failover` and check cluster status.
 
-
-## Start cluster with docker-compose
-
-To start cluster run it as normal `docker-compose` application `docker-compose -f ./docker-compose/latest.yml up -d`
-
 Please check comments for each `ENV` variable in [./docker-compose/latest.yml](./docker-compose/latest.yml) file to understand parameter for each cluster node
 
 
 ## Start cluster in Kubernetes
 
-To make it easier repository contains services' objects under `k8s` dir.
-Setup `PostgreSQL` cluster following the steps in [the example](./k8s/README.md)
-It also has information how to check cluster state, so you will be able to see something like this:
-
-From any DB node pod:
-```
-Role      | Name  | Upstream | Connection String
-----------+-------|----------|---------------------------------------------------------------------------------------------------------------------
-* master  | node1 |          | user=replica_user password=replica_pass host=mysystem-db-node1-service dbname=replica_db port=5432 connect_timeout=2
-  standby | node4 | node1    | user=replica_user password=replica_pass host=mysystem-db-node4-service dbname=replica_db port=5432 connect_timeout=2
-  standby | node2 | node1    | user=replica_user password=replica_pass host=mysystem-db-node2-service dbname=replica_db port=5432 connect_timeout=2
-  standby | node3 | node2    | user=replica_user password=replica_pass host=mysystem-db-node3-service dbname=replica_db port=5432 connect_timeout=2
-  standby | node5 | node4    | user=replica_user password=replica_pass host=mysystem-db-node5-service dbname=replica_db port=5432 connect_timeout=2
-```
-
-From any Pgpool pod:
-```
- node_id |         hostname          | port | status | lb_weight |  role   | select_cnt | load_balance_node | replication_delay
----------+---------------------------+------+--------+-----------+---------+------------+-------------------+-------------------
- 0       | mysystem-db-node1-service | 5432 | up     | 0.200000  | primary | 0          | false             | 0
- 1       | mysystem-db-node2-service | 5432 | up     | 0.200000  | standby | 0          | false             | 0
- 2       | mysystem-db-node3-service | 5432 | up     | 0.200000  | standby | 0          | false             | 0
- 3       | mysystem-db-node4-service | 5432 | up     | 0.200000  | standby | 0          | false             | 0
- 4       | mysystem-db-node5-service | 5432 | up     | 0.200000  | standby | 0          | true              | 0
-(5 rows)
-
-```
+To make it easier repository contains services' objects under `k8s` dir. Setup `PostgreSQL` cluster following the steps in [the example](./k8s/README.md). It also has information how to check cluster state
 
 ## Configuring the cluster
 
@@ -225,7 +192,7 @@ Barman exposes several metrics on `:8080/metrics` for more information see [Barm
 
 ## Health-checks
 
-To make sure you cluster works as expected without 'split-brain' or other issues, you have to setup health-checks and stop container if any health-check returns non-zero result.
+To make sure you cluster works as expected without 'split-brain' or other issues, you have to setup health-checks and stop container if any health-check returns non-zero result. That is really useful when you use Kubernetes which has livenessProbe (check how to use it in [the example](./k8s/example2-single-statefulset/nodes/node.yml)) 
 
 * Postgres containers:
     * `/usr/local/bin/cluster/healthcheck/is_major_master.sh` - detect if node acts as a 'false'-master and there is another master - with more standbys
@@ -233,17 +200,7 @@ To make sure you cluster works as expected without 'split-brain' or other issues
     * `/usr/local/bin/pgpool/has_enough_backends.sh [REQUIRED_NUM_OF_BACKENDS, default=$REQUIRE_MIN_BACKENDS]` - check if there are enough backend behind `pgpool`
     * `/usr/local/bin/pgpool/has_write_node.sh` - check if one of the backend can be used as a master with write access
 
-Abnormal but possible situation in cluster:
-```
-Role      | Name  | Upstream | Connection String
-----------+-------|----------|---------------------------------------------------------------------------------------------------------------------
-* master  | node1 |          | user=replica_user password=replica_pass host=mysystem-db-node1-service dbname=replica_db port=5432 connect_timeout=2
-  standby | node4 | node2    | user=replica_user password=replica_pass host=mysystem-db-node4-service dbname=replica_db port=5432 connect_timeout=2
-* master  | node2 |          | user=replica_user password=replica_pass host=mysystem-db-node2-service dbname=replica_db port=5432 connect_timeout=2
-  standby | node3 | node2    | user=replica_user password=replica_pass host=mysystem-db-node3-service dbname=replica_db port=5432 connect_timeout=2
-  standby | node5 | node4    | user=replica_user password=replica_pass host=mysystem-db-node5-service dbname=replica_db port=5432 connect_timeout=2
 
-```
 
 ## Useful commands
 
@@ -260,6 +217,9 @@ Any command might be wrapped with `docker-compose` or `kubectl` - `docker-compos
 
 Check [the document](./doc/FLOWS.md) to understand different cases of failover, split-brain resistance and recovery
 
+## Publications
+* [Article on Medium.com](https://medium.com/@dpaunin/postgresql-cluster-into-kubernetes-cluster-f353cde212de)
+* [Статья на habr-e](https://habrahabr.ru/post/301370/)
 
 ## How to contribute
 

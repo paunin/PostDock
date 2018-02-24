@@ -18,7 +18,15 @@ spec:
     spec:
       containers:
         - name: db-node
-          image: postdock/postgres:latest-postgres95
+          image: postdock/postgres:latest-postgres102-repmgr32
+          livenessProbe:
+            exec:
+              command: ['bash', '-c', '/usr/local/bin/cluster/healthcheck/is_major_master.sh']
+            initialDelaySeconds: 600
+            timeoutSeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            failureThreshold: 3
           imagePullPolicy: Always
           resources:
             requests:
@@ -32,8 +40,10 @@ spec:
             
             - name: "REPMGR_WAIT_POSTGRES_START_TIMEOUT"
               value: "600"
+            - name: "REPLICATION_PRIMARY_HOST"
+              value: "mysystem-db-node-0.mysystem-db"
             - name: "PARTNER_NODES"
-              value: "db-node-0.mysystem-db,db-node-1.mysystem-db,db-node-2.mysystem-db"
+              value: "mysystem-db-node-0.mysystem-db,mysystem-db-node-1.mysystem-db,mysystem-db-node-2.mysystem-db"
             - name: "NODE_NAME"
               value: "$(MY_POD_NAME)"
             - name: "CLUSTER_NODE_NETWORK_NAME"

@@ -1,7 +1,7 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Fri Feb 23 10:37:06 +07 2018              ##
+##               BUILD_NUMBER=Sat 24 Feb 2018 19:03:25 +07              ##
 ##########################################################################
 
 version: '2'
@@ -238,7 +238,7 @@ services:
             CONFIGS_ASSIGNMENT_SYMBOL: ")"
         ports:
             - 5440:5432
-            - 9898:9898 # PCP
+            - 9897:9898 # PCP
     pgmaster2:
         build:
             context: ../src
