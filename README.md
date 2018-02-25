@@ -45,9 +45,10 @@ PostgreSQL cluster with **High Availability** and **Self Healing** features for 
 
 ### What's in the box
 [This project](https://github.com/paunin/postgres-docker-cluster) includes:
-* Dockerfiles for `postgresql` cluster
+* Dockerfiles for `postgresql` cluster and backup system
     * [postgresql](./src/Postgres-latest.Dockerfile)
     * [pgpool](./src/Pgpool-latest.Dockerfile)
+    * [barman](./src/Barman-latest.Dockerfile)
 * Examples of usage(suitable for production environment as architecture has fault protection with auto failover)
     * example of [docker-compose](./docker-compose/latest.yml) file to start this cluster.
     * directory [k8s](./k8s) contains information for building this cluster in Kubernetes
