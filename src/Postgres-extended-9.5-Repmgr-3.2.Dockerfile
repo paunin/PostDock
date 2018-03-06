@@ -1,7 +1,7 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Sat 24 Feb 2018 19:03:25 +07              ##
+##               BUILD_NUMBER=Tue Mar  6 12:11:00 +08 2018              ##
 ##########################################################################
 
 FROM postgres:9.5
@@ -125,6 +125,6 @@ VOLUME /var/lib/postgresql/data
 USER root
 
 CMD ["/usr/local/bin/cluster/entrypoint.sh"]
-ARG EXTENSIONS="pgosm postgis nominatim"
+ARG EXTENSIONS="pglogical pgosm postgis nominatim"
 COPY ./pgsql/extensions/bin/ /extensions_installer/
 RUN chmod -R +x /extensions_installer/ && bash /extensions_installer/install.sh "$EXTENSIONS"
