@@ -199,7 +199,8 @@ services:
           POSTGRES_USER: monkey_user
           POSTGRES_DB: monkey_db
           CLEAN_OVER_REWIND: 0
-          CONFIGS: "listen_addresses:'*'"
+          CONFIGS_DELIMITER_SYMBOL: ;
+          CONFIGS: "listen_addresses:'*';shared_preload_libraries:'pglogical'"
     postgres_conf:
         build:
           context: ../src/

@@ -14,21 +14,27 @@ touch $REPMGR_CONFIG_FILE
 # master_reponse_timeout    | async_query_timeout
 
 if [ "$REPMGR_MAJOR" == "3" ]; then
-    PRELOAD_LIBS_CONFIG="shared_preload_libraries${CONFIGS_ASSIGNMENT_SYMBOL}repmgr_funcs"
+    PRELOAD_REPMGR_LIB="repmgr_funcs"
     # deprecated for v4 params
     echo "cluster=$CLUSTER_NAME" >> $REPMGR_CONFIG_FILE
 elif [ "$REPMGR_MAJOR" == "4" ]; then   
-    PRELOAD_LIBS_CONFIG="shared_preload_libraries${CONFIGS_ASSIGNMENT_SYMBOL}repmgr"
+    PRELOAD_REPMGR_LIB="repmgr"
     # new required params
     echo "degraded_monitoring_timeout=$REPMGR_DEGRADED_MONITORING_TIMEOUT" >> $REPMGR_CONFIG_FILE
     echo "data_directory=$PGDATA" >> $REPMGR_CONFIG_FILE
     echo "async_query_timeout=$MASTER_RESPONSE_TIMEOUT" >> $REPMGR_CONFIG_FILE
 fi
 
-if [ "$CONFIGS" != "" ]; then
-    DELIMITER="${CONFIGS_DELIMITER_SYMBOL}"
+if [[ `echo $CONFIGS | grep shared_preload_libraries | wc -l | tr -d ' '` == "0" ]]; then
+    if [ "$CONFIGS" != "" ]; then
+        DELIMITER="${CONFIGS_DELIMITER_SYMBOL}"
+    fi
+    NEW_CONFIGS="${CONFIGS}${DELIMITER}shared_preload_libraries${CONFIGS_ASSIGNMENT_SYMBOL}'${PRELOAD_REPMGR_LIB}'"
+else
+    NEW_CONFIGS=`echo $CONFIGS | sed -e "s/\(shared_preload_libraries${CONFIGS_ASSIGNMENT_SYMBOL}'\{0,1\}\)/\1${PRELOAD_REPMGR_LIB},/g"`
 fi
-export CONFIGS="${CONFIGS}${DELIMITER}${PRELOAD_LIBS_CONFIG}"
+
+export CONFIGS="$NEW_CONFIGS"
 
 function set_repmgr_upstream_node {
     if [ "$REPMGR_MAJOR" == "3" ]; then
