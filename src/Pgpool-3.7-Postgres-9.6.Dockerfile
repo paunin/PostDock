@@ -1,7 +1,7 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Tue Mar  6 21:45:29 +08 2018              ##
+##               BUILD_NUMBER=Tue Mar  6 22:26:28 +08 2018              ##
 ##########################################################################
 
 FROM debian:jessie
@@ -26,7 +26,12 @@ RUN  wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key a
      sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" >> /etc/apt/sources.list.d/pgdg.list' && \
      apt-get update
 
-RUN  apt-get install -y libffi-dev libssl-dev postgresql-client-9.6=9.6\* openssh-server
+RUN  apt-get install -y libffi-dev libssl-dev openssh-server
+
+
+RUN TEMP_DEB="$(mktemp)" && \
+    wget -O "$TEMP_DEB"  "http://atalia.postgresql.org/morgue/p/postgresql-9.6/postgresql-client-9.6_9.6.7-1.pgdg80+1_amd64.deb" && \
+    (dpkg -i "$TEMP_DEB" || apt-get install -y -f) && rm -f "$TEMP_DEB"
 
 RUN  apt-get install -y libpgpool0=3.7\* pgpool2=3.7\* 
 
