@@ -20,7 +20,15 @@ RUN  wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key a
      sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" >> /etc/apt/sources.list.d/pgdg.list' && \
      apt-get update
 
-RUN  apt-get install -y libffi-dev libssl-dev postgresql-client-{{ PG_CLIENT_VERSION }}={{ PG_CLIENT_PACKAGE_VERSION }}\* openssh-server
+RUN  apt-get install -y libffi-dev libssl-dev openssh-server
+
+{{ #PG_CLIENT_LATEST }}
+RUN  apt-get install -y postgresql-client-{{ PG_CLIENT_VERSION }}={{ PG_CLIENT_PACKAGE_VERSION }}\* 
+{{ /PG_CLIENT_LATEST }}{{ ^PG_CLIENT_LATEST }}
+RUN TEMP_DEB="$(mktemp)" && \
+    wget -O "$TEMP_DEB"  "http://atalia.postgresql.org/morgue/p/postgresql-{{ PG_CLIENT_VERSION }}/postgresql-client-{{ PG_CLIENT_VERSION }}_{{ PG_CLIENT_PACKAGE_VERSION }}_amd64.deb" && \
+    (dpkg -i "$TEMP_DEB" || apt-get install -y -f) && rm -f "$TEMP_DEB"
+{{ /PG_CLIENT_LATEST }}
 
 {{ #PGPOOL_LATEST }}
 RUN  apt-get install -y libpgpool0={{ PGPOOL_PACKAGE_VERSION }}\* pgpool2={{ PGPOOL_PACKAGE_VERSION }}\* 
