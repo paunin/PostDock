@@ -1,7 +1,7 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Tue Mar  6 12:11:00 +08 2018              ##
+##               BUILD_NUMBER=Tue Mar  6 21:45:29 +08 2018              ##
 ##########################################################################
 
 version: '2'
@@ -205,7 +205,8 @@ services:
           POSTGRES_USER: monkey_user
           POSTGRES_DB: monkey_db
           CLEAN_OVER_REWIND: 0
-          CONFIGS: "listen_addresses:'*'"
+          CONFIGS_DELIMITER_SYMBOL: ;
+          CONFIGS: "listen_addresses:'*';shared_preload_libraries:'pglogical'"
     postgres_conf:
         build:
           context: ../src/

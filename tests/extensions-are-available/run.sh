@@ -4,7 +4,7 @@ docker-compose up -d postgres_ext
 sleep 30
 set -e
 
-for EXTENSION in postgis;
+for EXTENSION in postgis pglogical;
 do
     echo ">>> Checking now: $EXTENSION"
     docker-compose exec -T postgres_ext bash -c "gosu postgres psql -c 'CREATE EXTENSION $EXTENSION'"
