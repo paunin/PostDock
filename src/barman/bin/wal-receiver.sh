@@ -5,7 +5,7 @@ SLOTS_COUNT=`barman show-server $UPSTREAM_NAME | grep "replication_slot: Record(
 if [ "$SLOTS_COUNT" -gt "0" ]; then 
 	echo "Looks like replication slot already exists"
 else 
-	echo "Creating replication slot: $REPLICATION_SLOT_NAM"
+	echo "Creating replication slot: $REPLICATION_SLOT_NAME"
 	barman receive-wal --create-slot $UPSTREAM_NAME
 fi
 
