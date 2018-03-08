@@ -9,5 +9,5 @@ make libpgosm.so
 cp libpgosm.so /usr/lib/postgresql/$PG_MAJOR/lib
 
 apt-get remove -y make build-essential
-
+cd /
 rm -rf /tmp/openstreetmap-website-master/
