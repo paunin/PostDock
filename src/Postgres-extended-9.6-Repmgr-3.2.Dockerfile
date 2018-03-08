@@ -1,7 +1,7 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Thu Mar  8 13:02:28 +07 2018              ##
+##               BUILD_NUMBER=Thu Mar  8 17:30:10 +07 2018              ##
 ##########################################################################
 
 FROM postgres:9.6
@@ -125,6 +125,6 @@ VOLUME /var/lib/postgresql/data
 USER root
 
 CMD ["/usr/local/bin/cluster/entrypoint.sh"]
-ARG EXTENSIONS="pglogical pgosm postgis pgl_ddl_deploy"
+ARG EXTENSIONS="pg_repack pglogical pgosm postgis pgl_ddl_deploy"
 COPY ./pgsql/extensions/bin/ /extensions_installer/
 RUN chmod -R +x /extensions_installer/ && bash /extensions_installer/install.sh "$EXTENSIONS"
