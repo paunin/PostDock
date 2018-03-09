@@ -1,0 +1,12 @@
+sudo: required
+
+services:
+  - docker
+
+jobs:
+  include:
+{{#TEST_COMBINATIONS}}
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS={{.}} ./tests/run.sh
+      env:
+        - NAME = {{.}}
+{{/TEST_COMBINATIONS}}

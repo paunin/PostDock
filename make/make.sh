@@ -23,7 +23,7 @@ function template {
     flush $TEMPLATE_FILE_TO
 
     echo ">>>>>> $CONFIGS"
-    eval "$CONFIGS" ./tmp/mo $TEMPLATE_FILE_FROM >> $TEMPLATE_FILE_TO
+    eval "$CONFIGS" mo $TEMPLATE_FILE_FROM >> $TEMPLATE_FILE_TO
 }
     
 # Getting templates processor
@@ -32,9 +32,9 @@ if [ ! -f "tmp/mo" ]; then
     mkdir tmp
     curl -sSL https://git.io/get-mo > tmp/mo
     chmod +x tmp/mo
-    . ./tmp/mo
 fi
 
+. ./tmp/mo
 # Making
 for SYSTEM in `find ./make/* -maxdepth 1 -type d`; do
     echo "> Processing $SYSTEM"
