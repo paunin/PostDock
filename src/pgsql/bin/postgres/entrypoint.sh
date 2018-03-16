@@ -12,6 +12,8 @@ chown postgres:postgres /home/postgres/.pgpass
 if ! has_pg_cluster; then
     echo ">>> Cleaning data folder which might have some garbage..."
     rm -rf $PGDATA/*
+else
+    postgres_configure
 fi
 
 
