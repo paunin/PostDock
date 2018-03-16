@@ -8,7 +8,7 @@ if [ "$FORCE_RECONFIGURE" == 1 ] || [ ! -f $CONFIG_FILE ]; then
     echo ">>>>>> Config file was replaced with standard one!"
     cp -f /var/cluster_configs/postgresql.conf $CONFIG_FILE
 else
-    echo ">>>>>> Will add configs to exists file"
+    echo ">>>>>> Will add configs to the exists file"
 fi
 
 IFS=$CONFIGS_DELIMITER_SYMBOL read -ra CONFIG_PAIRS <<< "$CONFIGS"
