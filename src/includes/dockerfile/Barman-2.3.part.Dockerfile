@@ -19,7 +19,7 @@ RUN  wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key a
      apt-get install -y libffi-dev libssl-dev openssh-server
 
 {{ #PG_CLIENT_LATEST }}
-RUN  apt-get install -y postgresql-client-{{ PG_CLIENT_VERSION }}={{ PG_CLIENT_PACKAGE_VERSION }}\* 
+RUN  apt-get install -y postgresql-client-{{ PG_CLIENT_VERSION }}
 {{ /PG_CLIENT_LATEST }}{{ ^PG_CLIENT_LATEST }}
 RUN TEMP_DEB="$(mktemp)" && \
     wget -O "$TEMP_DEB"  "http://atalia.postgresql.org/morgue/p/postgresql-{{ PG_CLIENT_VERSION }}/postgresql-client-{{ PG_CLIENT_VERSION }}_{{ PG_CLIENT_PACKAGE_VERSION }}_amd64.deb" && \

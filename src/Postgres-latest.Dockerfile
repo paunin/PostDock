@@ -1,1 +1,1 @@
-Postgres-10.2-Repmgr-3.2.Dockerfile
+Postgres-10-Repmgr-3.2.Dockerfile

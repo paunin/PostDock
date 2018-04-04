@@ -1,1 +1,1 @@
-Pgpool-3.7-Postgres-10.2.Dockerfile
+Pgpool-3.7-Postgres-10.Dockerfile

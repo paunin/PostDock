@@ -1,10 +1,10 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Fri Mar  9 17:48:14 +07 2018              ##
+##               BUILD_NUMBER=Thu Apr  5 01:24:19 CST 2018              ##
 ##########################################################################
 
-FROM postgres:10.2
+FROM postgres:10
 
 RUN apt-get update --fix-missing && \
     apt-get install -y postgresql-server-dev-$PG_MAJOR wget openssh-server barman-cli

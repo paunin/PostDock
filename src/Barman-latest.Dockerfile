@@ -1,1 +1,1 @@
-Barman-2.3-Postgres-10.2.Dockerfile
+Barman-2.3-Postgres-10.Dockerfile

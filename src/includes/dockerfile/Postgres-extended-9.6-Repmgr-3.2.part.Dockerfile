@@ -1,1 +1,1 @@
-Postgres-extended-9.5-10.2-Repmgr-3.2.part.Dockerfile
+Postgres-extended-9.5-10-Repmgr-3.2.part.Dockerfile
