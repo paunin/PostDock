@@ -1,7 +1,7 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Thu Apr  5 01:24:19 CST 2018              ##
+##               BUILD_NUMBER=Sun Apr  8 00:03:15 CST 2018              ##
 ##########################################################################
 
 FROM golang:1.8-jessie
@@ -26,7 +26,7 @@ RUN  wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key a
 
 RUN  apt-get install -y postgresql-client-10
 
-RUN  apt-get install -y barman=2.3-2.pgdg80+1
+RUN  apt-get install -y barman=2.3\*
 
 RUN apt-get -y install cron
 ADD barman/crontab /etc/cron.d/barman

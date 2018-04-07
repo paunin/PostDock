@@ -31,7 +31,7 @@ RUN TEMP_DEB="$(mktemp)" && \
 {{ /PG_CLIENT_LATEST }}
 
 {{ #PGPOOL_LATEST }}
-RUN  apt-get install -y libpgpool0 pgpool2
+RUN  apt-get install -y libpgpool0={{ PGPOOL_VERSION }}\* pgpool2={{ PGPOOL_VERSION }}\*
 {{ /PGPOOL_LATEST }}{{ ^PGPOOL_LATEST }}
 RUN TEMP_DEB="$(mktemp)" && \
     wget -O "$TEMP_DEB" "http://atalia.postgresql.org/morgue/p/pgpool2/pgpool2_{{ PGPOOL_PACKAGE_VERSION }}_amd64.deb" && \

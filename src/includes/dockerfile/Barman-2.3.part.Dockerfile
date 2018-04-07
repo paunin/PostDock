@@ -26,7 +26,7 @@ RUN TEMP_DEB="$(mktemp)" && \
     (dpkg -i "$TEMP_DEB" || apt-get install -y -f) && rm -f "$TEMP_DEB"
 {{ /PG_CLIENT_LATEST }}
 
-RUN  apt-get install -y barman={{ BARMAN_PACKAGE_VERSION }}
+RUN  apt-get install -y barman={{ BARMAN_VERSION }}\*
 
 RUN apt-get -y install cron
 ADD barman/crontab /etc/cron.d/barman

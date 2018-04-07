@@ -1,7 +1,7 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Thu Apr  5 01:24:19 CST 2018              ##
+##               BUILD_NUMBER=Sun Apr  8 00:03:15 CST 2018              ##
 ##########################################################################
 
 FROM debian:jessie
@@ -30,7 +30,7 @@ RUN  apt-get install -y libffi-dev libssl-dev openssh-server
 
 RUN  apt-get install -y postgresql-client-9.6
 
-RUN  apt-get install -y libpgpool0 pgpool2
+RUN  apt-get install -y libpgpool0=3.7\* pgpool2=3.7\*
 
 RUN  wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
      tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
