@@ -98,3 +98,4 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: db-data
+        
