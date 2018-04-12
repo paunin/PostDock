@@ -92,6 +92,10 @@ spec:
                   key: app.db.cluster.replication.password
           ports:
             - containerPort: 5432
+          volumeMounts:
+            - name: db-data
+              mountPath: /var/lib/postgresql/data
   volumeClaimTemplates:
     - metadata:
         name: db-data
+        
