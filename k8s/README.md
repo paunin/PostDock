@@ -8,9 +8,9 @@
 
 * Create namespace by `kubectl create -f ./namespace/`
 * Create configs: `kubectl create -f ./configs/`
-* Create services `kubectl create -f ./volumes/`
+* Create volumes `kubectl create -f ./volumes/`
 * Create services `kubectl create -f ./services/`
-* Create tnodes `kubectl create -f ./nodes/`
+* Create nodes `kubectl create -f ./nodes/`
 * Create pgpool `kubectl create -f ./pgpool/`
 * See containers are running `kubectl get pod --namespace=mysystem` (give it some time to warm up the cluster after all containers are running)
 * Test by commands and see status of the cluster
