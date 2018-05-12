@@ -13,3 +13,4 @@ spec:
     matchLabels:
       system: mysystem-db
       node: node-0
+  storageClassName: standard      
