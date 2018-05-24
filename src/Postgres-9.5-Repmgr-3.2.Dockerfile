@@ -1,7 +1,7 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Mon  9 Apr 2018 21:51:20 +07              ##
+##               BUILD_NUMBER=Fri May 25 12:36:46 +07 2018              ##
 ##########################################################################
 
 FROM postgres:9.5
@@ -96,9 +96,8 @@ ENV SSH_ENABLE 0
 #### Advanced options ####
 ENV REPMGR_DEGRADED_MONITORING_TIMEOUT 1
 ENV REPMGR_PID_FILE /tmp/repmgrd.pid
-ENV WAIT_SYSTEM_IS_STARTING 5
 ENV STOPPING_LOCK_FILE /tmp/stop.pid
-ENV REPLICATION_LOCK_FILE /tmp/replication
+ENV MASTER_SYNC_LOCK_FILE /tmp/replication
 ENV STOPPING_TIMEOUT 15
 ENV CONNECT_TIMEOUT 2
 ENV RECONNECT_ATTEMPTS 3
@@ -107,6 +106,7 @@ ENV MASTER_RESPONSE_TIMEOUT 20
 ENV LOG_LEVEL INFO
 ENV CHECK_PGCONNECT_TIMEOUT 10
 ENV REPMGR_SLOT_NAME_PREFIX repmgr_slot_
+ENV LAUNCH_RECOVERY_CHECK_INTERVAL 30
 
 COPY ./pgsql/bin /usr/local/bin/cluster
 RUN chmod -R +x /usr/local/bin/cluster

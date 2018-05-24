@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+# interval in seconds to check if replication is still in progress
+INTERVAL=30
+
+# Lock file is used to wait for replication is over
+# MASTER_SYNC_LOCK_FILE - set in Dockerfile
+
+# Folder with postgres cluster
+# PGDATA - set by Postgres
+
+# Replication will be considered as failed if REPLICATION_SIZE is not changing
+LAST_PGDATA_SIZE="-1"
+
+# Clear $PGDATA folder on failed or stuck replication 1-yes, not_1-no
+CLEAN_UP_ON_FAIL="$1"
+
+wait_upstream_postgres
+
+echo ">>> Waiting for cloning on this node is over(if any in progress): CLEAN_UP_ON_FAIL=$CLEAN_UP_ON_FAIL, INTERVAL=$INTERVAL"
+
+while [ -f "$MASTER_SYNC_LOCK_FILE" ]
+do
+    CURRENT_PGDATA_SIZE=`du -s $PGDATA | awk '{print $1}'`
+    echo ">>> Replicated: $CURRENT_PGDATA_SIZE"
+    if [[ "$LAST_PGDATA_SIZE" == "$CURRENT_PGDATA_SIZE" ]]; then
+        echo ">>>>>> Looks like cloning stuck but lock file is still there "
+        if [[ "$CLEAN_UP_ON_FAIL" == "1" ]]; then
+            echo ">>>>>> Cleaning up $PGDATA"
+            rm -rf $PGDATA/*
+        fi
+        exit 1
+    fi
+    LAST_PGDATA_SIZE="$CURRENT_PGDATA_SIZE"
+    sleep $INTERVAL
+done
+echo ">>> Cloning is done"
+exit 0

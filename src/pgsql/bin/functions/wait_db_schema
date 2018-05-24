@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+SCHEMA_EXISTS=''
+SLEEP_TIME=10
+
+
+HOST=$1
+PORT=$2
+USER=$3
+PASSWORD=$4
+DB=$5
+SCHEMA=$6
+TIMEOUT=$7
+MAX_TRIES=`expr "$TIMEOUT" / "$SLEEP_TIME"`
+TRIES="$MAX_TRIES"
+
+echo ">>> Wait schema $DB.$SCHEMA on $HOST:$PORT(user: $USER,password: *******), will try $MAX_TRIES times with delay $SLEEP_TIME seconds (TIMEOUT=$TIMEOUT)"
+
+while [[ "$TRIES" != "0" ]]
+do
+
+    
+    SCHEMA_EXISTS=`PGCONNECT_TIMEOUT=$CHECK_PGCONNECT_TIMEOUT PGPASSWORD=$PASSWORD psql --username "$USER" -h $HOST -p $PORT -tAc "SELECT 1 FROM information_schema.schemata WHERE catalog_name='$DB' AND schema_name='$SCHEMA'" $DB`
+    if [[ "$?" -ne "0" ]]; then
+        echo -n ">>>>>> Host $HOST:$PORT is not accessible"
+    else
+        if [[ "$SCHEMA_EXISTS" != "1" ]]; then
+            echo -n ">>>>>> Schema $DB.$SCHEMA is still not accessible on host $HOST:$PORT"
+        else
+            echo ">>>>>> Schema $DB.$SCHEMA exists on host $HOST:$PORT!"
+            exit 0
+        fi
+    fi
+    sleep "$SLEEP_TIME"
+    echo " (will try $TRIES times more)"
+    TRIES=`expr "$TRIES" - 1`
+done
+
+echo ">>> Schema $DB.$SCHEMA is not accessible, even after $MAX_TRIES tries!"
+exit 1
