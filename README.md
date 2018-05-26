@@ -61,7 +61,7 @@ Taking into account that PostDock project itself has versioning schema, all dock
 * `<component>`, `<component_version>` - depends on component:
     * `postgres`,`postgres-extended` - major and minor version without dot in between(can be `95`,`96`,`10`)
     * `pgpool` - major and minor version of component without dot in between(can be `33`,`36`,`37`)
-    * `barman` - major version only (can be `2`)
+    * `barman` - major version only (can be `23`,`24`)
 * `<sub_component>`, `<sub_component_version>` - depends on component:
     * for `postgres` - `repmgr` can be `3.2`
     * for `barman` - `postgres` can be `9.6`, `10`

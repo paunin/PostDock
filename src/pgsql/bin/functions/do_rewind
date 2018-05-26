@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo `date` > $REPLICATION_LOCK_FILE
+echo `date` > $MASTER_SYNC_LOCK_FILE
 echo ">>> Rewinding to the latest state"
 TRY_TO_FOLLOW_CLUSTER_MASTER=`PGCONNECT_TIMEOUT=$CHECK_PGCONNECT_TIMEOUT PGPASSWORD=$REPLICATION_PASSWORD  psql -h $CURRENT_REPLICATION_PRIMARY_HOST -U $REPLICATION_USER  $REPLICATION_DB -tAc "SELECT count(*) FROM $(get_repmgr_schema).$REPMGR_NODES_TABLE WHERE type='master' AND conninfo LIKE '%host=$CURRENT_REPLICATION_PRIMARY_HOST%'"`
 
@@ -43,4 +43,4 @@ else
     gosu postgres pg_ctl stop
 fi
 
-rm -rf $REPLICATION_LOCK_FILE
+rm -rf $MASTER_SYNC_LOCK_FILE

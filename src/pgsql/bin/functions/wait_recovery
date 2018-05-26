@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+set -e
+echo ">>> Waiting for local postgres server recovery if any in progress:LAUNCH_RECOVERY_CHECK_INTERVAL=$LAUNCH_RECOVERY_CHECK_INTERVAL"
+
+echo ">>> Recovery WAL id:"
+# LAUNCH_RECOVERY_CHECK_INTERVAL
+PREVIOUS_RECOVERY_WAL=''
+
+while true
+do
+    sleep $LAUNCH_RECOVERY_CHECK_INTERVAL
+    RECOVERY_WAL_ID=`ps aux | grep -v 'grep' | grep 'recovering' | sed 's/.* \([0-9A-F]\{24\}\).*/\1/g'`
+    WAL_RECEIVER_FLAG=`ps aux | grep -v 'grep' | grep 'wal receiver' | wc -l | tr -d ' '`
+
+    if [[ "$RECOVERY_WAL_ID" == "" ]]; then
+        echo ">>>>>> RECOVERY_WAL_ID is empty!"
+        break
+    else
+        echo "$RECOVERY_WAL_ID"
+    fi
+    
+    if [[ "$WAL_RECEIVER_FLAG" == "1" ]];then
+        echo ">>>>>> WAL_RECEIVER_FLAG=1!"
+        break
+    fi
+
+    if [[ "$RECOVERY_WAL_ID" == "$PREVIOUS_RECOVERY_WAL" ]];then
+        echo ">>>>>> Recovery is not progressing - RECOVERY_WAL_ID=PREVIOUS_RECOVERY_WAL=$RECOVERY_WAL_ID!"
+        break
+    fi
+    PREVIOUS_RECOVERY_WAL="$RECOVERY_WAL_ID"
+done
+
+echo ">>> Not in recovery state (anymore)"

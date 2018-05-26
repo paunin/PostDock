@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -e
 echo ">>> Clonning primary node..."
-echo `date` > $REPLICATION_LOCK_FILE
+echo `date` > $MASTER_SYNC_LOCK_FILE
 
-wait_replication &
+wait_master_clone &
 PGPASSWORD=$REPLICATION_PASSWORD gosu postgres repmgr -h $CURRENT_REPLICATION_PRIMARY_HOST -U $REPLICATION_USER -d $REPLICATION_DB -D $PGDATA standby clone --fast-checkpoint --force
-rm -rf $REPLICATION_LOCK_FILE
+rm -rf $MASTER_SYNC_LOCK_FILE
