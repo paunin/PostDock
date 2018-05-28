@@ -156,7 +156,7 @@ But nevertheless you are able to play with `NODE_PRIORITY` environment variable 
 
 If you have need to organize your cluster with some tricky logic or less problematic cross checks. You can enable SSH server on each node. Just set ENV variable `SSH_ENABLE=1` (disabled by default) in all containers (including pgpool and barman). That will allow you to connect from any to any node by simple command under `postgres` user: `gosu postgres ssh {NODE NETWORK NAME}`
 
-You might want to change default ssh keys which are put into the cluster. For that you need to mount files with your keys in paths `/home/postgres/.ssh/id_rsa`, `/home/postgres/.ssh/id_rsa.pub`.
+You also will have to set identical ssh keys to all containers. For that you need to mount files with your keys in paths `/home/postgres/.ssh/keys/id_rsa`, `/home/postgres/.ssh/keys/id_rsa.pub`.
 
 
 ## Replication slots
