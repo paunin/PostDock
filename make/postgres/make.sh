@@ -1,18 +1,22 @@
 echo ">>> Making postgres"
 
-for POSTGRES_VERSION in 9.5 9.6 10; do
-    for REPMGR_VERSION in 3.2; do
-        FILE_FROM="./src/includes/dockerfile/Postgres-$POSTGRES_VERSION-Repmgr-$REPMGR_VERSION.part.Dockerfile"
-        FILE_FROM_EXT="./src/includes/dockerfile/Postgres-extended-$POSTGRES_VERSION-Repmgr-$REPMGR_VERSION.part.Dockerfile"
+for VALS in "POSTGRES_VERSION=9.5 REPMGR_VERSION=3.2 REPMGR_PACKAGE_VERSION=3.3.2-1.pgdg80%2b1" \
+            "POSTGRES_VERSION=9.6 REPMGR_VERSION=3.2 REPMGR_PACKAGE_VERSION=3.3.2-1.pgdg80%2b1" \
+            "POSTGRES_VERSION=10 REPMGR_VERSION=3.2 REPMGR_PACKAGE_VERSION=3.3.2-1.pgdg80%2b1" \
+            "POSTGRES_VERSION=9.5 REPMGR_VERSION=4.0 REPMGR_LATEST=1" \
+            "POSTGRES_VERSION=9.6 REPMGR_VERSION=4.0 REPMGR_LATEST=1" \
+            "POSTGRES_VERSION=10 REPMGR_VERSION=4.0 REPMGR_LATEST=1"; do
+    eval $VALS
+    FILE_FROM="./src/includes/dockerfile/Postgres-$POSTGRES_VERSION-Repmgr-$REPMGR_VERSION.part.Dockerfile"
+    FILE_FROM_EXT="./src/includes/dockerfile/Postgres-extended-$POSTGRES_VERSION-Repmgr-$REPMGR_VERSION.part.Dockerfile"
 
-        VALS="POSTGRES_VERSION=$POSTGRES_VERSION"
-        FILE_TO="./src/Postgres-$POSTGRES_VERSION-Repmgr-$REPMGR_VERSION.Dockerfile"
+    VALS="POSTGRES_VERSION=$POSTGRES_VERSION"
+    FILE_TO="./src/Postgres-$POSTGRES_VERSION-Repmgr-$REPMGR_VERSION.Dockerfile"
 
-        template $FILE_FROM $FILE_TO $VALS
+    template $FILE_FROM $FILE_TO $VALS
 
-        FILE_TO_EXT="./src/Postgres-extended-$POSTGRES_VERSION-Repmgr-$REPMGR_VERSION.Dockerfile"
+    FILE_TO_EXT="./src/Postgres-extended-$POSTGRES_VERSION-Repmgr-$REPMGR_VERSION.Dockerfile"
 
-        template $FILE_FROM $FILE_TO_EXT $VALS
-        template $FILE_FROM_EXT $FILE_TO_EXT
-    done
+    template $FILE_FROM $FILE_TO_EXT $VALS
+    template $FILE_FROM_EXT $FILE_TO_EXT
 done

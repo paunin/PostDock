@@ -1,7 +1,7 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Thu May 31 14:36:44 +07 2018              ##
+##               BUILD_NUMBER=Sat  2 Jun 2018 15:28:51 +07              ##
 ##########################################################################
 
 FROM postgres:9.5
@@ -9,14 +9,12 @@ FROM postgres:9.5
 RUN apt-get update --fix-missing && \
     apt-get install -y postgresql-server-dev-$PG_MAJOR wget openssh-server barman-cli
 
-#<<< Hack to support initial version of Repmgr (https://github.com/paunin/PostDock/issues/97)
+
 RUN TEMP_DEB="$(mktemp)" && \
     wget -O "$TEMP_DEB" "http://atalia.postgresql.org/morgue/r/repmgr/repmgr-common_3.3.2-1.pgdg80%2b1_all.deb" && \
     dpkg -i "$TEMP_DEB" && rm -f "$TEMP_DEB" && \
-    TEMP_DEB="$(mktemp)" && \
     wget -O "$TEMP_DEB" "http://atalia.postgresql.org/morgue/r/repmgr/postgresql-$PG_MAJOR-repmgr_3.3.2-1.pgdg80%2b1_amd64.deb" && \
-    dpkg -i "$TEMP_DEB" && apt-get install -f && rm -f "$TEMP_DEB"
-# >>> Hack
+    (dpkg -i "$TEMP_DEB" || apt-get install -y -f) && rm -f "$TEMP_DEB"
 
 # Inherited variables
 # ENV POSTGRES_PASSWORD monkey_pass
@@ -54,6 +52,8 @@ ENV CONFIGS_DELIMITER_SYMBOL ,
 ENV CONFIGS_ASSIGNMENT_SYMBOL :
                                 #CONFIGS_DELIMITER_SYMBOL and CONFIGS_ASSIGNMENT_SYMBOL are used to parse CONFIGS variable
                                 # if CONFIGS_DELIMITER_SYMBOL=| and CONFIGS_ASSIGNMENT_SYMBOL=>, valid configuration string is var1>val1|var2>val2
+
+
 ENV REPMGR_MAJOR 3
 ENV REPMGR_NODES_TABLE repl_nodes
 ENV REPMGR_NODE_ID_COLUMN id
@@ -63,6 +63,7 @@ ENV REPMGR_SHOW_NODES_TABLE repl_show_nodes
 ENV REPMGR_NODE_ID_PARAM_NAME node
 ENV REPMGR_LOG_LEVEL_PARAM_NAME loglevel
 ENV REPMGR_MASTER_RESPONSE_TIMEOUT_PARAM_NAME master_reponse_timeout
+
 # ENV CONFIGS "listen_addresses:'*'"
                                     # in format variable1:value1[,variable2:value2[,...]] if CONFIGS_DELIMITER_SYMBOL=, and CONFIGS_ASSIGNMENT_SYMBOL=:
                                     # used for pgpool.conf file
@@ -94,7 +95,7 @@ ENV SSH_ENABLE 0
                         # If you need SSH server running on the node
 
 #### Advanced options ####
-ENV REPMGR_DEGRADED_MONITORING_TIMEOUT 1
+ENV REPMGR_DEGRADED_MONITORING_TIMEOUT 5
 ENV REPMGR_PID_FILE /tmp/repmgrd.pid
 ENV STOPPING_LOCK_FILE /tmp/stop.pid
 ENV MASTER_SYNC_LOCK_FILE /tmp/replication

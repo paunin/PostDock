@@ -1,7 +1,7 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Sat  2 Jun 2018 13:40:46 +07              ##
+##               BUILD_NUMBER=Sat  2 Jun 2018 15:28:51 +07              ##
 ##########################################################################
 
 sudo: required
@@ -9,60 +9,114 @@ services:
   - docker
 jobs:
   include:
-    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.6_pgpool-3.7_barman-2.4 ./tests/run.sh
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.6_repmgr-4.0_pgpool-3.7_barman-2.4 ./tests/run.sh
       env:
-        - COMBINATION=postgres-9.6_pgpool-3.7_barman-2.4
-    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.6_pgpool-3.7_barman-2.3 ./tests/run.sh
+        - COMBINATION=postgres-9.6_repmgr-4.0_pgpool-3.7_barman-2.4
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.6_repmgr-4.0_pgpool-3.7_barman-2.3 ./tests/run.sh
       env:
-        - COMBINATION=postgres-9.6_pgpool-3.7_barman-2.3
-    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.6_pgpool-3.6_barman-2.4 ./tests/run.sh
+        - COMBINATION=postgres-9.6_repmgr-4.0_pgpool-3.7_barman-2.3
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.6_repmgr-4.0_pgpool-3.6_barman-2.4 ./tests/run.sh
       env:
-        - COMBINATION=postgres-9.6_pgpool-3.6_barman-2.4
-    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.6_pgpool-3.6_barman-2.3 ./tests/run.sh
+        - COMBINATION=postgres-9.6_repmgr-4.0_pgpool-3.6_barman-2.4
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.6_repmgr-4.0_pgpool-3.6_barman-2.3 ./tests/run.sh
       env:
-        - COMBINATION=postgres-9.6_pgpool-3.6_barman-2.3
-    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.6_pgpool-3.3_barman-2.4 ./tests/run.sh
+        - COMBINATION=postgres-9.6_repmgr-4.0_pgpool-3.6_barman-2.3
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.6_repmgr-4.0_pgpool-3.3_barman-2.4 ./tests/run.sh
       env:
-        - COMBINATION=postgres-9.6_pgpool-3.3_barman-2.4
-    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.6_pgpool-3.3_barman-2.3 ./tests/run.sh
+        - COMBINATION=postgres-9.6_repmgr-4.0_pgpool-3.3_barman-2.4
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.6_repmgr-4.0_pgpool-3.3_barman-2.3 ./tests/run.sh
       env:
-        - COMBINATION=postgres-9.6_pgpool-3.3_barman-2.3
-    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.5_pgpool-3.7_barman-2.4 ./tests/run.sh
+        - COMBINATION=postgres-9.6_repmgr-4.0_pgpool-3.3_barman-2.3
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.6_repmgr-3.2_pgpool-3.7_barman-2.4 ./tests/run.sh
       env:
-        - COMBINATION=postgres-9.5_pgpool-3.7_barman-2.4
-    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.5_pgpool-3.7_barman-2.3 ./tests/run.sh
+        - COMBINATION=postgres-9.6_repmgr-3.2_pgpool-3.7_barman-2.4
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.6_repmgr-3.2_pgpool-3.7_barman-2.3 ./tests/run.sh
       env:
-        - COMBINATION=postgres-9.5_pgpool-3.7_barman-2.3
-    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.5_pgpool-3.6_barman-2.4 ./tests/run.sh
+        - COMBINATION=postgres-9.6_repmgr-3.2_pgpool-3.7_barman-2.3
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.6_repmgr-3.2_pgpool-3.6_barman-2.4 ./tests/run.sh
       env:
-        - COMBINATION=postgres-9.5_pgpool-3.6_barman-2.4
-    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.5_pgpool-3.6_barman-2.3 ./tests/run.sh
+        - COMBINATION=postgres-9.6_repmgr-3.2_pgpool-3.6_barman-2.4
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.6_repmgr-3.2_pgpool-3.6_barman-2.3 ./tests/run.sh
       env:
-        - COMBINATION=postgres-9.5_pgpool-3.6_barman-2.3
-    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.5_pgpool-3.3_barman-2.4 ./tests/run.sh
+        - COMBINATION=postgres-9.6_repmgr-3.2_pgpool-3.6_barman-2.3
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.6_repmgr-3.2_pgpool-3.3_barman-2.4 ./tests/run.sh
       env:
-        - COMBINATION=postgres-9.5_pgpool-3.3_barman-2.4
-    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.5_pgpool-3.3_barman-2.3 ./tests/run.sh
+        - COMBINATION=postgres-9.6_repmgr-3.2_pgpool-3.3_barman-2.4
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.6_repmgr-3.2_pgpool-3.3_barman-2.3 ./tests/run.sh
       env:
-        - COMBINATION=postgres-9.5_pgpool-3.3_barman-2.3
-    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-10_pgpool-3.7_barman-2.4 ./tests/run.sh
+        - COMBINATION=postgres-9.6_repmgr-3.2_pgpool-3.3_barman-2.3
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.5_repmgr-4.0_pgpool-3.7_barman-2.4 ./tests/run.sh
       env:
-        - COMBINATION=postgres-10_pgpool-3.7_barman-2.4
-    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-10_pgpool-3.7_barman-2.3 ./tests/run.sh
+        - COMBINATION=postgres-9.5_repmgr-4.0_pgpool-3.7_barman-2.4
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.5_repmgr-4.0_pgpool-3.7_barman-2.3 ./tests/run.sh
       env:
-        - COMBINATION=postgres-10_pgpool-3.7_barman-2.3
-    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-10_pgpool-3.6_barman-2.4 ./tests/run.sh
+        - COMBINATION=postgres-9.5_repmgr-4.0_pgpool-3.7_barman-2.3
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.5_repmgr-4.0_pgpool-3.6_barman-2.4 ./tests/run.sh
       env:
-        - COMBINATION=postgres-10_pgpool-3.6_barman-2.4
-    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-10_pgpool-3.6_barman-2.3 ./tests/run.sh
+        - COMBINATION=postgres-9.5_repmgr-4.0_pgpool-3.6_barman-2.4
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.5_repmgr-4.0_pgpool-3.6_barman-2.3 ./tests/run.sh
       env:
-        - COMBINATION=postgres-10_pgpool-3.6_barman-2.3
-    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-10_pgpool-3.3_barman-2.4 ./tests/run.sh
+        - COMBINATION=postgres-9.5_repmgr-4.0_pgpool-3.6_barman-2.3
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.5_repmgr-4.0_pgpool-3.3_barman-2.4 ./tests/run.sh
       env:
-        - COMBINATION=postgres-10_pgpool-3.3_barman-2.4
-    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-10_pgpool-3.3_barman-2.3 ./tests/run.sh
+        - COMBINATION=postgres-9.5_repmgr-4.0_pgpool-3.3_barman-2.4
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.5_repmgr-4.0_pgpool-3.3_barman-2.3 ./tests/run.sh
       env:
-        - COMBINATION=postgres-10_pgpool-3.3_barman-2.3
+        - COMBINATION=postgres-9.5_repmgr-4.0_pgpool-3.3_barman-2.3
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.5_repmgr-3.2_pgpool-3.7_barman-2.4 ./tests/run.sh
+      env:
+        - COMBINATION=postgres-9.5_repmgr-3.2_pgpool-3.7_barman-2.4
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.5_repmgr-3.2_pgpool-3.7_barman-2.3 ./tests/run.sh
+      env:
+        - COMBINATION=postgres-9.5_repmgr-3.2_pgpool-3.7_barman-2.3
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.5_repmgr-3.2_pgpool-3.6_barman-2.4 ./tests/run.sh
+      env:
+        - COMBINATION=postgres-9.5_repmgr-3.2_pgpool-3.6_barman-2.4
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.5_repmgr-3.2_pgpool-3.6_barman-2.3 ./tests/run.sh
+      env:
+        - COMBINATION=postgres-9.5_repmgr-3.2_pgpool-3.6_barman-2.3
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.5_repmgr-3.2_pgpool-3.3_barman-2.4 ./tests/run.sh
+      env:
+        - COMBINATION=postgres-9.5_repmgr-3.2_pgpool-3.3_barman-2.4
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-9.5_repmgr-3.2_pgpool-3.3_barman-2.3 ./tests/run.sh
+      env:
+        - COMBINATION=postgres-9.5_repmgr-3.2_pgpool-3.3_barman-2.3
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-10_repmgr-4.0_pgpool-3.7_barman-2.4 ./tests/run.sh
+      env:
+        - COMBINATION=postgres-10_repmgr-4.0_pgpool-3.7_barman-2.4
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-10_repmgr-4.0_pgpool-3.7_barman-2.3 ./tests/run.sh
+      env:
+        - COMBINATION=postgres-10_repmgr-4.0_pgpool-3.7_barman-2.3
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-10_repmgr-4.0_pgpool-3.6_barman-2.4 ./tests/run.sh
+      env:
+        - COMBINATION=postgres-10_repmgr-4.0_pgpool-3.6_barman-2.4
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-10_repmgr-4.0_pgpool-3.6_barman-2.3 ./tests/run.sh
+      env:
+        - COMBINATION=postgres-10_repmgr-4.0_pgpool-3.6_barman-2.3
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-10_repmgr-4.0_pgpool-3.3_barman-2.4 ./tests/run.sh
+      env:
+        - COMBINATION=postgres-10_repmgr-4.0_pgpool-3.3_barman-2.4
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-10_repmgr-4.0_pgpool-3.3_barman-2.3 ./tests/run.sh
+      env:
+        - COMBINATION=postgres-10_repmgr-4.0_pgpool-3.3_barman-2.3
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-10_repmgr-3.2_pgpool-3.7_barman-2.4 ./tests/run.sh
+      env:
+        - COMBINATION=postgres-10_repmgr-3.2_pgpool-3.7_barman-2.4
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-10_repmgr-3.2_pgpool-3.7_barman-2.3 ./tests/run.sh
+      env:
+        - COMBINATION=postgres-10_repmgr-3.2_pgpool-3.7_barman-2.3
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-10_repmgr-3.2_pgpool-3.6_barman-2.4 ./tests/run.sh
+      env:
+        - COMBINATION=postgres-10_repmgr-3.2_pgpool-3.6_barman-2.4
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-10_repmgr-3.2_pgpool-3.6_barman-2.3 ./tests/run.sh
+      env:
+        - COMBINATION=postgres-10_repmgr-3.2_pgpool-3.6_barman-2.3
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-10_repmgr-3.2_pgpool-3.3_barman-2.4 ./tests/run.sh
+      env:
+        - COMBINATION=postgres-10_repmgr-3.2_pgpool-3.3_barman-2.4
+    - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=postgres-10_repmgr-3.2_pgpool-3.3_barman-2.3 ./tests/run.sh
+      env:
+        - COMBINATION=postgres-10_repmgr-3.2_pgpool-3.3_barman-2.3
     - script: NO_COLOURS=1 DEBUG=1 TEST_COMBINATIONS=latest ./tests/run.sh
       env:
         - COMBINATION=latest
