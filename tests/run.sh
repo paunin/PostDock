@@ -31,8 +31,14 @@ for TEST_COMBINATION in $TEST_COMBINATIONS; do
         TESTS_SKIPPED=$((TESTS_SKIPPED+1))
     fi
     export COMPOSE_FILE
-    echo ">>> Preparing environment:"
-    docker-compose down -v && docker-compose build --no-cache > /dev/null
+    
+    if [ "$SKIP_BUILD" == "1" ]; then
+        echo ">>> Skipping environment preparation! (SKIP_BUILD=$SKIP_BUILD)"
+    else
+        echo ">>> Preparing environment:"
+        docker-compose down -v && docker-compose build --no-cache > /dev/null
+    fi
+    
     for TEST in $TESTS; do
         echo -n ">>> Running test $TEST:"
         
