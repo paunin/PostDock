@@ -1,10 +1,11 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Mon May 28 16:58:37 +07 2018              ##
+##               BUILD_NUMBER=Thu May 31 14:25:00 +07 2018              ##
 ##########################################################################
 
-FROM golang:1.8-jessie
+-n 
+-n -n FROM golang:1.8-jessie
 
 # grab gosu for easy step-down from root
 ARG GOSU_VERSION=1.7
@@ -24,13 +25,23 @@ RUN  wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key a
      apt-get update && \
      apt-get install -y libffi-dev libssl-dev openssh-server
 
-RUN  apt-get install -y postgresql-client-10
 
+-n RUN  apt-get install -y postgresql-client-
+-n 10
+-n 
 
+-n 
+-n 
+
+-n 
+-n 
 RUN TEMP_DEB="$(mktemp)" && \
-    wget -O "$TEMP_DEB"  "http://atalia.postgresql.org/morgue/b/barman/barman_2.3-2.pgdg80+1_all.deb" && \
+    wget -O "$TEMP_DEB"  "http://atalia.postgresql.org/morgue/b/barman/barman_
+-n 2.3-2.pgdg80+1
+-n _all.deb" && \
     (dpkg -i "$TEMP_DEB" || apt-get install -y -f) && rm -f "$TEMP_DEB"
 
+-n 
 RUN apt-get -y install cron
 ADD barman/crontab /etc/cron.d/barman
 RUN rm -f /etc/cron.daily/*
@@ -72,3 +83,6 @@ RUN cd /go && go build /go/main.go
 VOLUME $BACKUP_DIR
 
 CMD /usr/local/bin/barman_docker/entrypoint.sh
+
+-n 
+-n 

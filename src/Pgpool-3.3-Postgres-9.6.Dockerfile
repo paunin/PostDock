@@ -1,10 +1,11 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Mon May 28 16:58:37 +07 2018              ##
+##               BUILD_NUMBER=Thu May 31 14:25:00 +07 2018              ##
 ##########################################################################
 
-FROM debian:jessie
+-n 
+-n -n FROM debian:jessie
 ARG DOCKERIZE_VERSION=v0.2.0
 
 RUN groupadd -r postgres --gid=999 && useradd -r -g postgres -d /home/postgres  --uid=999 postgres
@@ -28,13 +29,23 @@ RUN  wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key a
 
 RUN  apt-get install -y libffi-dev libssl-dev openssh-server
 
-RUN  apt-get install -y postgresql-client-9.6
 
+-n RUN  apt-get install -y postgresql-client-
+-n 9.6
+-n 
 
+-n 
+-n 
+
+-n 
+-n 
 RUN TEMP_DEB="$(mktemp)" && \
-    wget -O "$TEMP_DEB" "http://atalia.postgresql.org/morgue/p/pgpool2/pgpool2_3.3.4-1.pgdg70+1_amd64.deb" && \
+    wget -O "$TEMP_DEB" "http://atalia.postgresql.org/morgue/p/pgpool2/pgpool2_
+-n 3.3.4-1.pgdg70+1
+-n _amd64.deb" && \
     (dpkg -i "$TEMP_DEB" || apt-get install -y -f) && rm -f "$TEMP_DEB"
 
+-n 
 RUN  wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
      tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
@@ -66,3 +77,6 @@ HEALTHCHECK --interval=1m --timeout=10s --retries=5 \
   CMD /usr/local/bin/pgpool/has_write_node.sh
 
 CMD ["/usr/local/bin/pgpool/entrypoint.sh"]
+
+-n 
+-n 
