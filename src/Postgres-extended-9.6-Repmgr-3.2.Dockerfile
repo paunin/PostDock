@@ -1,13 +1,10 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Thu May 31 14:25:00 +07 2018              ##
+##               BUILD_NUMBER=Thu May 31 14:36:44 +07 2018              ##
 ##########################################################################
 
--n 
--n -n FROM postgres:
--n 9.6
--n 
+FROM postgres:9.6
 
 RUN apt-get update --fix-missing && \
     apt-get install -y postgresql-server-dev-$PG_MAJOR wget openssh-server barman-cli
@@ -128,13 +125,6 @@ VOLUME /var/lib/postgresql/data
 USER root
 
 CMD ["/usr/local/bin/cluster/entrypoint.sh"]
-
--n 
--n 
--n 
--n -n ARG EXTENSIONS="pg_repack pglogical pgosm postgis pgl_ddl_deploy pg_nominatim"
+ARG EXTENSIONS="pg_repack pglogical pgosm postgis pgl_ddl_deploy pg_nominatim"
 COPY ./pgsql/extensions/bin/ /extensions_installer/
 RUN chmod -R +x /extensions_installer/ && bash /extensions_installer/install.sh "$EXTENSIONS"
-
--n 
--n 
