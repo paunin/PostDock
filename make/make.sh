@@ -2,6 +2,7 @@
 set -e
 
 BUILD_NUMBER=`date`
+SYSTEM_TO_MAKE="$1"
 
 function flush {
     MARKER_LINE="BUILD_NUMBER=$BUILD_NUMBER"
@@ -21,8 +22,12 @@ function template {
     TEMPLATE_FILE_TO="$2"
     CONFIGS="${@:3}"
     flush $TEMPLATE_FILE_TO
-
-    echo ">>>>>> $CONFIGS"
+    echo -n ">>>>>> "
+    if [ "$CONFIGS" == "" ];then
+        echo "(no configs)"
+    else
+        echo "CONFIGS: $CONFIGS"
+    fi
     eval "$CONFIGS" mo $TEMPLATE_FILE_FROM >> $TEMPLATE_FILE_TO
 }
     
@@ -35,8 +40,12 @@ if [ ! -f "tmp/mo" ]; then
 fi
 
 . ./tmp/mo
-# Making
-for SYSTEM in `find ./make/* -maxdepth 1 -type d`; do
-    echo "> Processing $SYSTEM"
-    source $SYSTEM/make.sh
+for SYSTEM_PATH in `find ./make/* -maxdepth 1 -type d`; do
+    SYSTEM=`basename $SYSTEM_PATH`
+    if [ "$SYSTEM_TO_MAKE" != "" ] && [ "$SYSTEM_TO_MAKE" != "$SYSTEM" ]; then
+        echo "> Skipping $SYSTEM as it's not required to build (SYSTEM_TO_MAKE=$SYSTEM_TO_MAKE)"
+        continue
+    fi
+    echo "> Making $SYSTEM ($SYSTEM_PATH)"
+    source $SYSTEM_PATH/make.sh
 done
