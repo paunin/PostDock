@@ -6,5 +6,5 @@ FILE_TO=".travis.yml"
 
 template $FILE_HEADER $FILE_TO
 
-export TEST_COMBINATIONS=(`ls -r docker-compose | grep '.yml' | xargs -I % basename % '.yml'`)
+export TEST_COMBINATIONS=(`ls -r docker-compose | grep '.yml' | grep -v 'extended' | xargs -I % basename % '.yml'`)
 template $FILE_FROM $FILE_TO
