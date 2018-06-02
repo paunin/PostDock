@@ -1,4 +1,5 @@
-# Script to build final Dockerfile-s for different versions of components
+#!/bin/bash
+
 set -e
 
 BUILD_NUMBER=`date`

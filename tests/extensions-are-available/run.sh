@@ -10,7 +10,7 @@ do
     docker-compose exec -T postgres_ext bash -c "gosu postgres psql -c 'CREATE EXTENSION $EXTENSION'"
 done
 
-for LIB in libpgosm.so;
+for LIB in libpgosm.so nominatim.so;
 do
     echo ">>> Checking now: $LIB"
     docker-compose exec -T postgres_ext gosu postgres psql -c "load '$LIB'"
