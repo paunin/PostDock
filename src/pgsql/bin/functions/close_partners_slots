@@ -2,7 +2,7 @@
 
 # Basically we should remove all slots from the node which exist on master server
 echo ">>> Getting slots from master node"
-SLOTS=`PGCONNECT_TIMEOUT=$CHECK_PGCONNECT_TIMEOUT PGPASSWORD=$REPLICATION_PASSWORD  psql -h $CURRENT_REPLICATION_PRIMARY_HOST -U $REPLICATION_USER  $REPLICATION_DB -tAc "SELECT slot_name FROM pg_replication_slots"`
+SLOTS=`PGCONNECT_TIMEOUT=$CHECK_PGCONNECT_TIMEOUT PGPASSWORD=$REPLICATION_PASSWORD  psql -h $CURRENT_REPLICATION_PRIMARY_HOST -U $REPLICATION_USER -p $REPLICATION_PRIMARY_PORT $REPLICATION_DB -tAc "SELECT slot_name FROM pg_replication_slots"`
 echo "$SLOTS"
 
 echo ">>> Closing slots which exist on master node"

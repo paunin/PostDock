@@ -5,7 +5,7 @@ MY_NAME=$NODE_NAME
 echo ">>> My name is $MY_NAME"
 
 # ====================================== Do I feel like master
-AM_I_MASTER=`PGPASSWORD=$REPLICATION_PASSWORD psql -h $CLUSTER_NODE_NETWORK_NAME -U $REPLICATION_USER $REPLICATION_DB  -tAc "SELECT * FROM $(get_repmgr_schema).$REPMGR_NODES_TABLE WHERE $REPMGR_NODE_NAME_COLUMN='$MY_NAME' AND (type='primary' OR type='master')" | wc -l`
+AM_I_MASTER=`PGPASSWORD=$REPLICATION_PASSWORD psql -h $CLUSTER_NODE_NETWORK_NAME -U $REPLICATION_USER -p $REPLICATION_PRIMARY_PORT $REPLICATION_DB  -tAc "SELECT * FROM $(get_repmgr_schema).$REPMGR_NODES_TABLE WHERE $REPMGR_NODE_NAME_COLUMN='$MY_NAME' AND (type='primary' OR type='master')" | wc -l`
 if [[ "$AM_I_MASTER" -eq "0" ]]; then
     echo ">>> I'm not master at all! No worries!"
     exit 0
@@ -24,14 +24,14 @@ if [ "$PARTNER_NODES" != "" ]; then
     echo ">>> Will ask nodes from PARTNER_NODES list"
     IFS=',' read -ra NODES <<< "$PARTNER_NODES"
 else
-    DIFFERENT_UPSTREAMS=`PGPASSWORD=$REPLICATION_PASSWORD psql -h $CLUSTER_NODE_NETWORK_NAME -U $REPLICATION_USER $REPLICATION_DB  -tAc "SELECT upstream_node_id FROM $(get_repmgr_schema).$REPMGR_NODES_TABLE" | uniq | awk '{$1=$1};1' | grep -v -e '^[[:space:]]*$' | wc -l`
+    DIFFERENT_UPSTREAMS=`PGPASSWORD=$REPLICATION_PASSWORD psql -h $CLUSTER_NODE_NETWORK_NAME -U $REPLICATION_USER -p $REPLICATION_PRIMARY_PORT $REPLICATION_DB  -tAc "SELECT upstream_node_id FROM $(get_repmgr_schema).$REPMGR_NODES_TABLE" | uniq | awk '{$1=$1};1' | grep -v -e '^[[:space:]]*$' | wc -l`
     if [[ "$DIFFERENT_UPSTREAMS" -gt "1" ]]; then
         echo ">>> I can't work with cascade replication without PARTNER_NODES list! Will not run check!"
         exit 0
     fi
     echo ">>> Will ask all nodes in the cluster"
     # TODO: Does not make array here
-    read -d '' -ra NODES <<<`PGPASSWORD=$REPLICATION_PASSWORD psql -h $CLUSTER_NODE_NETWORK_NAME -U $REPLICATION_USER $REPLICATION_DB  -tAc "SELECT conninfo FROM $(get_repmgr_schema).$REPMGR_NODES_TABLE" | grep host | awk '{print $3}' | cut -d "=" -f2`
+    read -d '' -ra NODES <<<`PGPASSWORD=$REPLICATION_PASSWORD psql -h $CLUSTER_NODE_NETWORK_NAME -U $REPLICATION_USER -p $REPLICATION_PRIMARY_PORT $REPLICATION_DB  -tAc "SELECT conninfo FROM $(get_repmgr_schema).$REPMGR_NODES_TABLE" | grep host | awk '{print $3}' | cut -d "=" -f2`
 fi
 
 NODES_COUNT="${#NODES[@]}"
@@ -43,7 +43,7 @@ for NODE in "${NODES[@]}"; do
     NO_ROUTE=false
     echo ">>> Checking node $NODE"
 
-    MASTER=`PGCONNECT_TIMEOUT=$CHECK_PGCONNECT_TIMEOUT PGPASSWORD=$REPLICATION_PASSWORD psql -h $NODE -U $REPLICATION_USER $REPLICATION_DB  -tAc "SELECT upstream_node_name FROM $(get_repmgr_schema).$REPMGR_SHOW_NODES_TABLE WHERE conninfo LIKE '%host=$NODE%' AND (upstream_node_name IS NOT NULL AND upstream_node_name <>'') AND active=true"`
+    MASTER=`PGCONNECT_TIMEOUT=$CHECK_PGCONNECT_TIMEOUT PGPASSWORD=$REPLICATION_PASSWORD psql -h $NODE -U $REPLICATION_USER -p $REPLICATION_PRIMARY_PORT $REPLICATION_DB  -tAc "SELECT upstream_node_name FROM $(get_repmgr_schema).$REPMGR_SHOW_NODES_TABLE WHERE conninfo LIKE '%host=$NODE%' AND (upstream_node_name IS NOT NULL AND upstream_node_name <>'') AND active=true"`
     if [[ "$?" -ne "0" ]]; then
         FAILED_NODES=$((FAILED_NODES + 1))
         echo ">>>>>> Failed nodes - $FAILED_NODES"

@@ -8,7 +8,7 @@ if [ "$PARTNER_NODES" != "" ]; then
     for NODE in "${NODES[@]}"
     do
         echo ">>>>>> Checking NODE=$NODE..."  >&2
-        MASTER_CONNINFO=`PGCONNECT_TIMEOUT=$CHECK_PGCONNECT_TIMEOUT PGPASSWORD=$REPLICATION_PASSWORD psql -h $NODE -U $REPLICATION_USER $REPLICATION_DB  -tAc "SELECT conninfo FROM $(get_repmgr_schema).$REPMGR_SHOW_NODES_TABLE WHERE (upstream_node_name IS NULL OR upstream_node_name = '') AND active=true"`
+        MASTER_CONNINFO=`PGCONNECT_TIMEOUT=$CHECK_PGCONNECT_TIMEOUT PGPASSWORD=$REPLICATION_PASSWORD psql -h $NODE -U $REPLICATION_USER -p $REPLICATION_PRIMARY_PORT $REPLICATION_DB  -tAc "SELECT conninfo FROM $(get_repmgr_schema).$REPMGR_SHOW_NODES_TABLE WHERE (upstream_node_name IS NULL OR upstream_node_name = '') AND active=true"`
         if [[ "$?" -ne "0" ]]; then
             echo ">>>>>> Skipping: failed to get master from the node!"  >&2
             continue
