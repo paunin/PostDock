@@ -11,6 +11,7 @@ spec:
   capacity:
     storage: 100Gi
   persistentVolumeReclaimPolicy: Delete
+  storageClassName: standard
   hostPath:
     path: /tmp/db-data-mysystem-db-node-0
   # awsElasticBlockStore:
