@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.postDock.name }}-config
+  labels:
+    app: {{ .Values.postDock.name }}
+data:
+  app.db.database: "{{ .Values.postgres.db.name }}"
+  app.db.cluster.name: "{{ .Values.postgres.clusterName }}"
+  app.db.cluster.replication.db: "{{ .Values.postgres.replicationDb.name }}"
+  app.db.pool.backends: "{{ range $i, $e := .Values.postgres.nodes }}{{ if $i }},{{ end }}{{ $i }}:{{ $.Values.postDock.name }}-db-node-{{ $i }}.{{ $.Values.postDock.name }}-db::::{{ end }}"

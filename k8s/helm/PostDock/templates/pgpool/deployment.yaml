@@ -1,0 +1,73 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ .Values.postDock.name }}-database-pgpool
+  labels:
+    name: database-balancer
+    node: pgpool
+    system: {{ .Values.postDock.name }}
+    app: {{ .Values.postDock.name }}
+spec:
+  replicas: {{ .Values.pgpool.replicas }}
+  revisionHistoryLimit: 5
+  template:
+    metadata:
+      name: database-pgpool
+      labels:
+        name: database-balancer
+        node: pgpool
+        system: {{ .Values.postDock.name }}
+        app: {{ .Values.postDock.name }}
+    spec:
+      containers:
+      - name: database-pgpool
+        image: {{ .Values.pgpool.image }}:{{ .Values.pgpool.tag }}
+        livenessProbe:
+          exec:
+            command: ['bash', '-c', '/usr/local/bin/pgpool/has_write_node.sh && /usr/local/bin/pgpool/has_enough_backends.sh']
+          initialDelaySeconds: 600
+          timeoutSeconds: 10
+          periodSeconds: 30
+          successThreshold: 1
+          failureThreshold: 3
+        imagePullPolicy: Always
+{{ if .Values.pgpool.resources }}
+        resources:
+{{ toYaml .Values.pgpool.resources | indent 10 }}
+{{ end }}
+        ports:
+          - containerPort: 5432
+        env:
+{{ if .Values.pgpool.env }}
+{{ toYaml .Values.pgpool.env | indent 10 }}
+{{ end }}
+          - name: "PCP_USER"
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.postDock.name }}-secret
+                key: app.db.pool.pcp.user
+          - name: "PCP_PASSWORD"
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.postDock.name }}-secret
+                key: app.db.pool.pcp.password
+          - name: "CHECK_USER"
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.postDock.name }}-secret
+                key: app.db.cluster.replication.user
+          - name: "CHECK_PASSWORD"
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.postDock.name }}-secret
+                key: app.db.cluster.replication.password
+          - name: "DB_USERS"
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.postDock.name }}-secret
+                key: app.db.pool.users
+          - name: "BACKENDS"
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.postDock.name }}-config
+                key: app.db.pool.backends

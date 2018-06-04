@@ -1,0 +1,15 @@
+{{ if .Values.barman.backupSchedule }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: barman-data-{{ .Values.postDock.name }}-barman-node-0
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.barman.volume.size }}
+  selector:
+    matchLabels:
+      system: {{ .Values.postDock.name }}-barman
+{{ end }}

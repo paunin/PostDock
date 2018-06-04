@@ -1,0 +1,17 @@
+{{ range $i, $e := .Values.postgres.nodes }}
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: db-data-{{ $.Values.postDock.name }}-db-node-{{ $i }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ $e.volume.size }}
+  selector:
+    matchLabels:
+      system: {{ $.Values.postDock.name }}-db
+      node: node-{{ $i }}
+{{ end }}

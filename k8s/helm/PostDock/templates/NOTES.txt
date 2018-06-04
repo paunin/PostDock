@@ -1,0 +1,13 @@
+May the force be with you in this release of {{ .Chart.Name }}={{ .Release.Name }}
+
+Your database will be accessible through pgpool k8s service:
+* Host - {{ .Values.postDock.name }}-pgpool
+* Port - 5432
+* User - {{ .Values.postgres.db.user }}
+* Database - {{ .Values.postgres.db.name }}
+
+To read:
+* Useful commands - https://github.com/paunin/PostDock#useful-commands
+* Recovery of cluster from backups - https://github.com/paunin/PostDock/blob/master/doc/RECOVERY.md
+* Documentation - https://github.com/paunin/PostDock
+* Issues tracker - https://github.com/paunin/PostDock/issues

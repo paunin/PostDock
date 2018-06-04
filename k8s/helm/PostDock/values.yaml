@@ -1,0 +1,107 @@
+# Default values for postdoc.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+postDock:
+  # setup.name - name for your setup, unique name allows you to have many releases of postdock in the same namespace
+  name: mysystem
+# postgres - postgres component related settings
+postgres:
+  # postgres.image - is the image to use for postgres component
+  image: postdock/postgres
+  # postgres.tag - is the tag to use for postgres component image (@see https://hub.docker.com/r/postdock/postgres/tags/)
+  tag: latest-postgres10-repmgr32
+  # postgres.replicas - number of nodes in you postgres cluster
+  replicas: 3
+  # postgres.clusterName - cluster name inside PostDock
+  clusterName: mysystem_cluster
+  # postgres.db - database and credentials for it which will be created on PostDock start
+  db:
+    # postgres.db.name - database name
+    name: mysystem.mysystem
+    # postgres.db.user - database user to access DB {postgres.db.name}
+    user: wide
+    # postgres.db.password - database user {postgres.db.user} password
+    password: pass
+  # postgres.replicationDb - database for metadata and credentials for it which will be created on PostDock start
+  replicationDb:
+    # postgres.replicationDb.user - database user to access DB {postgres.replicationDb.name}
+    name: replication_db
+    # postgres.replicationDb.user - database user to access DB {postgres.replicationDb.name}
+    user: replica_user
+    # postgres.replicationDb.password - database user {postgres.replicationDb.user} password
+    password: replica_pass
+  # postgres.nodes - configurations per postgres node in PostDock release
+  nodes:
+    # postgres.nodes.[*].volume - define how the volume for your node will look like
+    #   .size - size of the volume and claim
+    #   .recalimPolicy - k8s recalim policy
+    #   .definition - will be copied to volume object as is, 
+    #                 if empty, volume will not be created for the node (assuming k8s will manage it by itself)
+    #                 Examples:
+    #                 ```
+    #                   hostPath:
+    #                     path: /tmp/db-data-mysystem-db-node-0
+    #                 ```
+    #                 ```
+    #                   awsElasticBlockStore:
+    #                     fsType: ext4
+    #                     volumeID: vol-xxxxxxx
+    #                 ```
+    - volume:
+        size: 100Gi
+        recalimPolicy: Delete
+    - volume:
+        size: 100Gi
+        recalimPolicy: Delete
+    - volume:
+        size: 100Gi
+        recalimPolicy: Delete
+  # postgres.resources - define (in k8s style) resources for postgres pods of PostDock release
+  resources:
+  # postgres.env - environment variables for postgres nodes (@see https://github.com/paunin/PostDock#postgres)
+  env:
+# Example:
+#    - name: CONFIGS
+#      value: wal_keep_segments:250,shared_buffers:300MB,archive_command:'/bin/true'
+
+# pgpool - pgpool component related settings
+pgpool:
+  # pgpool.image - is the image to use for pgpool component
+  image: postdock/pgpool
+  # pgpool.tag - is the tag to use for pgpool component image (@see https://hub.docker.com/r/postdock/pgpool/tags/)
+  tag: latest-pgpool37-postgres10
+  # pgpool.replicas - number of pgpools for your cluster
+  replicas: 2
+  # pgpool.users - users in format of PostDock to access cluster through pgpool (@see https://github.com/paunin/PostDock#pgpool)
+  users: wide:pass
+  # pgpool.pcp - pcp settings for pgpool
+  pcp:
+    # pgpool.pcp.user - username for pcp access
+    user: pcp_user
+    # pgpool.pcp.password - password for pcp user {pgpool.pcp.user}
+    password: pcp_pass
+  # pgpool.resources - define (in k8s style) resources for pgpool pods of PostDock release
+  resources:
+  # pgpool.env - environment variables for pgpool nodes (@see https://github.com/paunin/PostDock#pgpool)
+  env:
+# Example:
+#    - name: CONFIGS
+#      value: num_init_children:60,max_pool:4,client_idle_limit:900,connection_life_time:300
+
+# barman - barman component related settings
+barman:
+  # barman.image - is the image to use for barman component
+  image: postdock/barman
+  # barman.tag - is the tag to use for barman component image (@see https://hub.docker.com/r/postdock/postgres/tags/)
+  tag: latest-barman24-postgres10
+  # barman.backupSchedule - how often barman should do backups, empty schedule will disable barman
+  backupSchedule: "*/30 */5 * * *"
+  # barman.resources - define (in k8s style) resources for barman pod of PostDock release
+  resources:
+  # barman.env - environment variables for barman nodes (@see https://github.com/paunin/PostDock#barman)
+  env:
+  # barman.volume - same as {postgres.nodes.[*].volume}
+  volume:
+    size: 200Gi
+    recalimPolicy: Delete

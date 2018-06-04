@@ -1,0 +1,95 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.postDock.name }}-db-node
+  labels:
+    name: database
+    system: {{ .Values.postDock.name }}
+    app: {{ .Values.postDock.name }}
+spec:
+  updateStrategy: 
+    type: RollingUpdate
+  replicas: {{ .Values.postgres.replicas }}
+  serviceName: "{{ .Values.postDock.name }}-db"
+  template:
+    metadata:
+      labels:
+        name: database
+        system: {{ .Values.postDock.name }}
+    spec:
+      containers:
+        - name: db-node
+          image: {{ .Values.postgres.image }}:{{ .Values.postgres.tag }}
+          livenessProbe:
+            exec:
+              command: ['bash', '-c', '/usr/local/bin/cluster/healthcheck/is_major_master.sh']
+            initialDelaySeconds: 600
+            timeoutSeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            failureThreshold: 3
+          imagePullPolicy: Always
+{{ if .Values.postgres.resources }}
+          resources:
+{{ toYaml .Values.postgres.resources | indent 12 }}
+{{ end }}
+          env:
+{{ if .Values.postgres.env }}
+{{ toYaml .Values.postgres.env | indent 12 }}
+{{ end }}
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: "REPLICATION_PRIMARY_HOST"
+              value: "{{ .Values.postDock.name }}-db-node-0.{{ .Values.postDock.name }}-db"
+            - name: "PARTNER_NODES"
+              value: "{{ range $i, $e := .Values.postgres.nodes }}{{ if $i }},{{ end }}{{ $.Values.postDock.name }}-db-node-{{ $i }}.{{ $.Values.postDock.name }}-db{{ end }}"
+            - name: "NODE_NAME"
+              value: "$(MY_POD_NAME)"
+            - name: "CLUSTER_NODE_NETWORK_NAME"
+              value: "$(MY_POD_NAME).{{ .Values.postDock.name }}-db"
+            - name: "POSTGRES_DB"
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.postDock.name }}-config
+                  key: app.db.database
+            - name: "POSTGRES_USER"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postDock.name }}-secret
+                  key: app.db.user
+            - name: "POSTGRES_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postDock.name }}-secret
+                  key: app.db.password
+            - name: "CLUSTER_NAME"
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.postDock.name }}-config
+                  key: app.db.cluster.name
+            - name: "REPLICATION_DB"
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.postDock.name }}-config
+                  key: app.db.cluster.replication.db
+            - name: "REPLICATION_USER"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postDock.name }}-secret
+                  key: app.db.cluster.replication.user
+            - name: "REPLICATION_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postDock.name }}-secret
+                  key: app.db.cluster.replication.password
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: db-data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: db-data
+        
