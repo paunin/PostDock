@@ -2,7 +2,7 @@
 
 PostgreSQL cluster with **High Availability** and **Self Healing** features for any cloud and docker environment (Amazon, Google Cloud, Kubernetes, Docker Compose, Docker Swarm, Apache Mesos)
 
-![Formula](./artwork/formula2.png)
+![Formula](https://raw.githubusercontent.com/paunin/PostDock/master/artwork/formula2.png)
 
 [![Build Status](https://travis-ci.org/paunin/PostDock.svg?branch=master)](https://travis-ci.org/paunin/PostDock)
 
