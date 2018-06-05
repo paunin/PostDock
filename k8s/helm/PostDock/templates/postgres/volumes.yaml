@@ -1,0 +1,19 @@
+{{ range $i, $e := .Values.postgres.nodes }}
+  {{ if .volume.definition }}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: db-data-{{ $.Values.postDock.name }}-db-node-{{ $i }}
+  labels:
+    system: {{ $.Values.postDock.name }}-db
+    node: node-{{ $i }}
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: {{ $e.volume.size }}
+  persistentVolumeReclaimPolicy: {{ $e.volume.recalimPolicy }}
+{{ toYaml .volume.definition | indent 2 }}
+  {{ end }}
+{{ end }}

@@ -1,0 +1,68 @@
+{{ if .Values.barman.backupSchedule }}
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.postDock.name }}-barman-node
+  labels:
+    name: barman
+    system: {{ .Values.postDock.name }}
+    app: {{ .Values.postDock.name }}
+spec:
+  updateStrategy: 
+    type: RollingUpdate
+  replicas: 1
+  serviceName: "{{ .Values.postDock.name }}-barman"
+  template:
+    metadata:
+      labels:
+        name: database
+        system: {{ .Values.postDock.name }}
+    spec:
+      containers:
+        - name: barman-node
+          image: {{ .Values.barman.image }}:{{ .Values.barman.tag }}
+{{ if .Values.barman.resources }}
+          resources:
+{{ toYaml .Values.barman.resources | indent 12 }}
+{{ end }}
+          env:
+{{ if .Values.barman.env }}
+{{ toYaml .Values.barman.env | indent 12 }}
+{{ end }}
+            - name: "BACKUP_SCHEDULE"
+              value: {{ .Values.barman.backupSchedule | quote }}
+            - name: "POSTGRES_DB"
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.postDock.name }}-config
+                  key: app.db.database
+            - name: "POSTGRES_USER"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postDock.name }}-secret
+                  key: app.db.user
+            - name: "POSTGRES_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postDock.name }}-secret
+                  key: app.db.password
+            - name: "REPLICATION_USER"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postDock.name }}-secret
+                  key: app.db.cluster.replication.user
+            - name: "REPLICATION_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postDock.name }}-secret
+                  key: app.db.cluster.replication.password
+            # @todo: should be service which always points to master - https://github.com/paunin/PostDock/issues/137
+            - name: "REPLICATION_HOST"
+              value: {{ .Values.postDock.name }}-db-node-0.{{ .Values.postDock.name }}-db
+          volumeMounts:
+            - name: barman-data
+              mountPath: /var/backups
+  volumeClaimTemplates:
+    - metadata:
+        name: barman-data
+{{ end }}

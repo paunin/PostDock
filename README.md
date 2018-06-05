@@ -2,7 +2,9 @@
 
 PostgreSQL cluster with **High Availability** and **Self Healing** features for any cloud and docker environment (Amazon, Google Cloud, Kubernetes, Docker Compose, Docker Swarm, Apache Mesos)
 
-<img align="right" width="400" src="https://github.com/paunin/PostDock/blob/master/artwork/logo.png?raw=true">
+![Formula](./artwork/formula2.png)
+
+[![Build Status](https://travis-ci.org/paunin/PostDock.svg?branch=master)](https://travis-ci.org/paunin/PostDock)
 
 - [Info](#info)
   * [Features](#features)
@@ -29,8 +31,6 @@ PostgreSQL cluster with **High Availability** and **Self Healing** features for 
 - [Documentation and manuals](#documentation-and-manuals)
 
 -------
-
-[![Build Status](https://travis-ci.org/paunin/PostDock.svg?branch=master)](https://travis-ci.org/paunin/PostDock)
 
 ## Info
 ### Features
@@ -95,6 +95,10 @@ Please check comments for each `ENV` variable in [./docker-compose/latest.yml](.
 
 ## Start cluster in Kubernetes
 
+### Using Helm (recomended for production)
+You can install PostDock with [Helm](https://helm.sh/) package manager check the [README.md of the package](./k8s/helm/PostDock/README.md) for more information
+
+### Simple (NOT recomended for production)
 To make it easier repository contains services' objects under `k8s` dir. Setup `PostgreSQL` cluster following the steps in [the example](./k8s/README.md). It also has information how to check cluster state
 
 ## Configuring the cluster
