@@ -24,7 +24,7 @@ echo ">>> Auto-detected master name: '$CURRENT_MASTER'"
 if [ -f "$MASTER_ROLE_LOCK_FILE_NAME" ]; then
     echo ">>> The node was acting as a master before restart!"
 
-    if [[ "$CURRENT_MASTER" == "" ]]; then
+    if [[ "$CURRENT_MASTER" == "" ]] || [[ "$CURRENT_MASTER" == "$CLUSTER_NODE_NETWORK_NAME" ]]; then
         echo ">>> Can not find new master. Will keep starting postgres normally..."
     else
         echo ">>> Current master is $CURRENT_MASTER. Will clone/rewind it and act as a standby node..."
