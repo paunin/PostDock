@@ -4,7 +4,7 @@ RUN apt-get update --fix-missing && \
     apt-get install -y postgresql-server-dev-$PG_MAJOR wget openssh-server barman-cli
 
 {{ #REPMGR_LATEST }}
-RUN apt-get install -y postgresql-$PG_MAJOR-repmgr={{ REPMGR_VERSION }}\*
+RUN apt-get install -y postgresql-$PG_MAJOR-repmgr={{ REPMGR_PACKAGE_VERSION }}\*
 {{ /REPMGR_LATEST }}{{ ^REPMGR_LATEST }}
 RUN TEMP_DEB="$(mktemp)" && \
     wget -O "$TEMP_DEB" "http://atalia.postgresql.org/morgue/r/repmgr/repmgr-common_{{ REPMGR_PACKAGE_VERSION }}_all.deb" && \

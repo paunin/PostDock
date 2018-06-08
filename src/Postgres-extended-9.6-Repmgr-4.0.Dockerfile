@@ -1,7 +1,7 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Sat  2 Jun 2018 15:28:51 +07              ##
+##               BUILD_NUMBER=Wed  4 Jul 2018 10:16:37 MSK              ##
 ##########################################################################
 
 FROM postgres:9.6
@@ -9,7 +9,7 @@ FROM postgres:9.6
 RUN apt-get update --fix-missing && \
     apt-get install -y postgresql-server-dev-$PG_MAJOR wget openssh-server barman-cli
 
-RUN apt-get install -y postgresql-$PG_MAJOR-repmgr=4.0\*
+RUN apt-get install -y postgresql-$PG_MAJOR-repmgr=4.0.6\*
 
 # Inherited variables
 # ENV POSTGRES_PASSWORD monkey_pass
