@@ -6,18 +6,21 @@ touch $REPMGR_CONFIG_FILE
 
 # repmgr3                   | repmgr4
 # ====================================================
+# cluster                   | -
 # node                      | node_id
 # loglevel                  | log_level
 # logfacility	            | log_facility
 # logfile                   | log_file
 # barman_server             | barman_host
 # master_reponse_timeout    | async_query_timeout
+# -                         | location
+# -                         | degraded_monitoring_timeout
 
 if [ "$REPMGR_MAJOR" == "3" ]; then
     PRELOAD_REPMGR_LIB="repmgr_funcs"
     # deprecated for v4 params
     echo "cluster=$CLUSTER_NAME" >> $REPMGR_CONFIG_FILE
-elif [ "$REPMGR_MAJOR" == "4" ]; then   
+elif [ "$REPMGR_MAJOR" == "4" ]; then  
     PRELOAD_REPMGR_LIB="repmgr"
     # new required params
     echo "degraded_monitoring_timeout=$REPMGR_DEGRADED_MONITORING_TIMEOUT" >> $REPMGR_CONFIG_FILE

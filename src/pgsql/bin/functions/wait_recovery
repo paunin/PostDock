@@ -2,7 +2,7 @@
 set -e
 echo ">>> Waiting for local postgres server recovery if any in progress:LAUNCH_RECOVERY_CHECK_INTERVAL=$LAUNCH_RECOVERY_CHECK_INTERVAL"
 
-echo ">>> Recovery WAL id:"
+echo ">>> Recovery is in progress:"
 # LAUNCH_RECOVERY_CHECK_INTERVAL
 PREVIOUS_RECOVERY_WAL=''
 
@@ -16,7 +16,7 @@ do
         echo ">>>>>> RECOVERY_WAL_ID is empty!"
         break
     else
-        echo "$RECOVERY_WAL_ID"
+        echo ">>>>>> WAL id: $RECOVERY_WAL_ID"
     fi
     
     if [[ "$WAL_RECEIVER_FLAG" == "1" ]];then

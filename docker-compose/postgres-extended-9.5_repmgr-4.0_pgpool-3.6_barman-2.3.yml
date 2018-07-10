@@ -1,0 +1,300 @@
+
+##########################################################################
+##                         AUTO-GENERATED FILE                          ##
+##               BUILD_NUMBER=Sat  2 Jun 2018 15:28:51 +07              ##
+##########################################################################
+
+version: '2'
+networks:
+    cluster:
+        driver: bridge
+
+volumes:
+    pgmaster:
+    pgslave1:
+    pgslave2:
+    pgslave3:
+    pgslave4:
+    backup:
+
+services:
+    pgmaster:
+        build:
+            context: ../src
+            dockerfile: Postgres-extended-9.5-Repmgr-4.0.Dockerfile
+        environment:
+            NODE_ID: 1 # Integer number of node (not required if can be extracted from NODE_NAME var, e.g. node-45 => 1045)
+            NODE_NAME: node1 # Node name
+            CLUSTER_NODE_NETWORK_NAME: pgmaster # (default: hostname of the node)
+            
+            PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
+            REPLICATION_PRIMARY_HOST: pgmaster # That should be ignored on the same node
+            
+            NODE_PRIORITY: 100  # (default: 100)
+            SSH_ENABLE: 1
+            #database we want to use for application
+            POSTGRES_PASSWORD: monkey_pass
+            POSTGRES_USER: monkey_user
+            POSTGRES_DB: monkey_db
+            CLEAN_OVER_REWIND: 0
+            CONFIGS_DELIMITER_SYMBOL: ;
+            CONFIGS: "listen_addresses:'*';max_replication_slots:5;shared_preload_libraries:'pglogical'"
+                                  # in format variable1:value1[,variable2:value2[,...]] if CONFIGS_DELIMITER_SYMBOL=, and CONFIGS_ASSIGNMENT_SYMBOL=:
+                                  # used for pgpool.conf file
+            #defaults:
+            CLUSTER_NAME: pg_cluster # default is pg_cluster
+            REPLICATION_DB: replication_db # default is replication_db
+            REPLICATION_USER: replication_user # default is replication_user
+            REPLICATION_PASSWORD: replication_pass # default is replication_pass
+            
+        ports:
+            - 5422:5432
+        volumes:
+            - pgmaster:/var/lib/postgresql/data
+            - ./ssh/:/home/postgres/.ssh/keys
+        networks:
+            cluster:
+                aliases:
+                    - pgmaster
+#<<< Branch 1
+    pgslave1:
+        build:
+            context: ../src
+            dockerfile: Postgres-extended-9.5-Repmgr-4.0.Dockerfile
+        environment:
+            NODE_ID: 2
+            NODE_NAME: node2
+            CLUSTER_NODE_NETWORK_NAME: pgslave1 # (default: hostname of the node)
+            SSH_ENABLE: 1
+            PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
+            REPLICATION_PRIMARY_HOST: pgmaster
+            CLEAN_OVER_REWIND: 1
+            CONFIGS_DELIMITER_SYMBOL: ;
+            CONFIGS: "max_replication_slots:10;shared_preload_libraries:'pglogical'" #some overrides
+        ports:
+            - 5441:5432
+        volumes:
+            - pgslave1:/var/lib/postgresql/data
+            - ./ssh:/home/postgres/.ssh/keys
+        networks:
+            cluster:
+                aliases:
+                    - pgslave1
+
+    # Add more slaves if required
+    pgslave2:
+        build:
+            context: ../src
+            dockerfile: Postgres-extended-9.5-Repmgr-4.0.Dockerfile
+        environment:
+            NODE_ID: 3
+            NODE_NAME: node3
+            CLUSTER_NODE_NETWORK_NAME: pgslave2 # (default: hostname of the node)
+
+            REPLICATION_PRIMARY_HOST: pgslave1 # I want to have cascade Streeming replication
+            #USE_REPLICATION_SLOTS: 0
+            CONFIGS_DELIMITER_SYMBOL: ;
+            CONFIGS: "listen_addresses:'*';shared_preload_libraries:'pglogical'"
+        ports:
+            - 5442:5432
+        volumes:
+            - pgslave2:/var/lib/postgresql/data
+        networks:
+            cluster:
+                aliases:
+                    - pgslave2
+#>>> Branch 1
+#<<< Branch 2
+    pgslave3:
+        build:
+            context: ../src
+            dockerfile: Postgres-extended-9.5-Repmgr-4.0.Dockerfile
+        environment:
+            NODE_ID: 4
+            NODE_NAME: node4
+            CLUSTER_NODE_NETWORK_NAME: pgslave3 # (default: hostname of the node)
+
+            PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
+            REPLICATION_PRIMARY_HOST: pgmaster
+            NODE_PRIORITY: 200  # (default: 100)
+            CLEAN_OVER_REWIND: 1
+            CONFIGS_DELIMITER_SYMBOL: ;
+            CONFIGS: "listen_addresses:'*';shared_preload_libraries:'pglogical'"
+        ports:
+            - 5443:5432
+        volumes:
+            - pgslave3:/var/lib/postgresql/data
+        networks:
+            cluster:
+                aliases:
+                    - pgslave3
+
+    pgslave4:
+        build:
+            context: ../src
+            dockerfile: Postgres-extended-9.5-Repmgr-4.0.Dockerfile
+        environment:
+            NODE_ID: 5
+            NODE_NAME: node5
+            CLUSTER_NODE_NETWORK_NAME: pgslave4 # (default: hostname of the node)
+
+            REPLICATION_PRIMARY_HOST: pgslave3
+            #USE_REPLICATION_SLOTS: 0
+            CONFIGS_DELIMITER_SYMBOL: ;
+            CONFIGS: "listen_addresses:'*';shared_preload_libraries:'pglogical'"
+        ports:
+            - 5444:5432
+        volumes:
+            - pgslave4:/var/lib/postgresql/data
+        networks:
+            cluster:
+                aliases:
+                    - pgslave4
+#>>> Branch 2
+    backup:
+        build:
+            context: ../src
+            dockerfile: Barman-2.3-Postgres-9.6.Dockerfile
+        environment:
+            REPLICATION_USER: replication_user # default is replication_user
+            REPLICATION_PASSWORD: replication_pass # default is replication_pass
+            REPLICATION_HOST: pgmaster
+            POSTGRES_PASSWORD: monkey_pass
+            POSTGRES_USER: monkey_user
+            POSTGRES_DB: monkey_db
+            SSH_ENABLE: 1
+            BACKUP_SCHEDULE: "*/30 */5 * * *"
+        volumes:
+            - backup:/var/backups
+            - ./ssh:/home/postgres/.ssh/keys
+        networks:
+            cluster:
+                aliases:
+                    - backup
+    pgpool:
+        build:
+            context: ../src
+            dockerfile: Pgpool-3.6-Postgres-9.6.Dockerfile
+        environment:
+            PCP_USER: pcp_user
+            PCP_PASSWORD: pcp_pass
+            WAIT_BACKEND_TIMEOUT: 60
+
+            CHECK_USER: monkey_user
+            CHECK_PASSWORD: monkey_pass
+            CHECK_PGCONNECT_TIMEOUT: 3 #timout for checking if primary node is healthy
+            SSH_ENABLE: 1
+            DB_USERS: monkey_user:monkey_pass # in format user:password[,user:password[...]]
+            BACKENDS: "0:pgmaster:5432:1:/var/lib/postgresql/data:ALLOW_TO_FAILOVER,1:pgslave1::::,3:pgslave3::::,2:pgslave2::::" #,4:pgslaveDOES_NOT_EXIST::::
+                      # in format num:host:port:weight:data_directory:flag[,...]
+                      # defaults:
+                      #   port: 5432
+                      #   weight: 1
+                      #   data_directory: /var/lib/postgresql/data
+                      #   flag: ALLOW_TO_FAILOVER
+            REQUIRE_MIN_BACKENDS: 3 # minimal number of backends to start pgpool (some might be unreachable)
+            CONFIGS: "num_init_children:250,max_pool:4"
+                      # in format variable1:value1[,variable2:value2[,...]] if CONFIGS_DELIMITER_SYMBOL=, and CONFIGS_ASSIGNMENT_SYMBOL=:
+                      # used for pgpool.conf file
+        ports:
+            - 5430:5432
+            - 9898:9898 # PCP
+        volumes:
+            - ./ssh:/home/postgres/.ssh/keys
+        networks:
+            cluster:
+                aliases:
+                    - pgpool
+# the rest is for tests
+    postgres_ext:
+        build:
+            context: ../src
+            dockerfile: Postgres-extended-9.5-Repmgr-4.0.Dockerfile
+        environment:
+          NODE_ID: 101 
+          NODE_NAME: node101 # Node name
+          CLUSTER_NODE_NETWORK_NAME: postgres_ext # (default: hostname of the node)
+          POSTGRES_PASSWORD: monkey_pass
+          POSTGRES_USER: monkey_user
+          POSTGRES_DB: monkey_db
+          CLEAN_OVER_REWIND: 0
+          CONFIGS_DELIMITER_SYMBOL: ;
+          CONFIGS: "listen_addresses:'*';shared_preload_libraries:'pglogical'"
+    postgres_conf:
+        build:
+          context: ../src/
+          dockerfile: Postgres-extended-9.5-Repmgr-4.0.Dockerfile
+        environment:
+          NODE_NAME: node-102 # Node name
+          CLUSTER_NODE_NETWORK_NAME: postgres_conf # (default: hostname of the node)
+          POSTGRES_PASSWORD: monkey_pass
+          POSTGRES_USER: monkey_user
+          POSTGRES_DB: monkey_db
+          CLEAN_OVER_REWIND: 0
+          CONFIGS: "listen_addresses)'some_host'|max_replication_slots)55"
+          CONFIGS_DELIMITER_SYMBOL: "|"
+          CONFIGS_ASSIGNMENT_SYMBOL: ")"
+    pgpool_conf:
+        build:
+            context: ../src
+            dockerfile: Pgpool-3.6-Postgres-9.6.Dockerfile
+        environment:
+            PCP_USER: pcp_user
+            PCP_PASSWORD: pcp_pass
+
+            CHECK_USER: monkey_user
+            CHECK_PASSWORD: monkey_pass
+
+            CHECK_PGCONNECT_TIMEOUT: 3 #timout for checking if primary node is healthy
+            DB_USERS: monkey_user:monkey_pass # in format user:password[,user:password[...]]
+            CONFIGS: "num_init_children)12|max_pool)13"
+            CONFIGS_DELIMITER_SYMBOL: "|"
+            CONFIGS_ASSIGNMENT_SYMBOL: ")"
+        ports:
+            - 5440:5432
+            - 9897:9898 # PCP
+    pgmaster2:
+        build:
+            context: ../src
+            dockerfile: Postgres-extended-9.5-Repmgr-4.0.Dockerfile
+        environment:
+
+            NODE_ID: 1
+            NODE_NAME: node1
+            CLUSTER_NODE_NETWORK_NAME: pgmaster2
+
+            POSTGRES_PASSWORD: monkey_pass
+            POSTGRES_USER: monkey_user
+            POSTGRES_DB: monkey_db
+            CONFIGS_DELIMITER_SYMBOL: ;
+            CONFIGS: "listen_addresses:'*';shared_preload_libraries:'pglogical'"
+        ports:
+            - 5439:5432
+        networks:
+            cluster:
+                aliases:
+                    - pgmaster2
+    pgpool2:
+        build:
+            context: ../src
+            dockerfile: Pgpool-3.6-Postgres-9.6.Dockerfile
+        depends_on:
+            - pgmaster
+            - pgmaster2
+        environment:
+            PCP_USER: pcp_user
+            PCP_PASSWORD: pcp_pass
+
+            CHECK_USER: monkey_user
+            CHECK_PASSWORD: monkey_pass
+            CHECK_PGCONNECT_TIMEOUT: 3 #timout for checking if primary node is healthy
+
+            DB_USERS: monkey_user:monkey_pass # in format user:password[,user:password[...]]
+            BACKENDS: "0:pgmaster::::,1:pgmaster2::::"
+        ports:
+            - 5431:5432
+            - 9899:9898 # PCP
+        networks:
+            cluster:
+                aliases:
+                    - pgpool2
