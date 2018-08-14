@@ -10,14 +10,14 @@ echo '>>> STARTING SSH (if required)...'
 source /home/postgres/.ssh/entrypoint.sh
 
 echo '>>> STARTING POSTGRES...'
-/usr/local/bin/cluster/postgres/entrypoint.sh &
-wait ${!}
-code=$?
-echo ">>> Foreground processes returned code: '$code'"
+/usr/local/bin/cluster/postgres/entrypoint.sh & wait ${!}
+
+EXIT_CODE=$?
+echo ">>> Foreground processes returned code: '$EXIT_CODE'"
 
 while [ -f /var/run/recovery.lock ]; do
     sleep 1;
 done;
 
 system_exit
-exit $code
+exit $EXIT_CODE
