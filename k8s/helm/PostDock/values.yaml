@@ -35,7 +35,7 @@ postgres:
   nodes:
     # postgres.nodes.[*].volume - define how the volume for your node will look like
     #   .size - size of the volume and claim
-    #   .recalimPolicy - k8s recalim policy
+    #   .reclaimPolicy - k8s reclaim policy
     #   .definition - will be copied to volume object as is, 
     #                 if empty, volume will not be created for the node (assuming k8s will manage it by itself)
     #                 Examples:
@@ -50,13 +50,13 @@ postgres:
     #                 ```
     - volume:
         size: 100Gi
-        recalimPolicy: Delete
+        reclaimPolicy: Delete
     - volume:
         size: 100Gi
-        recalimPolicy: Delete
+        reclaimPolicy: Delete
     - volume:
         size: 100Gi
-        recalimPolicy: Delete
+        reclaimPolicy: Delete
   # postgres.resources - define (in k8s style) resources for postgres pods of PostDock release
   resources:
   # postgres.env - environment variables for postgres nodes (@see https://github.com/paunin/PostDock#postgres)
@@ -104,4 +104,4 @@ barman:
   # barman.volume - same as {postgres.nodes.[*].volume}
   volume:
     size: 200Gi
-    recalimPolicy: Delete
+    reclaimPolicy: Delete

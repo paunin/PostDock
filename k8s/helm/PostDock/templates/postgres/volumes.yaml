@@ -13,7 +13,7 @@ spec:
   - ReadWriteOnce
   capacity:
     storage: {{ $e.volume.size }}
-  persistentVolumeReclaimPolicy: {{ $e.volume.recalimPolicy }}
+  persistentVolumeReclaimPolicy: {{ $e.volume.reclaimPolicy }}
 {{ toYaml .volume.definition | indent 2 }}
   {{ end }}
 {{ end }}
