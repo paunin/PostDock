@@ -48,8 +48,12 @@ source /usr/local/bin/cluster/repmgr/configure.sh
 
 echo ">>> Sending in background postgres start..."
 if [[ "$CURRENT_REPLICATION_PRIMARY_HOST" == "" ]]; then
-    cp -f /usr/local/bin/cluster/postgres/primary/entrypoint.sh /docker-entrypoint-initdb.d/
+    cp -f /usr/local/bin/cluster/postgres/primary/entrypoint.sh /primary-entrypoint.sh
     /docker-entrypoint.sh postgres &
+    sleep 20s
+    echo ">>> Starting primary postgres image entrypoint process..."
+    gosu postgres /primary-entrypoint.sh
+    echo "<<< DONE primary postgres image entrypoint process"
 else
     /usr/local/bin/cluster/postgres/standby/entrypoint.sh
 fi
