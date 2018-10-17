@@ -13,10 +13,10 @@ RUN groupadd -r postgres --gid=999 && useradd -r -g postgres -d /home/postgres  
 ARG GOSU_VERSION=1.7
 RUN set -x \
 	&& apt-get update && apt-get install -y --no-install-recommends ca-certificates wget && rm -rf /var/lib/apt/lists/* \
-	&& wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
-	&& wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture).asc" \
+	&& wget --no-check-certificate -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
+	&& wget --no-check-certificate -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture).asc" \
 	&& export GNUPGHOME="$(mktemp -d)" \
-	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
+	&& gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
 	&& gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
 	&& rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc \
 	&& chmod +x /usr/local/bin/gosu \
@@ -32,7 +32,7 @@ RUN  apt-get install -y postgresql-client-10
 
 RUN  apt-get install -y libpgpool0=3.7\* pgpool2=3.7\*
 
-RUN  wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
+RUN  wget --no-check-certificate https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
      tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 COPY ./ssh /home/postgres/.ssh
