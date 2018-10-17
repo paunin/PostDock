@@ -33,14 +33,13 @@ function template {
 }
     
 # Getting templates processor
-if [ ! -f "tmp/mo" ]; then
+if [ ! -f "/tmp/mo" ]; then
     echo "> Getting Mustache template processor Mo"
-    mkdir tmp
-    curl -sSL https://git.io/get-mo > tmp/mo
-    chmod +x tmp/mo
+    curl -sSLk https://git.io/get-mo > /tmp/mo
+    chmod +x /tmp/mo
 fi
 
-. ./tmp/mo
+. /tmp/mo
 for SYSTEM_PATH in `find ./make/* -maxdepth 1 -type d`; do
     SYSTEM=`basename $SYSTEM_PATH`
     if [ "$SYSTEM_TO_MAKE" != "" ] && [ "$SYSTEM_TO_MAKE" != "$SYSTEM" ]; then
