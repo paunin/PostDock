@@ -42,7 +42,18 @@ else
     fi
 fi
 
-KEYS=$(egrep '(ssl_cert_file|ssl_key_file)' $PGDATA/postgresql.conf|cut -d "=" -f 2-)
+# Tweak keys to avoid permission issues:
+ORIGKEYS=$(egrep '(ssl_cert_file|ssl_key_file)' $PGDATA/postgresql.conf|cut -d "=" -f 2-)
+KEYS=""
+
+for file in ${KEYS}; do
+    if [ -f /pg-ssl/$(dirname ${file}) ]; then
+        echo ">>> Copying SSL file from /pg-ssl/$(dirname ${file}) to ${file}"
+        cat /pg-ssl/$(dirname ${file}) > ${file}
+        KEYS="$KEYS ${file}"
+    fi
+done
+
 chown -R postgres $PGDATA $KEYS && chmod -R 0700 $PGDATA $KEYS
 
 source /usr/local/bin/cluster/repmgr/configure.sh
