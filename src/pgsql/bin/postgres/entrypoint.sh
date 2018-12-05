@@ -42,10 +42,13 @@ else
     fi
 fi
 
+
+echo ">>> Trying to configure SSL"
 # Tweak keys to avoid permission issues:
-ORIGKEYS=$(egrep '(ssl_cert_file|ssl_key_file)' $PGDATA/postgresql.conf|cut -d "=" -f 2-)
+ORIGKEYS=$(echo $CONFIGS|tr "," "\n"|egrep '(ssl_cert_file|ssl_key_file)'|cut -d ":" -f 2-)
 KEYS=""
 
+echo ">>> Trying to move ${ORIGKEYS} to proper folder"
 for file in ${ORIGKEYS}; do
     # Check for file or link pointing to file
     if [ -e /pg-ssl/$(basename ${file}) ]; then
