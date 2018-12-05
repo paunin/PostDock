@@ -42,7 +42,8 @@ else
     fi
 fi
 
-chown -R postgres $PGDATA && chmod -R 0700 $PGDATA
+KEYS=$(egrep '(ssl_cert_file|ssl_key_file)' $PGDATA/postgresql.conf|cut -d "=" -f 2-)
+chown -R postgres $PGDATA $KEYS && chmod -R 0700 $PGDATA $KEYS
 
 source /usr/local/bin/cluster/repmgr/configure.sh
 
