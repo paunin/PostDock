@@ -16,21 +16,6 @@ else
     postgres_configure
 fi
 
-# Tweak keys to avoid permission issues:
-ORIGKEYS=$(egrep '(ssl_cert_file|ssl_key_file)' $PGDATA/postgresql.conf|cut -d "=" -f 2-)
-KEYS=""
-
-for file in ${ORIGKEYS}; do
-    if [ -f /pg-ssl/$(basename ${file}) ]; then
-        echo ">>> Copying SSL file from /pg-ssl/$(basename ${file}) to ${file}"
-        mkdir -p $(dirname ${file})
-        cat /pg-ssl/$(basename ${file}) > ${file}
-        KEYS="$KEYS ${file}"
-    fi
-done
-
-chown -R postgres $KEYS
-chmod -R 0700  $KEYS
 
 export CURRENT_REPLICATION_PRIMARY_HOST=""
 CURRENT_MASTER=`cluster_master || echo ''`
@@ -57,7 +42,21 @@ else
     fi
 fi
 
-chown -R postgres $PGDATA && chmod -R 0700 $PGDATA
+# Tweak keys to avoid permission issues:
+ORIGKEYS=$(egrep '(ssl_cert_file|ssl_key_file)' $PGDATA/postgresql.conf|cut -d "=" -f 2-)
+KEYS=""
+
+for file in ${ORIGKEYS}; do
+    # Check for file or link pointing to file
+    if [ -e /pg-ssl/$(basename ${file}) ]; then
+        echo ">>> Copying SSL file from /pg-ssl/$(basename ${file}) to ${file}"
+        mkdir -p $(dirname ${file})
+        cat /pg-ssl/$(basename ${file}) > ${file}
+        KEYS="$KEYS ${file}"
+    fi
+done
+
+chown -R postgres $PGDATA $KEYS && chmod -R 0700 $PGDATA $KEYS
 
 source /usr/local/bin/cluster/repmgr/configure.sh
 
