@@ -45,7 +45,7 @@ fi
 
 echo ">>> Trying to configure SSL"
 # Tweak keys to avoid permission issues:
-ORIGKEYS=$(echo $CONFIGS|tr "," "\n"|egrep '(ssl_cert_file|ssl_key_file)'|cut -d ":" -f 2-)
+ORIGKEYS=$(echo $CONFIGS|tr "," "\n"|egrep '(ssl_cert_file|ssl_key_file)'|cut -d ":" -f 2-|tr "\n" " ")
 KEYS=""
 
 echo ">>> Trying to move ${ORIGKEYS} to proper folder"
@@ -56,6 +56,8 @@ for file in ${ORIGKEYS}; do
         mkdir -p $(dirname ${file})
         cat /pg-ssl/$(basename ${file}) > ${file}
         KEYS="$KEYS ${file}"
+    else:
+        echo ">>> ERROR: SSL File ${file} doesn't exist on disk"
     fi
 done
 
