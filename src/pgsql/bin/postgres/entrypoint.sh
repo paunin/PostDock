@@ -47,9 +47,10 @@ ORIGKEYS=$(egrep '(ssl_cert_file|ssl_key_file)' $PGDATA/postgresql.conf|cut -d "
 KEYS=""
 
 for file in ${ORIGKEYS}; do
-    if [ -f /pg-ssl/$(dirname ${file}) ]; then
-        echo ">>> Copying SSL file from /pg-ssl/$(dirname ${file}) to ${file}"
-        cat /pg-ssl/$(dirname ${file}) > ${file}
+    if [ -f /pg-ssl/$(basename ${file}) ]; then
+        echo ">>> Copying SSL file from /pg-ssl/$(basename ${file}) to ${file}"
+        mkdir -p $(dirname ${file})
+        cat /pg-ssl/$(basename ${file}) > ${file}
         KEYS="$KEYS ${file}"
     fi
 done
