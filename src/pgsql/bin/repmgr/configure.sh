@@ -17,7 +17,7 @@ pg_bindir=/usr/lib/postgresql/$PG_MAJOR/bin
 
 $REPMGR_NODE_ID_PARAM_NAME=$(get_node_id)
 node_name=$NODE_NAME
-conninfo='user=$REPLICATION_USER password=$REPLICATION_PASSWORD host=$CLUSTER_NODE_NETWORK_NAME dbname=$REPLICATION_DB port=5432 connect_timeout=$CONNECT_TIMEOUT'
+conninfo='user=$REPLICATION_USER password=$REPLICATION_PASSWORD host=$CLUSTER_NODE_NETWORK_NAME dbname=$REPLICATION_DB port=$REPLICATION_PRIMARY_PORT connect_timeout=$CONNECT_TIMEOUT'
 failover=automatic
 promote_command='PGPASSWORD=$REPLICATION_PASSWORD repmgr standby promote --log-level DEBUG --verbose'
 follow_command='PGPASSWORD=$REPLICATION_PASSWORD repmgr standby follow -W --log-level DEBUG --verbose'
