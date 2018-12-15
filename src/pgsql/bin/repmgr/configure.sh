@@ -36,6 +36,7 @@ if [[ "$CURRENT_REPLICATION_PRIMARY_HOST" != "" ]]; then
         REPLICATION_UPSTREAM_NODE_ID="$LOCKED_STANDBY"
     else
         wait_upstream_postgres
+        wait_upstream_node_id
         REPLICATION_UPSTREAM_NODE_ID=`get_upstream_node_id`
     fi
 

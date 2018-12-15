@@ -1,7 +1,7 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Sat  2 Jun 2018 15:28:51 +07              ##
+##               BUILD_NUMBER=Sun 16 Dec 2018 00:29:32 +08              ##
 ##########################################################################
 
 FROM golang:1.8-jessie
@@ -26,7 +26,10 @@ RUN  wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key a
 
 RUN  apt-get install -y postgresql-client-9.6
 
-RUN  apt-get install -y barman=2.4\*
+
+RUN TEMP_DEB="$(mktemp)" && \
+    wget -O "$TEMP_DEB"  "http://atalia.postgresql.org/morgue/b/barman/barman_2.4-1.pgdg80+1_all.deb" && \
+    (dpkg -i "$TEMP_DEB" || apt-get install -y -f) && rm -f "$TEMP_DEB"
 
 RUN apt-get -y install cron
 ADD barman/crontab /etc/cron.d/barman
