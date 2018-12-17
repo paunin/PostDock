@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+NODE_ID=''
+SLEEP_TIME=10
+
+TIMEOUT=300
+MAX_TRIES=`expr "$TIMEOUT" / "$SLEEP_TIME"`
+TRIES="$MAX_TRIES"
+
+echo ">>> Waiting for upstream node id $REPLICATION_DB on $CURRENT_REPLICATION_PRIMARY_HOST:$REPLICATION_PRIMARY_PORT(user: $REPLICATION_USER,password: *******), will try $MAX_TRIES times with delay $SLEEP_TIME seconds (TIMEOUT=$TIMEOUT)"
+
+while [[ "$TRIES" != "0" ]]
+do
+    NODE_ID=`get_upstream_node_id`
+    if [[ "$NODE_ID" == "" ]]; then
+        echo -n ">>>>>> Upstream node id is still not accessible on host $CURRENT_REPLICATION_PRIMARY_HOST:$REPLICATION_PRIMARY_PORT"
+    else
+        echo ">>>>>> Upstream node id $NODE_ID received from host $CURRENT_REPLICATION_PRIMARY_HOST:$REPLICATION_PRIMARY_PORT!"
+        exit 0
+    fi
+    sleep "$SLEEP_TIME"
+    echo " (will try $TRIES times more)"
+    TRIES=`expr "$TRIES" - 1`
+done
+
+echo ">>> Upstream node id is not accessible, even after $MAX_TRIES tries!"
+exit 1

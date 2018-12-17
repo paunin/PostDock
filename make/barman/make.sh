@@ -1,7 +1,7 @@
 echo ">>> Making barman"
 
 for VALS in "BARMAN_VERSION=2.3 BARMAN_PACKAGE_VERSION=2.3-2.pgdg80+1"\
-            "BARMAN_VERSION=2.4 BARMAN_LATEST=1"; do
+            "BARMAN_VERSION=2.4 BARMAN_PACKAGE_VERSION=2.4-1.pgdg80+1"; do
     eval $VALS
 
     for PG_CLIENT_VERSION in 9.6 10; do

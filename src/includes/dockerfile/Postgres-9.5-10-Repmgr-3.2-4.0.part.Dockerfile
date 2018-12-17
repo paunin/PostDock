@@ -50,7 +50,7 @@ ENV CONFIGS_ASSIGNMENT_SYMBOL :
                                 #CONFIGS_DELIMITER_SYMBOL and CONFIGS_ASSIGNMENT_SYMBOL are used to parse CONFIGS variable
                                 # if CONFIGS_DELIMITER_SYMBOL=| and CONFIGS_ASSIGNMENT_SYMBOL=>, valid configuration string is var1>val1|var2>val2
 
-{{ #REPMGR_LATEST }}
+{{ #REPMGR_SYNTAX_V4 }}
 ENV REPMGR_MAJOR 4
 ENV REPMGR_NODES_TABLE nodes
 ENV REPMGR_NODE_ID_COLUMN node_id
@@ -60,7 +60,7 @@ ENV REPMGR_SHOW_NODES_TABLE show_nodes
 ENV REPMGR_NODE_ID_PARAM_NAME node_id
 ENV REPMGR_LOG_LEVEL_PARAM_NAME log_level
 ENV REPMGR_MASTER_RESPONSE_TIMEOUT_PARAM_NAME async_query_timeout
-{{ /REPMGR_LATEST }}{{ ^REPMGR_LATEST }}
+{{ /REPMGR_SYNTAX_V4 }}{{ #REPMGR_SYNTAX_V3 }}
 ENV REPMGR_MAJOR 3
 ENV REPMGR_NODES_TABLE repl_nodes
 ENV REPMGR_NODE_ID_COLUMN id
@@ -70,7 +70,7 @@ ENV REPMGR_SHOW_NODES_TABLE repl_show_nodes
 ENV REPMGR_NODE_ID_PARAM_NAME node
 ENV REPMGR_LOG_LEVEL_PARAM_NAME loglevel
 ENV REPMGR_MASTER_RESPONSE_TIMEOUT_PARAM_NAME master_reponse_timeout
-{{ /REPMGR_LATEST }}
+{{ /REPMGR_SYNTAX_V3 }}
 
 # ENV CONFIGS "listen_addresses:'*'"
                                     # in format variable1:value1[,variable2:value2[,...]] if CONFIGS_DELIMITER_SYMBOL=, and CONFIGS_ASSIGNMENT_SYMBOL=:
