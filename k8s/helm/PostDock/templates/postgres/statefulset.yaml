@@ -20,6 +20,7 @@ spec:
       containers:
         - name: db-node
           image: {{ .Values.postgres.image }}:{{ .Values.postgres.tag }}
+          imagePullPolicy: Always
           livenessProbe:
             exec:
               command: ['bash', '-c', '/usr/local/bin/cluster/healthcheck/is_major_master.sh']
@@ -28,7 +29,6 @@ spec:
             periodSeconds: 30
             successThreshold: 1
             failureThreshold: 3
-          imagePullPolicy: Always
 {{ if .Values.postgres.resources }}
           resources:
 {{ toYaml .Values.postgres.resources | indent 12 }}
@@ -42,13 +42,13 @@ spec:
                 fieldRef:
                   fieldPath: metadata.name
             - name: "REPLICATION_PRIMARY_HOST"
-              value: "{{ .Values.postDock.name }}-db-node-0.{{ .Values.postDock.name }}-db"
+              value: "{{ .Values.postDock.name }}-db-node-0.{{ .Values.postDock.name }}-db.{{ .Values.postDock.k8sFullDomainName }}"
             - name: "PARTNER_NODES"
-              value: "{{ range $i, $e := .Values.postgres.nodes }}{{ if $i }},{{ end }}{{ $.Values.postDock.name }}-db-node-{{ $i }}.{{ $.Values.postDock.name }}-db{{ end }}"
+              value: "{{ range $i, $e := .Values.postgres.nodes }}{{ if $i }},{{ end }}{{ $.Values.postDock.name }}-db-node-{{ $i }}.{{ $.Values.postDock.name }}-db.{{ $.Values.postDock.k8sFullDomainName }}{{ end }}"
             - name: "NODE_NAME"
               value: "$(MY_POD_NAME)"
             - name: "CLUSTER_NODE_NETWORK_NAME"
-              value: "$(MY_POD_NAME).{{ .Values.postDock.name }}-db"
+              value: "$(MY_POD_NAME).{{ .Values.postDock.name }}-db.{{ .Values.postDock.k8sFullDomainName }}"
             - name: "POSTGRES_DB"
               valueFrom:
                 configMapKeyRef:

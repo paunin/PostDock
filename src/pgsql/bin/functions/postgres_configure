@@ -23,3 +23,5 @@ do
 done
 
 chown postgres:postgres $CONFIG_FILE
+
+echo "<<< DONE Configuring $CONFIG_FILE"

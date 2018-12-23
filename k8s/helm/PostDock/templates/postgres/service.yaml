@@ -5,6 +5,7 @@ metadata:
   labels:
     name: database
     system: {{ .Values.postDock.name }}
+    app: {{ .Values.postDock.name }}
 spec:
   clusterIP: None
   ports:

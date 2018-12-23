@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
+echo ">>> Starting standby entrypoint process..."
+
 wait_upstream_postgres
 
 if [ `ls $PGDATA/ | wc -l` != "0" ]; then

@@ -5,6 +5,13 @@
 postDock:
   # setup.name - name for your setup, unique name allows you to have many releases of postdock in the same namespace
   name: mysystem
+  # kubernetes namespace
+  k8sNamespace: default
+  # kubernetes domain (set when k8s cluster has been created 'kubeadm init --service-dns-domain XXXX')
+  k8sDnsDomainName: myk8scluster.local
+  # kubernetes full domain name
+  # concat does not work k8sFullDomainName: "{{ .Values.postDock.k8sNamespace }}.svc.{{ .Values.postDock.k8sDnsDomainName }}"
+  k8sFullDomainName: default.svc.myk8scluster.local
 # postgres - postgres component related settings
 postgres:
   # postgres.image - is the image to use for postgres component
@@ -13,8 +20,8 @@ postgres:
   tag: latest-postgres10-repmgr32
   # postgres.replicas - number of nodes in you postgres cluster
   replicas: 3
-  # postgres.clusterName - cluster name inside PostDock
-  clusterName: mysystem_cluster
+  # postgres.clusterName - cluster name inside PostDock (no '_' or '-' allowed)
+  clusterName: mysystemCluster
   # postgres.db - database and credentials for it which will be created on PostDock start
   db:
     # postgres.db.name - database name
