@@ -11,7 +11,7 @@ spec:
   - ReadWriteOnce
   capacity:
     storage: {{ .Values.barman.volume.size }}
-  persistentVolumeReclaimPolicy: {{ .Values.barman.volume.recalimPolicy }}
+  persistentVolumeReclaimPolicy: {{ .Values.barman.volume.reclaimPolicy }}
 {{ toYaml .Values.barman.volume.definition | indent 2 }}
 {{ end }}
 {{ end }}
