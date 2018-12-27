@@ -10,7 +10,7 @@ if [[ "$MASTER_SLAVE_SWITCH" == "1" ]] || [ "$TRY_TO_FOLLOW_CLUSTER_MASTER" == "
     gosu postgres repmgr standby archive-config --config-archive-dir=/tmp/repmgr-archive
 
     echo ">>>>>> Start server to be able to rewind (weird hack to avoid dirty shutdown issue)"
-    rm -rf $PGDATA/pg_xlog/archive_status/
+    rm -rf $PGDATA/pg_wal/archive_status/
     rm $PGDATA/postmaster.pid
     gosu postgres pg_ctl -D "$PGDATA"  -o "-c listen_addresses='localhost'" -w start 
 
