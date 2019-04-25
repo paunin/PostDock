@@ -1,29 +1,22 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Sun 16 Dec 2018 15:57:54 +08              ##
+##               BUILD_NUMBER=Thu 25 Apr 2019 13:38:03 +08              ##
 ##########################################################################
 
-FROM debian:jessie
+FROM debian:stretch
 ARG DOCKERIZE_VERSION=v0.2.0
 
 RUN groupadd -r postgres --gid=999 && useradd -r -g postgres -d /home/postgres  --uid=999 postgres
 
 # grab gosu for easy step-down from root
-ARG GOSU_VERSION=1.7
-RUN set -x \
-	&& apt-get update && apt-get install -y --no-install-recommends ca-certificates wget && rm -rf /var/lib/apt/lists/* \
-	&& wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
-	&& wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture).asc" \
-	&& export GNUPGHOME="$(mktemp -d)" \
-	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
-	&& gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
-	&& rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc \
-	&& chmod +x /usr/local/bin/gosu \
-	&& gosu nobody true 
+ARG GOSU_VERSION=1.11
+RUN set -eux \
+	&& apt-get update && apt-get install -y --no-install-recommends ca-certificates wget gnupg2 gosu && rm -rf /var/lib/apt/lists/*  && \
+	gosu nobody true
 
 RUN  wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key add - && \
-     sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" >> /etc/apt/sources.list.d/pgdg.list' && \
+     sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" >> /etc/apt/sources.list.d/pgdg.list' && \
      apt-get update
 
 RUN  apt-get install -y libffi-dev libssl-dev openssh-server
@@ -32,7 +25,7 @@ RUN  apt-get install -y postgresql-client-9.6
 
 
 RUN TEMP_DEB="$(mktemp)" && \
-    wget -O "$TEMP_DEB" "http://atalia.postgresql.org/morgue/p/pgpool2/pgpool2_3.7.5-2.pgdg80+1_amd64.deb" && \
+    wget -O "$TEMP_DEB" "http://atalia.postgresql.org/morgue/p/pgpool2/pgpool2_3.7.5-2.pgdg90+1_amd64.deb" && \
     (dpkg -i "$TEMP_DEB" || apt-get install -y -f) && rm -f "$TEMP_DEB"
 
 RUN  wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \

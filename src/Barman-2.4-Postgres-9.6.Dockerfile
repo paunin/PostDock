@@ -1,26 +1,21 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Sun 16 Dec 2018 00:29:32 +08              ##
+##               BUILD_NUMBER=Thu 25 Apr 2019 13:38:03 +08              ##
 ##########################################################################
 
-FROM golang:1.8-jessie
+FROM golang:1.11-stretch
 
 # grab gosu for easy step-down from root
-ARG GOSU_VERSION=1.7
-RUN set -x \
-	&& apt-get update && apt-get install -y --no-install-recommends ca-certificates wget && rm -rf /var/lib/apt/lists/* \
-	&& wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
-	&& wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture).asc" \
-	&& export GNUPGHOME="$(mktemp -d)" \
-	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
-	&& gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
-	&& rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc \
-	&& chmod +x /usr/local/bin/gosu \
-	&& gosu nobody true 
+ARG GOSU_VERSION=1.11
+RUN set -eux \
+	&& apt-get update && apt-get install -y --no-install-recommends ca-certificates libpq5 wget gnupg2 gosu && rm -rf /var/lib/apt/lists/*  && \
+	gosu nobody true
+
+
 
 RUN  wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key add - && \
-     sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" >> /etc/apt/sources.list.d/pgdg.list' && \
+     sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" >> /etc/apt/sources.list.d/pgdg.list' && \
      apt-get update && \
      apt-get install -y libffi-dev libssl-dev openssh-server
 
@@ -28,7 +23,7 @@ RUN  apt-get install -y postgresql-client-9.6
 
 
 RUN TEMP_DEB="$(mktemp)" && \
-    wget -O "$TEMP_DEB"  "http://atalia.postgresql.org/morgue/b/barman/barman_2.4-1.pgdg80+1_all.deb" && \
+    wget -O "$TEMP_DEB"  "http://atalia.postgresql.org/morgue/b/barman/barman_2.4-1.pgdg90+1_all.deb" && \
     (dpkg -i "$TEMP_DEB" || apt-get install -y -f) && rm -f "$TEMP_DEB"
 
 RUN apt-get -y install cron
