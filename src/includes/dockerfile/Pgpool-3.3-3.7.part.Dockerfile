@@ -26,9 +26,14 @@ RUN TEMP_DEB="$(mktemp)" && \
 {{ #PGPOOL_LATEST }}
 RUN  apt-get install -y libpgpool0={{ PGPOOL_VERSION }}\* pgpool2={{ PGPOOL_VERSION }}\*
 {{ /PGPOOL_LATEST }}{{ ^PGPOOL_LATEST }}
+
+RUN TEMP_DEB="$(mktemp)" && \
+    wget -O "$TEMP_DEB" "http://atalia.postgresql.org/morgue/p/pgpool2/libpgpool0_{{ PGPOOL_PACKAGE_VERSION }}_amd64.deb" && \
+    (dpkg -i "$TEMP_DEB" || true) && apt-mark hold libpgpool0 && apt-get install -y -f && rm -f "$TEMP_DEB"
+
 RUN TEMP_DEB="$(mktemp)" && \
     wget -O "$TEMP_DEB" "http://atalia.postgresql.org/morgue/p/pgpool2/pgpool2_{{ PGPOOL_PACKAGE_VERSION }}_amd64.deb" && \
-    (dpkg -i "$TEMP_DEB" || apt-get install -y -f) && rm -f "$TEMP_DEB"
+    (dpkg -i "$TEMP_DEB" || true) && apt-mark hold pgpool2 && apt-get install -y -f && rm -f "$TEMP_DEB"
 {{ /PGPOOL_LATEST }}
 
 RUN  wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \

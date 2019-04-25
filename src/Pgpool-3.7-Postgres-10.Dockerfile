@@ -1,7 +1,7 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Thu 25 Apr 2019 13:38:03 +08              ##
+##               BUILD_NUMBER=Thu 25 Apr 2019 15:26:29 +08              ##
 ##########################################################################
 
 FROM debian:stretch
@@ -24,9 +24,14 @@ RUN  apt-get install -y libffi-dev libssl-dev openssh-server
 RUN  apt-get install -y postgresql-client-10
 
 
+
+RUN TEMP_DEB="$(mktemp)" && \
+    wget -O "$TEMP_DEB" "http://atalia.postgresql.org/morgue/p/pgpool2/libpgpool0_3.7.5-2.pgdg90+1_amd64.deb" && \
+    (dpkg -i "$TEMP_DEB" || true) && apt-mark hold libpgpool0 && apt-get install -y -f && rm -f "$TEMP_DEB"
+
 RUN TEMP_DEB="$(mktemp)" && \
     wget -O "$TEMP_DEB" "http://atalia.postgresql.org/morgue/p/pgpool2/pgpool2_3.7.5-2.pgdg90+1_amd64.deb" && \
-    (dpkg -i "$TEMP_DEB" || apt-get install -y -f) && rm -f "$TEMP_DEB"
+    (dpkg -i "$TEMP_DEB" || true) && apt-mark hold pgpool2 && apt-get install -y -f && rm -f "$TEMP_DEB"
 
 RUN  wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
      tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
