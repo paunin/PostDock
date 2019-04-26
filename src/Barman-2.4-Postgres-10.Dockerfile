@@ -1,7 +1,7 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Thu 25 Apr 2019 14:28:12 +08              ##
+##               BUILD_NUMBER=Fri 26 Apr 2019 10:18:51 +08              ##
 ##########################################################################
 
 FROM golang:1.11-stretch
@@ -12,7 +12,8 @@ RUN set -eux \
 	&& apt-get update && apt-get install -y --no-install-recommends ca-certificates libpq5 wget gnupg2 gosu && rm -rf /var/lib/apt/lists/*  && \
 	gosu nobody true
 
-
+COPY ./dockerfile/bin /usr/local/bin/dockerfile
+RUN chmod -R +x /usr/local/bin/dockerfile && ln -s /usr/local/bin/dockerfile/functions/* /usr/local/bin/
 
 RUN  wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key add - && \
      sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" >> /etc/apt/sources.list.d/pgdg.list' && \
@@ -22,9 +23,7 @@ RUN  wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key a
 RUN  apt-get install -y postgresql-client-10
 
 
-RUN TEMP_DEB="$(mktemp)" && \
-    wget -O "$TEMP_DEB"  "http://atalia.postgresql.org/morgue/b/barman/barman_2.4-1.pgdg90+1_all.deb" && \
-    (dpkg -i "$TEMP_DEB" || apt-get install -y -f) && rm -f "$TEMP_DEB"
+RUN install_deb_pkg "http://atalia.postgresql.org/morgue/b/barman/barman_2.4-1.pgdg90+1_all.deb"
 
 RUN apt-get -y install cron
 ADD barman/crontab /etc/cron.d/barman

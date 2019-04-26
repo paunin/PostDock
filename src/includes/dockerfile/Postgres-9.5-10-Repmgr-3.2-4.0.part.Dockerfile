@@ -3,14 +3,14 @@ FROM postgres:{{ POSTGRES_VERSION }}
 RUN apt-get update --fix-missing && \
     apt-get install -y postgresql-server-dev-$PG_MAJOR wget openssh-server barman-cli
 
+COPY ./dockerfile/bin /usr/local/bin/dockerfile
+RUN chmod -R +x /usr/local/bin/dockerfile && ln -s /usr/local/bin/dockerfile/functions/* /usr/local/bin/
+
 {{ #REPMGR_LATEST }}
 RUN apt-get install -y postgresql-$PG_MAJOR-repmgr={{ REPMGR_PACKAGE_VERSION }}\*
 {{ /REPMGR_LATEST }}{{ ^REPMGR_LATEST }}
-RUN TEMP_DEB="$(mktemp)" && \
-    wget -O "$TEMP_DEB" "http://atalia.postgresql.org/morgue/r/repmgr/repmgr-common_{{ REPMGR_PACKAGE_VERSION }}_all.deb" && \
-    dpkg -i "$TEMP_DEB" && rm -f "$TEMP_DEB" && \
-    wget -O "$TEMP_DEB" "http://atalia.postgresql.org/morgue/r/repmgr/postgresql-$PG_MAJOR-repmgr_{{ REPMGR_PACKAGE_VERSION }}_amd64.deb" && \
-    (dpkg -i "$TEMP_DEB" || apt-get install -y -f) && rm -f "$TEMP_DEB"
+RUN install_deb_pkg "http://atalia.postgresql.org/morgue/r/repmgr/repmgr-common_{{ REPMGR_PACKAGE_VERSION }}_all.deb" 
+RUN install_deb_pkg "http://atalia.postgresql.org/morgue/r/repmgr/postgresql-$PG_MAJOR-repmgr_{{ REPMGR_PACKAGE_VERSION }}_amd64.deb" 
 {{ /REPMGR_LATEST }}
 
 # Inherited variables

@@ -6,7 +6,8 @@ RUN set -eux \
 	&& apt-get update && apt-get install -y --no-install-recommends ca-certificates libpq5 wget gnupg2 gosu && rm -rf /var/lib/apt/lists/*  && \
 	gosu nobody true
 
-
+COPY ./dockerfile/bin /usr/local/bin/dockerfile
+RUN chmod -R +x /usr/local/bin/dockerfile && ln -s /usr/local/bin/dockerfile/functions/* /usr/local/bin/
 
 RUN  wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key add - && \
      sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" >> /etc/apt/sources.list.d/pgdg.list' && \
@@ -16,17 +17,13 @@ RUN  wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key a
 {{ #PG_CLIENT_LATEST }}
 RUN  apt-get install -y postgresql-client-{{ PG_CLIENT_VERSION }}
 {{ /PG_CLIENT_LATEST }}{{ ^PG_CLIENT_LATEST }}
-RUN TEMP_DEB="$(mktemp)" && \
-    wget -O "$TEMP_DEB"  "http://atalia.postgresql.org/morgue/p/postgresql-{{ PG_CLIENT_VERSION }}/postgresql-client-{{ PG_CLIENT_VERSION }}_{{ PG_CLIENT_PACKAGE_VERSION }}_amd64.deb" && \
-    (dpkg -i "$TEMP_DEB" || apt-get install -y -f) && rm -f "$TEMP_DEB"
+RUN install_deb_pkg "http://atalia.postgresql.org/morgue/p/postgresql-{{ PG_CLIENT_VERSION }}/postgresql-client-{{ PG_CLIENT_VERSION }}_{{ PG_CLIENT_PACKAGE_VERSION }}_amd64.deb"
 {{ /PG_CLIENT_LATEST }}
 
 {{ #BARMAN_LATEST }}
 RUN  apt-get install -y barman={{ BARMAN_VERSION }}\*
 {{ /BARMAN_LATEST }}{{ ^BARMAN_LATEST }}
-RUN TEMP_DEB="$(mktemp)" && \
-    wget -O "$TEMP_DEB"  "http://atalia.postgresql.org/morgue/b/barman/barman_{{ BARMAN_PACKAGE_VERSION }}_all.deb" && \
-    (dpkg -i "$TEMP_DEB" || apt-get install -y -f) && rm -f "$TEMP_DEB"
+RUN install_deb_pkg "http://atalia.postgresql.org/morgue/b/barman/barman_{{ BARMAN_PACKAGE_VERSION }}_all.deb"
 {{ /BARMAN_LATEST }}
 
 RUN apt-get -y install cron

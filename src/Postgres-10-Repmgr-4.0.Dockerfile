@@ -1,7 +1,7 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Thu 25 Apr 2019 14:28:12 +08              ##
+##               BUILD_NUMBER=Fri 26 Apr 2019 10:18:51 +08              ##
 ##########################################################################
 
 FROM postgres:10
@@ -9,12 +9,12 @@ FROM postgres:10
 RUN apt-get update --fix-missing && \
     apt-get install -y postgresql-server-dev-$PG_MAJOR wget openssh-server barman-cli
 
+COPY ./dockerfile/bin /usr/local/bin/dockerfile
+RUN chmod -R +x /usr/local/bin/dockerfile && ln -s /usr/local/bin/dockerfile/functions/* /usr/local/bin/
 
-RUN TEMP_DEB="$(mktemp)" && \
-    wget -O "$TEMP_DEB" "http://atalia.postgresql.org/morgue/r/repmgr/repmgr-common_4.0.6-2.pgdg+1_all.deb" && \
-    dpkg -i "$TEMP_DEB" && rm -f "$TEMP_DEB" && \
-    wget -O "$TEMP_DEB" "http://atalia.postgresql.org/morgue/r/repmgr/postgresql-$PG_MAJOR-repmgr_4.0.6-2.pgdg+1_amd64.deb" && \
-    (dpkg -i "$TEMP_DEB" || apt-get install -y -f) && rm -f "$TEMP_DEB"
+
+RUN install_deb_pkg "http://atalia.postgresql.org/morgue/r/repmgr/repmgr-common_4.0.6-2.pgdg+1_all.deb" 
+RUN install_deb_pkg "http://atalia.postgresql.org/morgue/r/repmgr/postgresql-$PG_MAJOR-repmgr_4.0.6-2.pgdg+1_amd64.deb" 
 
 # Inherited variables
 # ENV POSTGRES_PASSWORD monkey_pass

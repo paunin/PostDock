@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# function to install deb package by URL
+set -e
+TEMP_DEB="$(mktemp)"
+PKG_URL=$1
+PKG_NAME=$2
+
+wget -O "$TEMP_DEB" "$PKG_URL"
+(dpkg -i "$TEMP_DEB" || true) 
+if [[ "$PKG_NAME" != "" ]]; then
+    apt-mark hold $PKG_NAME
+fi
+apt-get install -y -f
+rm -f "$TEMP_DEB"
