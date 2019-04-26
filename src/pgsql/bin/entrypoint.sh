@@ -7,7 +7,7 @@ for f in TERM SIGTERM QUIT SIGQUIT INT SIGINT KILL SIGKILL; do
 done
 
 echo '>>> STARTING SSH (if required)...'
-source /home/postgres/.ssh/entrypoint.sh
+sshd_start
 
 echo '>>> STARTING POSTGRES...'
 /usr/local/bin/cluster/postgres/entrypoint.sh & wait ${!}

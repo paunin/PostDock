@@ -34,7 +34,8 @@ RUN install_deb_pkg "http://atalia.postgresql.org/morgue/p/pgpool2/pgpool2_{{ PG
 RUN  wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
      tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
-COPY ./ssh /home/postgres/.ssh
+COPY ./ssh /tmp/.ssh
+RUN mv /tmp/.ssh/sshd_start /usr/local/bin/sshd_start && chmod +x /usr/local/bin/sshd_start
 COPY ./pgpool/bin /usr/local/bin/pgpool
 COPY ./pgpool/configs /var/pgpool_configs
 

@@ -16,7 +16,7 @@ Upod recovery completion duplicates wil be removed.
     ```    
 1. Check sshd is running on master, if not start it:
     ```
-    SSH_ENABLE=1 /home/postgres/.ssh/entrypoint.sh
+    SSH_ENABLE=1 sshd_start
     ```
 1. Connect to barman container and select appropriate base backup
     ```

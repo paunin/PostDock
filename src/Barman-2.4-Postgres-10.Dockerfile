@@ -1,7 +1,7 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Fri 26 Apr 2019 10:18:51 +08              ##
+##               BUILD_NUMBER=Fri 26 Apr 2019 22:57:06 +08              ##
 ##########################################################################
 
 FROM golang:1.11-stretch
@@ -53,8 +53,8 @@ ENV BACKUP_DIR /var/backups
 
 EXPOSE 22
 
-COPY ./ssh /home/postgres/.ssh
-RUN chown -R postgres:postgres /home/postgres
+COPY ./ssh /tmp/.ssh
+RUN mv /tmp/.ssh/sshd_start /usr/local/bin/sshd_start && chmod +x /usr/local/bin/sshd_start
 COPY ./barman/configs/barman.conf /etc/barman.conf
 COPY ./barman/configs/upstream.conf $UPSTREAM_CONFIG_FILE
 COPY ./barman/bin /usr/local/bin/barman_docker

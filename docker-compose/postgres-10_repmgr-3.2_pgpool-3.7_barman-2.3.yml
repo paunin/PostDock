@@ -1,7 +1,7 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Fri 26 Apr 2019 10:18:51 +08              ##
+##               BUILD_NUMBER=Fri 26 Apr 2019 22:57:06 +08              ##
 ##########################################################################
 
 version: '2'
@@ -51,7 +51,7 @@ services:
             - 5422:5432
         volumes:
             - pgmaster:/var/lib/postgresql/data
-            - ./ssh/:/home/postgres/.ssh/keys
+            - ./ssh/:/tmp/.ssh/keys
         networks:
             cluster:
                 aliases:
@@ -75,7 +75,7 @@ services:
             - 5441:5432
         volumes:
             - pgslave1:/var/lib/postgresql/data
-            - ./ssh:/home/postgres/.ssh/keys
+            - ./ssh:/tmp/.ssh/keys
         networks:
             cluster:
                 aliases:
@@ -166,7 +166,7 @@ services:
             BACKUP_SCHEDULE: "*/30 */5 * * *"
         volumes:
             - backup:/var/backups
-            - ./ssh:/home/postgres/.ssh/keys
+            - ./ssh:/tmp/.ssh/keys
         networks:
             cluster:
                 aliases:
@@ -200,7 +200,7 @@ services:
             - 5430:5432
             - 9898:9898 # PCP
         volumes:
-            - ./ssh:/home/postgres/.ssh/keys
+            - ./ssh:/tmp/.ssh/keys
         networks:
             cluster:
                 aliases:

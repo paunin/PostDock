@@ -3,11 +3,11 @@ set -e
 
 echo '>>> SETTING UP POLYMORPHIC VARIABLES (repmgr=3+postgres=9 | repmgr=4, postgres=10)... '
 source postdock_polymorphic
-
+PG_HOME=$(eval echo ~postgres)
 echo '>>> TUNING UP POSTGRES...'
-echo "*:$REPLICATION_PRIMARY_PORT:*:$REPLICATION_USER:$REPLICATION_PASSWORD" >> /home/postgres/.pgpass
-chmod 0600 /home/postgres/.pgpass
-chown postgres:postgres /home/postgres/.pgpass
+echo "*:$REPLICATION_PRIMARY_PORT:*:$REPLICATION_USER:$REPLICATION_PASSWORD" >> $PG_HOME/.pgpass
+chmod 0600 $PG_HOME/.pgpass
+chown postgres:postgres $PG_HOME/.pgpass
 
 if ! has_pg_cluster; then
     echo ">>> Cleaning data folder which might have some garbage..."

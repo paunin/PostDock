@@ -25,7 +25,7 @@ retention_policy = RECOVERY WINDOW OF $BACKUP_RETENTION_DAYS DAYS
 " >> $UPSTREAM_CONFIG_FILE
 
 echo '>>> STARTING SSH (if required)...'
-source /home/postgres/.ssh/entrypoint.sh
+sshd_start
 
 echo '>>> SETUP BARMAN CRON'
 echo ">>>>>> Backup schedule is $BACKUP_SCHEDULE"
