@@ -107,7 +107,7 @@ services:
             NODE_ID: 4
             NODE_NAME: node4
             CLUSTER_NODE_NETWORK_NAME: pgslave3 # (default: hostname of the node)
-
+            SSH_ENABLE: 1
             PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
             REPLICATION_PRIMARY_HOST: pgmaster
             NODE_PRIORITY: 200  # (default: 100)
@@ -118,6 +118,7 @@ services:
             - 5443:5432
         volumes:
             - pgslave3:/var/lib/postgresql/data
+            - ./ssh:/tmp/.ssh/keys
         networks:
             cluster:
                 aliases:
