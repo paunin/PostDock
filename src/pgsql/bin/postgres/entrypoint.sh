@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
+source auto_setup_replication
+
 echo '>>> SETTING UP POLYMORPHIC VARIABLES (repmgr=3+postgres=9 | repmgr=4, postgres=10)... '
 source postdock_polymorphic
 PG_HOME=$(eval echo ~postgres)
