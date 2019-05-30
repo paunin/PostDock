@@ -76,6 +76,15 @@ ENV REPMGR_MASTER_RESPONSE_TIMEOUT_PARAM_NAME master_reponse_timeout
                                     # in format variable1:value1[,variable2:value2[,...]] if CONFIGS_DELIMITER_SYMBOL=, and CONFIGS_ASSIGNMENT_SYMBOL=:
                                     # used for pgpool.conf file
 
+# ENV STANDBY_COUNT
+# ENV NODE_NAME_TEMPLATE
+                    # Used to setup PARTNER_NODES / REPLICATION_PRIMARY_HOST and CLEAN_OVER_REWIND automatically
+                    # based in a cascade replication setup where
+                    #  - node-0 is the master
+                    #  - node-1..node-${STANDBY_COUNT} are standby nodes (partners of the master)
+                    #  - node-${STANDBY_COUNT+1}.. are slave nodes cascaded from node-1..node-${STANDBY_COUNT} nodes
+                    # NODE_NAME_TEMPLATE is the template used to make the node name, replacing 'xxxx'. E.g. pg-node-xxxx.mycluster
+
 ENV PARTNER_NODES ""
                     # List (comma separated) of all nodes in the cluster, it allows master to be adaptive on restart
                     # (can act as a new standby if new master has been already elected)

@@ -4,6 +4,12 @@
 MY_NAME=$NODE_NAME
 echo ">>> My name is $MY_NAME"
 
+PGPASSWORD=$REPLICATION_PASSWORD psql -h $CLUSTER_NODE_NETWORK_NAME -U $REPLICATION_USER -p $REPLICATION_PRIMARY_PORT $REPLICATION_DB  -tAc "SELECT version()" >/dev/null 
+if [ $? -ne 0 ]; then
+    echo ">>> Clouldn't connect to postgres server or replication db."
+    exit 2
+fi
+
 # ====================================== Do I feel like master
 AM_I_MASTER=`PGPASSWORD=$REPLICATION_PASSWORD psql -h $CLUSTER_NODE_NETWORK_NAME -U $REPLICATION_USER -p $REPLICATION_PRIMARY_PORT $REPLICATION_DB  -tAc "SELECT * FROM $(get_repmgr_schema).$REPMGR_NODES_TABLE WHERE $REPMGR_NODE_NAME_COLUMN='$MY_NAME' AND (type='primary' OR type='master')" | wc -l`
 if [[ "$AM_I_MASTER" -eq "0" ]]; then

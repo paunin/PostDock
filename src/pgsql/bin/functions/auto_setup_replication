@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+NODE_NUMBER="${NODE_NAME##*-}"
+
+function make_node_name {
+    echo $NODE_NAME_TEMPLATE | sed "s|-xxxx|-$1|g" 
+}
+
+# Expected variable STANDBY_COUNT  (Number of partner nodes of the master)
+# Expected variable NODE_NAME_TEMPLATE (E.g. pg-node-xxxx.mycluster)
+if [ -n $STANDBY_COUNT ] && [ -n $NODE_NAME_TEMPLATE ] ; then 
+    if [ $NODE_NUMBER -eq 0 ]; then
+        MSG="I'm the MASTER "
+        REPLICATION_PRIMARY_HOST=$(make_node_name 0)
+        PARTNER_NODES=$REPLICATION_PRIMARY_HOST
+        for X in $(seq 1 $STANDBY_COUNT); do
+            PARTNER_NODES=$PARTNER_NODES,$(make_node_name $X)
+        done
+        CLEAN_OVER_REWIND=1
+        if [ ! -z $CONFIGS_MASTER_NODE ]; then
+            CONFIGS=$CONFIGS_MASTER_NODE
+        fi
+    elif [ $NODE_NUMBER -le $STANDBY_COUNT ]; then
+        MSG="I'm in one of the StandBys"
+        REPLICATION_PRIMARY_HOST=$(make_node_name 0)
+        PARTNER_NODES=$REPLICATION_PRIMARY_HOST
+        for X in $(seq 1 $STANDBY_COUNT); do
+            PARTNER_NODES=$PARTNER_NODES,$(make_node_name $X)
+        done
+        CLEAN_OVER_REWIND=1
+        if [ -n $CONFIGS_STANDBY_NODE ]; then
+            CONFIGS=$CONFIGS_STANDBY_NODE
+        fi
+    else 
+        MSG="I'm in one of the slaves"
+        let PARENT_NODE="(($NODE_NUMBER-1) % $STANDBY_COUNT) + 1"
+        REPLICATION_PRIMARY_HOST=$(make_node_name $PARENT_NODE)   # Cascade replication
+        PARTNER_NODES=
+        if [ -n $CONFIGS_SLAVE_NODE ]; then
+            CONFIGS=$CONFIGS_SLAVE_NODE
+        fi
+    fi
+    echo "Auto setup node #$NODE_NUMBER - $MSG - REPLICATION_PRIMARY_HOST: $REPLICATION_PRIMARY_HOST - PARTNER_NODES: $PARTNER_NODES - CLEAN_OVER_REWIND: $CLEAN_OVER_REWIND"
+fi
