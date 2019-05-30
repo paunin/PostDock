@@ -16,7 +16,7 @@ if [ -n $STANDBY_COUNT ] && [ -n $NODE_NAME_TEMPLATE ] ; then
         for X in $(seq 1 $STANDBY_COUNT); do
             PARTNER_NODES=$PARTNER_NODES,$(make_node_name $X)
         done
-        CLEAN_OVER_REWIND=0
+        CLEAN_OVER_REWIND=1
         if [ ! -z $CONFIGS_MASTER_NODE ]; then
             CONFIGS=$CONFIGS_MASTER_NODE
         fi

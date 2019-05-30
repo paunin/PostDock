@@ -30,7 +30,7 @@ RUN apt-get -y install cron
 ADD barman/crontab /etc/cron.d/barman
 RUN rm -f /etc/cron.daily/*
 
-RUN groupadd -r postgres --gid=999 && useradd -r -g postgres -d /home/postgres --uid=999 postgres
+RUN groupadd -r postgres --gid=999 && useradd -r -g postgres -d /home/postgres -m --uid=999 postgres
 
 ENV UPSTREAM_NAME pg_cluster
 ENV UPSTREAM_CONFIG_FILE /etc/barman.d/upstream.conf 
