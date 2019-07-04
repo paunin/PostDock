@@ -1,7 +1,7 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Fri 26 Apr 2019 22:57:06 +08              ##
+##               BUILD_NUMBER=mié jul  3 16:45:09 -03 2019              ##
 ##########################################################################
 
 FROM postgres:9.5
@@ -13,8 +13,8 @@ COPY ./dockerfile/bin /usr/local/bin/dockerfile
 RUN chmod -R +x /usr/local/bin/dockerfile && ln -s /usr/local/bin/dockerfile/functions/* /usr/local/bin/
 
 
-RUN install_deb_pkg "http://atalia.postgresql.org/morgue/r/repmgr/repmgr-common_3.3.2-1.pgdg80+1_all.deb" 
-RUN install_deb_pkg "http://atalia.postgresql.org/morgue/r/repmgr/postgresql-$PG_MAJOR-repmgr_3.3.2-1.pgdg80+1_amd64.deb" 
+RUN install_deb_pkg "http://atalia.postgresql.org/morgue/r/repmgr/repmgr-common_3.3.2-1.pgdg80+1_all.deb"
+RUN install_deb_pkg "http://atalia.postgresql.org/morgue/r/repmgr/postgresql-$PG_MAJOR-repmgr_3.3.2-1.pgdg80+1_amd64.deb"
 
 # Inherited variables
 # ENV POSTGRES_PASSWORD monkey_pass
@@ -27,14 +27,13 @@ ENV CLUSTER_NAME pg_cluster
 # special repmgr db for cluster info
 ENV REPLICATION_DB replication_db
 ENV REPLICATION_USER replication_user
-ENV REPLICATION_PASSWORD replication_pass
 ENV REPLICATION_PRIMARY_PORT 5432
 
 
 # Host for replication (REQUIRED, NO DEFAULT)
 # ENV REPLICATION_PRIMARY_HOST
 
-# Integer number of node (NO DEFAULT) 
+# Integer number of node (NO DEFAULT)
 # ENV NODE_ID 1
                 # if not defined, will be generated from the last number in NODE_NAME variable
                 # e.g. NODE_NAME=node-1 will give node identifier 1002

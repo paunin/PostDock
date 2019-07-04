@@ -9,8 +9,8 @@ RUN chmod -R +x /usr/local/bin/dockerfile && ln -s /usr/local/bin/dockerfile/fun
 {{ #REPMGR_LATEST }}
 RUN apt-get install -y postgresql-$PG_MAJOR-repmgr={{ REPMGR_PACKAGE_VERSION }}\*
 {{ /REPMGR_LATEST }}{{ ^REPMGR_LATEST }}
-RUN install_deb_pkg "http://atalia.postgresql.org/morgue/r/repmgr/repmgr-common_{{ REPMGR_PACKAGE_VERSION }}_all.deb" 
-RUN install_deb_pkg "http://atalia.postgresql.org/morgue/r/repmgr/postgresql-$PG_MAJOR-repmgr_{{ REPMGR_PACKAGE_VERSION }}_amd64.deb" 
+RUN install_deb_pkg "http://atalia.postgresql.org/morgue/r/repmgr/repmgr-common_{{ REPMGR_PACKAGE_VERSION }}_all.deb"
+RUN install_deb_pkg "http://atalia.postgresql.org/morgue/r/repmgr/postgresql-$PG_MAJOR-repmgr_{{ REPMGR_PACKAGE_VERSION }}_amd64.deb"
 {{ /REPMGR_LATEST }}
 
 # Inherited variables
@@ -24,14 +24,13 @@ ENV CLUSTER_NAME pg_cluster
 # special repmgr db for cluster info
 ENV REPLICATION_DB replication_db
 ENV REPLICATION_USER replication_user
-ENV REPLICATION_PASSWORD replication_pass
 ENV REPLICATION_PRIMARY_PORT 5432
 
 
 # Host for replication (REQUIRED, NO DEFAULT)
 # ENV REPLICATION_PRIMARY_HOST
 
-# Integer number of node (NO DEFAULT) 
+# Integer number of node (NO DEFAULT)
 # ENV NODE_ID 1
                 # if not defined, will be generated from the last number in NODE_NAME variable
                 # e.g. NODE_NAME=node-1 will give node identifier 1002
