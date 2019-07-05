@@ -33,9 +33,11 @@ for e in "${envs[@]}"; do
     file_env "$e"
 done
 
-DB_USERS=${PCP_PASSWORD:-}
+DB_USERS=${DB_USERS:-}
 PCP_PASSWORD=${PCP_PASSWORD:-pcp_pass}
 CHECK_PASSWORD=${CHECK_PASSWORD:-replication_pass}
+
+env >> /etc/environment
 
 export CONFIG_FILE='/usr/local/etc/pgpool.conf'
 export PCP_FILE='/usr/local/etc/pcp.conf'
