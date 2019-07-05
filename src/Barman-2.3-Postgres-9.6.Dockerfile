@@ -1,7 +1,7 @@
 
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               BUILD_NUMBER=Fri 26 Apr 2019 22:57:06 +08              ##
+##               BUILD_NUMBER=jue jul  4 12:31:21 -03 2019              ##
 ##########################################################################
 
 FROM golang:1.11-stretch
@@ -32,9 +32,8 @@ RUN rm -f /etc/cron.daily/*
 RUN groupadd -r postgres --gid=999 && useradd -r -g postgres -d /home/postgres --uid=999 postgres
 
 ENV UPSTREAM_NAME pg_cluster
-ENV UPSTREAM_CONFIG_FILE /etc/barman.d/upstream.conf 
+ENV UPSTREAM_CONFIG_FILE /etc/barman.d/upstream.conf
 ENV REPLICATION_USER replication_user
-ENV REPLICATION_PASSWORD replication_pass
 ENV REPLICATION_PORT 5432
 ENV POSTGRES_CONNECTION_TIMEOUT 20
 ENV REPLICATION_SLOT_NAME barman_the_backupper
