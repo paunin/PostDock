@@ -10,7 +10,7 @@ while true
 do
     sleep $LAUNCH_RECOVERY_CHECK_INTERVAL
     RECOVERY_WAL_ID=`ps aux | grep -v 'grep' | grep 'recovering' | sed 's/.* \([0-9A-F]\{24\}\).*/\1/g'`
-    WAL_RECEIVER_FLAG=`ps aux | grep -v 'grep' | grep 'wal receiver' | wc -l | tr -d ' '`
+    WAL_RECEIVER_FLAG=`ps aux | grep -v 'grep' | grep -E '(wal receiver|walreceiver)' | wc -l | tr -d ' '`
 
     if [[ "$RECOVERY_WAL_ID" == "" ]]; then
         echo ">>>>>> RECOVERY_WAL_ID is empty!"
