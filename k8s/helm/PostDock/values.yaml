@@ -10,7 +10,7 @@ postgres:
   # postgres.image - is the image to use for postgres component
   image: postdock/postgres
   # postgres.tag - is the tag to use for postgres component image (@see https://hub.docker.com/r/postdock/postgres/tags/)
-  tag: latest-postgres10-repmgr32
+  tag: latest-postgres11-repmgr40
   # postgres.replicas - number of nodes in you postgres cluster
   replicas: 3
   # postgres.clusterName - cluster name inside PostDock
@@ -70,7 +70,7 @@ pgpool:
   # pgpool.image - is the image to use for pgpool component
   image: postdock/pgpool
   # pgpool.tag - is the tag to use for pgpool component image (@see https://hub.docker.com/r/postdock/pgpool/tags/)
-  tag: latest-pgpool37-postgres10
+  tag: latest-pgpool37-postgres11
   # pgpool.replicas - number of pgpools for your cluster
   replicas: 2
   # pgpool.users - users in format of PostDock to access cluster through pgpool (@see https://github.com/paunin/PostDock#pgpool)
@@ -94,7 +94,7 @@ barman:
   # barman.image - is the image to use for barman component
   image: postdock/barman
   # barman.tag - is the tag to use for barman component image (@see https://hub.docker.com/r/postdock/postgres/tags/)
-  tag: latest-barman24-postgres10
+  tag: latest-barman24-postgres11
   # barman.backupSchedule - how often barman should do backups, empty schedule will disable barman
   backupSchedule: "*/30 */5 * * *"
   # barman.resources - define (in k8s style) resources for barman pod of PostDock release

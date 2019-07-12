@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: mysystem-db-node3
-          image: postdock/postgres:latest-postgres102-repmgr32
+          image: postdock/postgres:latest-postgres11-repmgr40
           imagePullPolicy: Always
           resources:
             requests:

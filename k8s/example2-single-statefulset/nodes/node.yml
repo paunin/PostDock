@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: db-node
-          image: postdock/postgres:latest-postgres102-repmgr32
+          image: postdock/postgres:latest-postgres11-repmgr40
           livenessProbe:
             exec:
               command: ['bash', '-c', '/usr/local/bin/cluster/healthcheck/is_major_master.sh']
