@@ -6,13 +6,12 @@ BUILD_NUMBER=`date`
 SYSTEM_TO_MAKE="$1"
 
 function flush {
-    MARKER_LINE="BUILD_NUMBER=$BUILD_NUMBER"
+    MARKER_LINE="POSTDOCK_BUILD_NUMBER=$BUILD_NUMBER"
     FILE="$1"
     if [[ `grep "$MARKER_LINE" $FILE | wc -l | tr -d ' '` == "0" ]]; then
-        echo "
+        echo "## $MARKER_LINE
 ##########################################################################
 ##                         AUTO-GENERATED FILE                          ##
-##               $MARKER_LINE              ##
 ##########################################################################
 " > $FILE 
     fi
@@ -49,4 +48,14 @@ for SYSTEM_PATH in `find ./make/* -maxdepth 1 -type d`; do
     fi
     echo "> Making $SYSTEM ($SYSTEM_PATH)"
     source $SYSTEM_PATH/make.sh
+done
+
+echo "> Removing build markers"
+for BUILT_FILE in `grep -rwl "$MARKER_LINE" .`; do
+    if [ ! -h "$BUILT_FILE" ]; then
+        echo ">>> $BUILT_FILE"
+        TMP_FILE="$(mktemp)"
+        tail -n +2 $BUILT_FILE > $TMP_FILE
+        mv -f $TMP_FILE $BUILT_FILE
+    fi
 done
