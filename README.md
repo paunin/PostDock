@@ -10,6 +10,7 @@ PostgreSQL cluster with **High Availability** and **Self Healing** features for 
   * [Features](#features)
   * [What's in the box](#whats-in-the-box)
   * [Docker images tags convention](#docker-images-tags-convention)
+    * [Repositories](#repositories)
 - [Start cluster with docker-compose](#start-cluster-with-docker-compose)
 - [Start cluster in Kubernetes](#start-cluster-in-kubernetes)
 - [Adaptive mode](#adaptive-mode)
@@ -57,15 +58,15 @@ PostgreSQL cluster with **High Availability** and **Self Healing** features for 
 
 Taking into account that PostDock project itself has versioning schema, all docker images produced by the repository have schema - `postdock/<component>:<postdock_version>-<component><component_version>-<sub_component><sub_component_version>[...]`, where:
 
-* `<postdock_version>` - semantic version without `bug-fix` component (can be `1.1`,`1.2`,...)
+* `<postdock_version>` - semantic version without `bug-fix` component (can be `1.1`, `1.2`, ...)
 * `<component>`, `<component_version>` - depends on component:
-    * `postgres`,`postgres-extended` - major and minor version without dot in between(can be `95`,`96`,`10`)
-    * `pgpool` - major and minor version of component without dot in between(can be `33`,`36`,`37`)
-    * `barman` - major version only (can be `23`,`24`)
+    * `postgres`,`postgres-extended` - major and minor version without dot in between(can be `95`, `96`, `10`, `11`, ...)
+    * `pgpool` - major and minor version of component without dot in between(can be `33`, `36`, `37`, ...)
+    * `barman` - major version only (can be `23`, `24`, ...)
 * `<sub_component>`, `<sub_component_version>` - depends on component:
-    * for `postgres` - `repmgr` can be `3.2`
-    * for `barman` - `postgres` can be `9.6`, `10`
-    * for `pgpool` - `postgres` can be `9.6`, `10`
+    * for `postgres` - `repmgr` can be `32`, `40`, ...
+    * for `barman` - `postgres` can be `96`, `10`, `11`, ...
+    * for `pgpool` - `postgres` can be `96`, `10`, `11`, ...
 
 Aliases are available **(not recommended to use for production)**:
 
@@ -73,6 +74,13 @@ Aliases are available **(not recommended to use for production)**:
 * `postdock/<component>:latest` - refers to the latest release of the postdock and the latest versions of all the components and sub-components (e.g. `postdock/postgres:latest`)
 * `postdock/<component>:edge` - refers to build of postdock from master with the latest version the component, and all sub-components (e.g. `postdock/postgres:edge`)
 
+#### Repositories
+
+All available tags (versions and combinations of it) are listed in respective docker-hub repositories:
+
+* [Postgres](https://hub.docker.com/r/postdock/postgres)
+* [Pgpool](https://hub.docker.com/r/postdock/pgpool)
+* [Barman](https://hub.docker.com/r/postdock/barman)
 
 ## Start cluster with docker-compose
 
