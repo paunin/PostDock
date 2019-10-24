@@ -24,7 +24,7 @@ RUN  apt-get install -y postgresql-client-9.6
 
 
 RUN install_deb_pkg "http://launchpadlibrarian.net/160156688/libmemcached10_1.0.8-1ubuntu2_amd64.deb" "libmemcached10"
-RUN install_deb_pkg "http://security-cdn.debian.org/debian-security/pool/updates/main/o/openssl/libssl1.0.0_1.0.1t-1+deb8u11_amd64.deb" "libssl1.0.0"
+RUN install_deb_pkg "http://security-cdn.debian.org/debian-security/pool/updates/main/o/openssl/libssl1.0.0_1.0.1t-1+deb8u12_amd64.deb" "libssl1.0.0"
 RUN install_deb_pkg "http://atalia.postgresql.org/morgue/p/pgpool2/libpgpool0_3.7.5-2.pgdg90+1_amd64.deb" "libpgpool0"
 RUN install_deb_pkg "http://atalia.postgresql.org/morgue/p/pgpool2/pgpool2_3.7.5-2.pgdg90+1_amd64.deb" "pgpool2"
 
