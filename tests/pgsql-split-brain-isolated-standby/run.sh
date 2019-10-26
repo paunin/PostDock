@@ -8,11 +8,12 @@ docker-compose exec -T pgslave3 wait_local_postgres
 sleep 10
 echo ">>> Isolating pgslave3..."
 docker-compose exec pgslave3 bash -c "echo 1.1.1.1 pgmaster >> /etc/hosts && echo 1.1.1.2 pgslave1 >> /etc/hosts"
-sleep 40
+sleep 60
 
 SLAVE_EXIT=`docker-compose ps | grep pgslave3 | grep Exit | wc -l | tr -d ' '`
 if [[ "$SLAVE_EXIT" != "1" ]]; then
     echo '>>> Isolated slave should die!';
+    docker-compose logs pgslave3
     exit 1
 fi
 
