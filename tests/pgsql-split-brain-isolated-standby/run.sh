@@ -12,8 +12,9 @@ sleep 60
 
 SLAVE_EXIT=`docker-compose ps | grep pgslave3 | grep Exit | wc -l | tr -d ' '`
 if [[ "$SLAVE_EXIT" != "1" ]]; then
-    echo '>>> Isolated slave should die!';
+    docker-compose ps
     docker-compose logs pgslave3
+    echo '>>> Isolated slave should die!';
     exit 1
 fi
 
