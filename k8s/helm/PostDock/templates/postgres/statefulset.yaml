@@ -64,6 +64,8 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.postDock.name }}-secret
                   key: app.db.password
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
             - name: "CLUSTER_NAME"
               valueFrom:
                 configMapKeyRef:
@@ -88,7 +90,7 @@ spec:
             - containerPort: 5432
           volumeMounts:
             - name: db-data
-              mountPath: /var/lib/postgresql/data
+              mountPath: /var/lib/postgresql/data/pgdata
   volumeClaimTemplates:
     - metadata:
         name: db-data
