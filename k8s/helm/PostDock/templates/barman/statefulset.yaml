@@ -65,4 +65,15 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: barman-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+{{- if .Values.postgres.volume.storageclass }}
+        storageClassName: {{ .Values.postgres.volume.storageclass }}
+{{ end }}
+        resources:
+          requests:
+            storage: {{ .Values.barman.volume.size }}
+{{- if .Values.barman.volume.definition }}
+  {{- toYaml .Values.barman.volume.definition | indent 8 }}
+{{ end }}
 {{ end }}

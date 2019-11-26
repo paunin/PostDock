@@ -32,31 +32,12 @@ postgres:
     # postgres.replicationDb.password - database user {postgres.replicationDb.user} password
     password: replica_pass
   # postgres.nodes - configurations per postgres node in PostDock release
-  nodes:
-    # postgres.nodes.[*].volume - define how the volume for your node will look like
+  volume:
+    # postgres.volume - define how the volume for your node will look like
     #   .size - size of the volume and claim
-    #   .reclaimPolicy - k8s reclaim policy
-    #   .definition - will be copied to volume object as is, 
-    #                 if empty, volume will not be created for the node (assuming k8s will manage it by itself)
-    #                 Examples:
-    #                 ```
-    #                   hostPath:
-    #                     path: /tmp/db-data-mysystem-db-node-0
-    #                 ```
-    #                 ```
-    #                   awsElasticBlockStore:
-    #                     fsType: ext4
-    #                     volumeID: vol-xxxxxxx
-    #                 ```
-    - volume:
-        size: 100Gi
-        reclaimPolicy: Delete
-    - volume:
-        size: 100Gi
-        reclaimPolicy: Delete
-    - volume:
-        size: 100Gi
-        reclaimPolicy: Delete
+    #   .storageclass - name of the storageclass to be used for the volume
+    size: 100Gi
+
   # postgres.resources - define (in k8s style) resources for postgres pods of PostDock release
   resources:
   # postgres.env - environment variables for postgres nodes (@see https://github.com/paunin/PostDock#postgres)
@@ -101,7 +82,6 @@ barman:
   resources:
   # barman.env - environment variables for barman nodes (@see https://github.com/paunin/PostDock#barman)
   env:
-  # barman.volume - same as {postgres.nodes.[*].volume}
+  # barman.volume - same as {postgres.volume}
   volume:
     size: 200Gi
-    reclaimPolicy: Delete
