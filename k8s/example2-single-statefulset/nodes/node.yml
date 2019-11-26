@@ -68,6 +68,8 @@ spec:
                 secretKeyRef:
                   name: mysystem-secret
                   key: app.db.password
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
 
             # Cluster configs
             - name: "CLUSTER_NAME"

@@ -64,6 +64,8 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.postDock.name }}-secret
                   key: app.db.password
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
             - name: "CLUSTER_NAME"
               valueFrom:
                 configMapKeyRef:
