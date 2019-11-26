@@ -92,4 +92,14 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: db-data
-        
+      spec:
+        accessModes: ["ReadWriteOnce"]
+{{- if .Values.postgres.volume.storageclass }}
+        storageClassName: {{ .Values.postgres.volume.storageclass }}
+{{ end }}
+        resources:
+          requests:
+            storage: {{ .Values.postgres.volume.size }}
+{{- if .Values.postgres.volume.definition }}
+  {{- toYaml .Values.postgres.volume.definition | indent 8 }}
+{{ end }}
