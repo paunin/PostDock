@@ -6,17 +6,14 @@ echo ">>> Rewinding to the latest state"
 TRY_TO_FOLLOW_CLUSTER_MASTER=`PGCONNECT_TIMEOUT=$CHECK_PGCONNECT_TIMEOUT PGPASSWORD=$REPLICATION_PASSWORD  psql -h $CURRENT_REPLICATION_PRIMARY_HOST -U $REPLICATION_USER -p $REPLICATION_PRIMARY_PORT $REPLICATION_DB -tAc "SELECT count(*) FROM $(get_repmgr_schema).$REPMGR_NODES_TABLE WHERE (type='primary' OR type='master') AND conninfo LIKE '%host=$CURRENT_REPLICATION_PRIMARY_HOST%'"`
 
 if [[ "$MASTER_SLAVE_SWITCH" == "1" ]] || [ "$TRY_TO_FOLLOW_CLUSTER_MASTER" == "1" ]; then
-    echo ">>>>>> Archiving configs"
-    gosu postgres repmgr standby archive-config --config-archive-dir=/tmp/repmgr-archive
-
     echo ">>>>>> Start server to be able to rewind (weird hack to avoid dirty shutdown issue)"
     rm -rf $PGDATA/pg_xlog/archive_status/
     rm $PGDATA/postmaster.pid
-    gosu postgres pg_ctl -D "$PGDATA"  -o "-c listen_addresses='localhost'" -w start 
+    gosu postgres pg_ctl -D "$PGDATA"  -o "-c listen_addresses='localhost'" -w start
 
     echo ">>>>>> Removing unactive replication slots of partners"
     close_partners_slots
-    
+
     echo ">>>>>> Stop server"
     gosu postgres pg_ctl stop
 
@@ -26,20 +23,21 @@ if [[ "$MASTER_SLAVE_SWITCH" == "1" ]] || [ "$TRY_TO_FOLLOW_CLUSTER_MASTER" == "
         echo ">>>>>>>>> Creating $REPLICATION_SLOT"
         PGCONNECT_TIMEOUT=$CHECK_PGCONNECT_TIMEOUT PGPASSWORD=$REPLICATION_PASSWORD  psql -h $CURRENT_REPLICATION_PRIMARY_HOST -U $REPLICATION_USER -p $REPLICATION_PRIMARY_PORT $REPLICATION_DB -c "SELECT * FROM pg_create_physical_replication_slot('$REPLICATION_SLOT')"
     fi
-    echo ">>>>>> Rewind to the host $CURRENT_REPLICATION_PRIMARY_HOST"
-    gosu postgres pg_rewind --source-server="user=$REPLICATION_USER password=$REPLICATION_PASSWORD host=$CURRENT_REPLICATION_PRIMARY_HOST dbname=$REPLICATION_DB  port=$REPLICATION_PRIMARY_PORT connect_timeout=10" --target-pgdata=$PGDATA
 
-    echo ">>>>>> Restoring configs"
-    gosu postgres repmgr standby restore-config -D $PGDATA --config-archive-dir=/tmp/repmgr-archive
+	echo ">>>>>> Rejoin cluster. new primary: $CURRENT_REPLICATION_PRIMARY_HOST"
+    gosu postgres repmgr node rejoin -f $REPMGR_CONFIG_FILE --force-rewind --verbose --log-level DEBUG  -h $CURRENT_REPLICATION_PRIMARY_HOST -p $REPLICATION_PRIMARY_PORT -d $REPLICATION_DB -U $REPLICATION_USER -D $PGDATA
+
+    echo ">>>>>> Starting server to register"
+    gosu postgres pg_ctl -D "$PGDATA"  -o "-c listen_addresses='$CLUSTER_NODE_NETWORK_NAME'" -w start
+
+    echo ">>>>>> Register"
+    gosu postgres repmgr -f $REPMGR_CONFIG_FILE standby register --verbose
 fi
 
 
 if [ "$TRY_TO_FOLLOW_CLUSTER_MASTER" == "0" ]; then
     echo ">>>>>> Repmgr can follow only main cluster master"
 else
-    echo ">>>>>> Tell repmgr to follow upstream for the node"
-    gosu postgres repmgr -h $CURRENT_REPLICATION_PRIMARY_HOST -p $REPLICATION_PRIMARY_PORT -d $REPLICATION_DB -U $REPLICATION_USER -D $PGDATA standby follow -W --log-level DEBUG --verbose
-
     echo ">>>>>> Stop server"
     gosu postgres pg_ctl stop
 fi
