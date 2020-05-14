@@ -21,6 +21,7 @@ if [[ "$SSH_ENABLE" == "1" ]]; then
     sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
     echo "export VISIBLE=now" >> /etc/profile
 
+    echo -e "\n" >> $PG_HOME/.ssh/authorized_keys  # ensure new line
     cat $PG_HOME/.ssh/id_rsa.pub >> $PG_HOME/.ssh/authorized_keys
 
     echo '>>> STARTING SSH SERVER...'
