@@ -12,15 +12,15 @@ Using only `docker-compose` utility we can run some scenarios to demonstrate the
 * See topology after master death
     * Repmgr
 ```
-docker-compose exec pgslave1 bash -c "gosu postgres repmgr cluster show"
+docker-compose exec pgreplica1 bash -c "gosu postgres repmgr cluster show"
 [2016-12-28 07:10:53] [INFO] connecting to database
 Role      | Name  | Upstream | Connection String
 ----------+-------|----------|----------------------------------------------------------------------------------------------------------------
-  standby | node3 | node2    | user=replication_user password=replication_pass host=pgslave2 dbname=replication_db port=5432 connect_timeout=2
-  standby | node5 | node4    | user=replication_user password=replication_pass host=pgslave4 dbname=replication_db port=5432 connect_timeout=2
+  standby | node3 | node2    | user=replication_user password=replication_pass host=pgreplica2 dbname=replication_db port=5432 connect_timeout=2
+  standby | node5 | node4    | user=replication_user password=replication_pass host=pgreplica4 dbname=replication_db port=5432 connect_timeout=2
   FAILED  | node1 |          | user=replication_user password=replication_pass host=pgmaster dbname=replication_db port=5432 connect_timeout=2
-* master  | node2 |          | user=replication_user password=replication_pass host=pgslave1 dbname=replication_db port=5432 connect_timeout=2
-  standby | node4 | node2    | user=replication_user password=replication_pass host=pgslave3 dbname=replication_db port=5432 connect_timeout=2
+* master  | node2 |          | user=replication_user password=replication_pass host=pgreplica1 dbname=replication_db port=5432 connect_timeout=2
+  standby | node4 | node2    | user=replication_user password=replication_pass host=pgreplica3 dbname=replication_db port=5432 connect_timeout=2
 
 ```
     * Pgpool
@@ -29,9 +29,9 @@ docker-compose exec pgpool bash -c 'PGPASSWORD=$CHECK_PASSWORD psql -U $CHECK_US
  node_id | hostname | port | status | lb_weight |  role   
 ---------+----------+------+--------+-----------+---------
  0       | pgmaster | 5432 | 3      | 0.250000  | standby
- 1       | pgslave1 | 5432 | 2      | 0.250000  | primary
- 2       | pgslave2 | 5432 | 2      | 0.250000  | standby
- 3       | pgslave3 | 5432 | 2      | 0.250000  | standby
+ 1       | pgreplica1 | 5432 | 2      | 0.250000  | primary
+ 2       | pgreplica2 | 5432 | 2      | 0.250000  | standby
+ 3       | pgreplica3 | 5432 | 2      | 0.250000  | standby
 ```
 
 ## Split-brain in pgpool with 2 write nodes
@@ -76,9 +76,9 @@ The flow should proof that one (out of two) standby nodes will not be elected as
 
 * Start cluster `docker-compose up -d`
 * Drop useless nodes for the test
-    * `docker-compose exec pgslave2 bash -c "gosu postgres repmgr standby unregister"`
-    * `docker-compose exec pgslave4 bash -c "gosu postgres repmgr standby unregister"`
-    * `docker-compose stop pgslave2 pgslave4`
+    * `docker-compose exec pgreplica2 bash -c "gosu postgres repmgr standby unregister"`
+    * `docker-compose exec pgreplica4 bash -c "gosu postgres repmgr standby unregister"`
+    * `docker-compose stop pgreplica2 pgreplica4`
 * Cluster topology should look like:
 ```
 docker-compose exec pgmaster bash -c "gosu postgres repmgr cluster show"
@@ -86,27 +86,27 @@ docker-compose exec pgmaster bash -c "gosu postgres repmgr cluster show"
 Role      | Name  | Upstream | Connection String
 ----------+-------|----------|----------------------------------------------------------------------------------------------------------------
 * master  | node1 |          | user=replication_user password=replication_pass host=pgmaster dbname=replication_db port=5432 connect_timeout=2
-  standby | node2 | node1    | user=replication_user password=replication_pass host=pgslave1 dbname=replication_db port=5432 connect_timeout=2
-  standby | node4 | node1    | user=replication_user password=replication_pass host=pgslave3 dbname=replication_db port=5432 connect_timeout=2
+  standby | node2 | node1    | user=replication_user password=replication_pass host=pgreplica1 dbname=replication_db port=5432 connect_timeout=2
+  standby | node4 | node1    | user=replication_user password=replication_pass host=pgreplica3 dbname=replication_db port=5432 connect_timeout=2
 ```
-* Emulate broken connection in one node(`node4` - `pgslave3`) by command `docker-compose exec pgslave3 bash -c "echo 1.1.1.1 pgmaster >> /etc/hosts && echo 1.1.1.1 pgslave1 >> /etc/hosts"`
+* Emulate broken connection in one node(`node4` - `pgreplica3`) by command `docker-compose exec pgreplica3 bash -c "echo 1.1.1.1 pgmaster >> /etc/hosts && echo 1.1.1.1 pgreplica1 >> /etc/hosts"`
 * See that isolated node dies in a few minutes:
 ```
-docker-compose logs -f pgslave3
-pgslave3_1  | [2016-12-27 17:13:45] [WARNING] connection to master has been lost, trying to recover... 10 seconds before failover decision
-pgslave3_1  | [2016-12-27 17:13:52] [WARNING] connection to master has been lost, trying to recover... 5 seconds before failover decision
-pgslave3_1  | [2016-12-27 17:13:59] [ERROR] unable to reconnect to master (timeout 20 seconds)...
-pgslave3_1  | [2016-12-27 17:14:01] [ERROR] connection to database failed: timeout expired
-pgslave3_1  |
-pgslave3_1  | [2016-12-27 17:14:11] [ERROR] connection to database failed: timeout expired
-pgslave3_1  |
-pgslave3_1  | [2016-12-27 17:14:21] [ERROR] connection to database failed: timeout expired
-pgslave3_1  |
-pgslave3_1  | [2016-12-27 17:14:21] [ERROR] Unable to reach most of the nodes.
-pgslave3_1  | Let the other standby servers decide which one will be the master.
-pgslave3_1  | Manual action will be needed to re-add this node to the cluster.
-pgslave3_1  | [2016-12-27 17:14:21] [INFO] repmgrd terminating...
-postgresdockercluster_pgslave3_1 exited with code 11
+docker-compose logs -f pgreplica3
+pgreplica3_1  | [2016-12-27 17:13:45] [WARNING] connection to master has been lost, trying to recover... 10 seconds before failover decision
+pgreplica3_1  | [2016-12-27 17:13:52] [WARNING] connection to master has been lost, trying to recover... 5 seconds before failover decision
+pgreplica3_1  | [2016-12-27 17:13:59] [ERROR] unable to reconnect to master (timeout 20 seconds)...
+pgreplica3_1  | [2016-12-27 17:14:01] [ERROR] connection to database failed: timeout expired
+pgreplica3_1  |
+pgreplica3_1  | [2016-12-27 17:14:11] [ERROR] connection to database failed: timeout expired
+pgreplica3_1  |
+pgreplica3_1  | [2016-12-27 17:14:21] [ERROR] connection to database failed: timeout expired
+pgreplica3_1  |
+pgreplica3_1  | [2016-12-27 17:14:21] [ERROR] Unable to reach most of the nodes.
+pgreplica3_1  | Let the other standby servers decide which one will be the master.
+pgreplica3_1  | Manual action will be needed to re-add this node to the cluster.
+pgreplica3_1  | [2016-12-27 17:14:21] [INFO] repmgrd terminating...
+postgresdockercluster_pgreplica3_1 exited with code 11
 ```
 * The rest part of cluster should look like this:
 ```
@@ -115,8 +115,8 @@ docker-compose exec pgmaster bash -c "gosu postgres repmgr cluster show"
 Role      | Name  | Upstream | Connection String
 ----------+-------|----------|----------------------------------------------------------------------------------------------------------------
 * master  | node1 |          | user=replication_user password=replication_pass host=pgmaster dbname=replication_db port=5432 connect_timeout=2
-  standby | node2 | node1    | user=replication_user password=replication_pass host=pgslave1 dbname=replication_db port=5432 connect_timeout=2
-  FAILED  | node4 | node1    | user=replication_user password=replication_pass host=pgslave3 dbname=replication_db port=5432 connect_timeout=2
+  standby | node2 | node1    | user=replication_user password=replication_pass host=pgreplica1 dbname=replication_db port=5432 connect_timeout=2
+  FAILED  | node4 | node1    | user=replication_user password=replication_pass host=pgreplica3 dbname=replication_db port=5432 connect_timeout=2
 
 ```
 * `pgpool` should have 2 active nodes only:
@@ -125,18 +125,18 @@ docker-compose exec pgpool bash -c 'PGPASSWORD=$CHECK_PASSWORD psql -U $CHECK_US
  node_id | hostname | port | status | lb_weight |  role   
 ---------+----------+------+--------+-----------+---------
  0       | pgmaster | 5432 | 2      | 0.250000  | primary
- 1       | pgslave1 | 5432 | 2      | 0.250000  | standby
- 3       | pgslave3 | 5432 | 3      | 0.250000  | standby
+ 1       | pgreplica1 | 5432 | 2      | 0.250000  | standby
+ 3       | pgreplica3 | 5432 | 3      | 0.250000  | standby
 ```
-* Bringing back lost slave will add it to cluster (but not to `pgpool`) - `docker-compose up -d pgslave3`
+* Bringing back lost replica will add it to cluster (but not to `pgpool`) - `docker-compose up -d pgreplica3`
 ```
 docker-compose exec pgmaster bash -c "gosu postgres repmgr cluster show"
 [2016-12-27 17:52:21] [INFO] connecting to database
 Role      | Name  | Upstream | Connection String
 ----------+-------|----------|----------------------------------------------------------------------------------------------------------------
 * master  | node1 |          | user=replication_user password=replication_pass host=pgmaster dbname=replication_db port=5432 connect_timeout=2
-  standby | node2 | node1    | user=replication_user password=replication_pass host=pgslave1 dbname=replication_db port=5432 connect_timeout=2
-  standby | node4 | node1    | user=replication_user password=replication_pass host=pgslave3 dbname=replication_db port=5432 connect_timeout=2
+  standby | node2 | node1    | user=replication_user password=replication_pass host=pgreplica1 dbname=replication_db port=5432 connect_timeout=2
+  standby | node4 | node1    | user=replication_user password=replication_pass host=pgreplica3 dbname=replication_db port=5432 connect_timeout=2
 ```
 
 You can attach node to `pgpool` by command: `docker-compose exec pgpool bash -c 'pcp_attach_node -h localhost -U $PCP_USER -w 3'`
@@ -146,9 +146,9 @@ docker-compose exec pgpool bash -c 'PGPASSWORD=$CHECK_PASSWORD psql -U $CHECK_US
  node_id | hostname | port | status | lb_weight |  role   
 ---------+----------+------+--------+-----------+---------
  0       | pgmaster | 5432 | 2      | 0.250000  | primary
- 1       | pgslave1 | 5432 | 2      | 0.250000  | standby
- 2       | pgslave2 | 5432 | 3      | 0.250000  | standby
- 3       | pgslave3 | 5432 | 2      | 0.250000  | standby
+ 1       | pgreplica1 | 5432 | 2      | 0.250000  | standby
+ 2       | pgreplica2 | 5432 | 3      | 0.250000  | standby
+ 3       | pgreplica3 | 5432 | 2      | 0.250000  | standby
 
 ```
 
@@ -162,9 +162,9 @@ The flow should proof that in case of lost connection to master from standbys bu
 
 * Start cluster `docker-compose up -d`
 * Drop useless nodes for the test
-    * `docker-compose exec pgslave2 bash -c "gosu postgres repmgr standby unregister"`
-    * `docker-compose exec pgslave4 bash -c "gosu postgres repmgr standby unregister"`
-    * `docker-compose stop pgslave2 pgslave4`
+    * `docker-compose exec pgreplica2 bash -c "gosu postgres repmgr standby unregister"`
+    * `docker-compose exec pgreplica4 bash -c "gosu postgres repmgr standby unregister"`
+    * `docker-compose stop pgreplica2 pgreplica4`
 * Cluster topology should look like:
 ```
 docker-compose exec pgmaster bash -c "gosu postgres repmgr cluster show"
@@ -172,23 +172,23 @@ docker-compose exec pgmaster bash -c "gosu postgres repmgr cluster show"
 Role      | Name  | Upstream | Connection String
 ----------+-------|----------|----------------------------------------------------------------------------------------------------------------
 * master  | node1 |          | user=replication_user password=replication_pass host=pgmaster dbname=replication_db port=5432 connect_timeout=2
-  standby | node2 | node1    | user=replication_user password=replication_pass host=pgslave1 dbname=replication_db port=5432 connect_timeout=2
-  standby | node4 | node1    | user=replication_user password=replication_pass host=pgslave3 dbname=replication_db port=5432 connect_timeout=2
+  standby | node2 | node1    | user=replication_user password=replication_pass host=pgreplica1 dbname=replication_db port=5432 connect_timeout=2
+  standby | node4 | node1    | user=replication_user password=replication_pass host=pgreplica3 dbname=replication_db port=5432 connect_timeout=2
 ```
-* Emulate broken connection from standbys to master(`node2` - `pgslave1`, `node4` - `pgslave3`) by commands
-    * `docker-compose exec pgslave1 bash -c "echo 1.1.1.1 pgmaster >> /etc/hosts"`
-    * `docker-compose exec pgslave3 bash -c "echo 1.1.1.1 pgmaster >> /etc/hosts"`
-    * `docker-compose exec pgmaster bash -c "echo 1.1.1.1 pgslave1 >> /etc/hosts && echo 1.1.1.1 pgslave3 >> /etc/hosts "`
+* Emulate broken connection from standbys to master(`node2` - `pgreplica1`, `node4` - `pgreplica3`) by commands
+    * `docker-compose exec pgreplica1 bash -c "echo 1.1.1.1 pgmaster >> /etc/hosts"`
+    * `docker-compose exec pgreplica3 bash -c "echo 1.1.1.1 pgmaster >> /etc/hosts"`
+    * `docker-compose exec pgmaster bash -c "echo 1.1.1.1 pgreplica1 >> /etc/hosts && echo 1.1.1.1 pgreplica3 >> /etc/hosts "`
 * Make sure biggest part of your cluster has elected new master by command
-on `node2` - `docker-compose exec pgslave1 bash -c "gosu postgres repmgr cluster show"` OR
-on `node4` - `docker-compose exec pgslave3 bash -c "gosu postgres repmgr cluster show"`
+on `node2` - `docker-compose exec pgreplica1 bash -c "gosu postgres repmgr cluster show"` OR
+on `node4` - `docker-compose exec pgreplica3 bash -c "gosu postgres repmgr cluster show"`
 ```
 [2016-12-28 03:16:33] [INFO] connecting to database
 Role      | Name  | Upstream | Connection String
 ----------+-------|----------|----------------------------------------------------------------------------------------------------------------
   FAILED  | node1 |          | user=replication_user password=replication_pass host=pgmaster dbname=replication_db port=5432 connect_timeout=2
-* master  | node2 |          | user=replication_user password=replication_pass host=pgslave1 dbname=replication_db port=5432 connect_timeout=2
-  standby | node4 | node2    | user=replication_user password=replication_pass host=pgslave3 dbname=replication_db port=5432 connect_timeout=2
+* master  | node2 |          | user=replication_user password=replication_pass host=pgreplica1 dbname=replication_db port=5432 connect_timeout=2
+  standby | node4 | node2    | user=replication_user password=replication_pass host=pgreplica3 dbname=replication_db port=5432 connect_timeout=2
 ```
 * In the same moment `pgmaster` initial primary node should still be alive but without standbys:
 ```
@@ -197,8 +197,8 @@ docker-compose exec pgmaster bash -c "gosu postgres repmgr cluster show"
 Role      | Name  | Upstream | Connection String
 ----------+-------|----------|----------------------------------------------------------------------------------------------------------------
 * master  | node1 |          | user=replication_user password=replication_pass host=pgmaster dbname=replication_db port=5432 connect_timeout=2
-  FAILED  | node4 | node1    | user=replication_user password=replication_pass host=pgslave3 dbname=replication_db port=5432 connect_timeout=2
-  FAILED  | node2 | node1    | user=replication_user password=replication_pass host=pgslave1 dbname=replication_db port=5432 connect_timeout=2
+  FAILED  | node4 | node1    | user=replication_user password=replication_pass host=pgreplica3 dbname=replication_db port=5432 connect_timeout=2
+  FAILED  | node2 | node1    | user=replication_user password=replication_pass host=pgreplica1 dbname=replication_db port=5432 connect_timeout=2
 ```
 * Check `pgpool`
 ```
@@ -206,8 +206,8 @@ docker-compose exec pgpool bash -c 'PGPASSWORD=$CHECK_PASSWORD psql -U $CHECK_US
  node_id | hostname | port | status | lb_weight |  role   
 ---------+----------+------+--------+-----------+---------
  0       | pgmaster | 5432 | 2      | 0.250000  | primary
- 1       | pgslave1 | 5432 | 2      | 0.250000  | standby
- 3       | pgslave3 | 5432 | 2      | 0.250000  | standby
+ 1       | pgreplica1 | 5432 | 2      | 0.250000  | standby
+ 3       | pgreplica3 | 5432 | 2      | 0.250000  | standby
 
 ```
 

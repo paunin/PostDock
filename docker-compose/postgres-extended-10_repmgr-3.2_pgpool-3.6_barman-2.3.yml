@@ -9,10 +9,10 @@ networks:
 
 volumes:
     pgmaster:
-    pgslave1:
-    pgslave2:
-    pgslave3:
-    pgslave4:
+    pgreplica1:
+    pgreplica2:
+    pgreplica3:
+    pgreplica4:
     backup:
 
 services:
@@ -25,7 +25,7 @@ services:
             NODE_NAME: node1 # Node name
             CLUSTER_NODE_NETWORK_NAME: pgmaster # (default: hostname of the node)
             
-            PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
+            PARTNER_NODES: "pgmaster,pgreplica1,pgreplica3"
             REPLICATION_PRIMARY_HOST: pgmaster # That should be ignored on the same node
             
             NODE_PRIORITY: 100  # (default: 100)
@@ -55,16 +55,16 @@ services:
                 aliases:
                     - pgmaster
 #<<< Branch 1
-    pgslave1:
+    pgreplica1:
         build:
             context: ../src
             dockerfile: Postgres-extended-10-Repmgr-3.2.Dockerfile
         environment:
             NODE_ID: 2
             NODE_NAME: node2
-            CLUSTER_NODE_NETWORK_NAME: pgslave1 # (default: hostname of the node)
+            CLUSTER_NODE_NETWORK_NAME: pgreplica1 # (default: hostname of the node)
             SSH_ENABLE: 1
-            PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
+            PARTNER_NODES: "pgmaster,pgreplica1,pgreplica3"
             REPLICATION_PRIMARY_HOST: pgmaster
             CLEAN_OVER_REWIND: 1
             CONFIGS_DELIMITER_SYMBOL: ;
@@ -72,47 +72,47 @@ services:
         ports:
             - 5441:5432
         volumes:
-            - pgslave1:/var/lib/postgresql/data
+            - pgreplica1:/var/lib/postgresql/data
             - ./ssh:/tmp/.ssh/keys
         networks:
             cluster:
                 aliases:
-                    - pgslave1
+                    - pgreplica1
 
-    # Add more slaves if required
-    pgslave2:
+    # Add more replicas if required
+    pgreplica2:
         build:
             context: ../src
             dockerfile: Postgres-extended-10-Repmgr-3.2.Dockerfile
         environment:
             NODE_ID: 3
             NODE_NAME: node3
-            CLUSTER_NODE_NETWORK_NAME: pgslave2 # (default: hostname of the node)
+            CLUSTER_NODE_NETWORK_NAME: pgreplica2 # (default: hostname of the node)
 
-            REPLICATION_PRIMARY_HOST: pgslave1 # I want to have cascade Streeming replication
+            REPLICATION_PRIMARY_HOST: pgreplica1 # I want to have cascade Streeming replication
             #USE_REPLICATION_SLOTS: 0
             CONFIGS_DELIMITER_SYMBOL: ;
             CONFIGS: "listen_addresses:'*';shared_preload_libraries:'pglogical'"
         ports:
             - 5442:5432
         volumes:
-            - pgslave2:/var/lib/postgresql/data
+            - pgreplica2:/var/lib/postgresql/data
         networks:
             cluster:
                 aliases:
-                    - pgslave2
+                    - pgreplica2
 #>>> Branch 1
 #<<< Branch 2
-    pgslave3:
+    pgreplica3:
         build:
             context: ../src
             dockerfile: Postgres-extended-10-Repmgr-3.2.Dockerfile
         environment:
             NODE_ID: 4
             NODE_NAME: node4
-            CLUSTER_NODE_NETWORK_NAME: pgslave3 # (default: hostname of the node)
+            CLUSTER_NODE_NETWORK_NAME: pgreplica3 # (default: hostname of the node)
             SSH_ENABLE: 1
-            PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
+            PARTNER_NODES: "pgmaster,pgreplica1,pgreplica3"
             REPLICATION_PRIMARY_HOST: pgmaster
             NODE_PRIORITY: 200  # (default: 100)
             CLEAN_OVER_REWIND: 1
@@ -121,34 +121,34 @@ services:
         ports:
             - 5443:5432
         volumes:
-            - pgslave3:/var/lib/postgresql/data
+            - pgreplica3:/var/lib/postgresql/data
             - ./ssh:/tmp/.ssh/keys
         networks:
             cluster:
                 aliases:
-                    - pgslave3
+                    - pgreplica3
 
-    pgslave4:
+    pgreplica4:
         build:
             context: ../src
             dockerfile: Postgres-extended-10-Repmgr-3.2.Dockerfile
         environment:
             NODE_ID: 5
             NODE_NAME: node5
-            CLUSTER_NODE_NETWORK_NAME: pgslave4 # (default: hostname of the node)
+            CLUSTER_NODE_NETWORK_NAME: pgreplica4 # (default: hostname of the node)
 
-            REPLICATION_PRIMARY_HOST: pgslave3
+            REPLICATION_PRIMARY_HOST: pgreplica3
             #USE_REPLICATION_SLOTS: 0
             CONFIGS_DELIMITER_SYMBOL: ;
             CONFIGS: "listen_addresses:'*';shared_preload_libraries:'pglogical'"
         ports:
             - 5444:5432
         volumes:
-            - pgslave4:/var/lib/postgresql/data
+            - pgreplica4:/var/lib/postgresql/data
         networks:
             cluster:
                 aliases:
-                    - pgslave4
+                    - pgreplica4
 #>>> Branch 2
     backup:
         build:
@@ -184,7 +184,7 @@ services:
             CHECK_PGCONNECT_TIMEOUT: 3 #timout for checking if primary node is healthy
             SSH_ENABLE: 1
             DB_USERS: monkey_user:monkey_pass # in format user:password[,user:password[...]]
-            BACKENDS: "0:pgmaster:5432:1:/var/lib/postgresql/data:ALLOW_TO_FAILOVER,1:pgslave1::::,3:pgslave3::::,2:pgslave2::::" #,4:pgslaveDOES_NOT_EXIST::::
+            BACKENDS: "0:pgmaster:5432:1:/var/lib/postgresql/data:ALLOW_TO_FAILOVER,1:pgreplica1::::,3:pgreplica3::::,2:pgreplica2::::" #,4:pgreplicaDOES_NOT_EXIST::::
                       # in format num:host:port:weight:data_directory:flag[,...]
                       # defaults:
                       #   port: 5432

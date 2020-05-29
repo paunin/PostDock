@@ -6,7 +6,7 @@ wait_upstream_postgres
 if [ `ls $PGDATA/ | wc -l` != "0" ]; then
     echo ">>> Data folder is not empty $PGDATA:"
     ls -al $PGDATA
-    if [[ "$CLEAN_OVER_REWIND" == "1" ]] && [[ "$MASTER_SLAVE_SWITCH" == "1" ]]; then
+    if [[ "$CLEAN_OVER_REWIND" == "1" ]] && [[ "$MASTER_replica_SWITCH" == "1" ]]; then
         echo ">>> Cleaning data folder..."
         rm -rf $PGDATA/*
     fi

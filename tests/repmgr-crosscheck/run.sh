@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # https://github.com/paunin/PostDock/issues/225
-docker-compose up -d pgmaster pgslave1 pgslave3
+docker-compose up -d pgmaster pgreplica1 pgreplica3
 set -e
 
 docker-compose exec -T pgmaster wait_local_postgres
-docker-compose exec -T pgslave1 wait_local_postgres
-docker-compose exec -T pgslave3 wait_local_postgres
+docker-compose exec -T pgreplica1 wait_local_postgres
+docker-compose exec -T pgreplica3 wait_local_postgres
 sleep 10
 
 # Result matrix should look like this(5 rows, 3 rows with stars but with no question marks):
@@ -16,7 +16,7 @@ sleep 10
 # node2 |  2 |  * |  * |  * 
 # node4 |  4 |  * |  * |  * 
 
-for CONTAINER in "pgmaster" "pgslave1" "pgslave3"; do
+for CONTAINER in "pgmaster" "pgreplica1" "pgreplica3"; do
     echo "Checking CONTAINER=$CONTAINER"
     UNKNOWN_NUMBER=`docker-compose exec $CONTAINER bash -c 'gosu postgres repmgr cluster crosscheck 2>/dev/null' | grep -v '?' | grep '*' | wc -l | tr -d ' '`
     if [[ "3" != "$UNKNOWN_NUMBER" ]]; then

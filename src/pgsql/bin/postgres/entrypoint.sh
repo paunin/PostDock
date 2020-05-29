@@ -29,7 +29,7 @@ if [ -f "$MASTER_ROLE_LOCK_FILE_NAME" ]; then
     else
         echo ">>> Current master is $CURRENT_MASTER. Will clone/rewind it and act as a standby node..."
         rm -f "$MASTER_ROLE_LOCK_FILE_NAME"
-        export MASTER_SLAVE_SWITCH="1"
+        export MASTER_replica_SWITCH="1"
         export CURRENT_REPLICATION_PRIMARY_HOST="$CURRENT_MASTER"
     fi
 else

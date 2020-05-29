@@ -20,8 +20,8 @@ SELECT * FROM nodes;
  node_id | upstream_node_id | active | node_name |  type   | location | priority |                                                    conninfo                                                     |     repluser     |   slot_name   |   config_file
 ---------+------------------+--------+-----------+---------+----------+----------+-----------------------------------------------------------------------------------------------------------------+------------------+---------------+------------------
        1 |                  | t      | node1     | primary | default  |      100 | user=replication_user password=replication_pass host=pgmaster dbname=replication_db port=5432 connect_timeout=2 | replication_user | repmgr_slot_1 | /etc/repmgr.conf
-       4 |                1 | t      | node4     | standby | default  |      200 | user=replication_user password=replication_pass host=pgslave3 dbname=replication_db port=5432 connect_timeout=2 | replication_user | repmgr_slot_4 | /etc/repmgr.conf
-       2 |                1 | t      | node2     | standby | default  |      100 | user=replication_user password=replication_pass host=pgslave1 dbname=replication_db port=5432 connect_timeout=2 | replication_user | repmgr_slot_2 | /etc/repmgr.conf
+       4 |                1 | t      | node4     | standby | default  |      200 | user=replication_user password=replication_pass host=pgreplica3 dbname=replication_db port=5432 connect_timeout=2 | replication_user | repmgr_slot_4 | /etc/repmgr.conf
+       2 |                1 | t      | node2     | standby | default  |      100 | user=replication_user password=replication_pass host=pgreplica1 dbname=replication_db port=5432 connect_timeout=2 | replication_user | repmgr_slot_2 | /etc/repmgr.conf
 (3 rows)
 ```
 
@@ -47,8 +47,8 @@ SELECT * FROM show_nodes;
  node_id | node_name | active | upstream_node_id | upstream_node_name |  type   | priority |                                                    conninfo
 ---------+-----------+--------+------------------+--------------------+---------+----------+-----------------------------------------------------------------------------------------------------------------
        1 | node1     | t      |                  |                    | primary |      100 | user=replication_user password=replication_pass host=pgmaster dbname=replication_db port=5432 connect_timeout=2
-       4 | node4     | t      |                1 | node1              | standby |      200 | user=replication_user password=replication_pass host=pgslave3 dbname=replication_db port=5432 connect_timeout=2
-       2 | node2     | t      |                1 | node1              | standby |      100 | user=replication_user password=replication_pass host=pgslave1 dbname=replication_db port=5432 connect_timeout=2
+       4 | node4     | t      |                1 | node1              | standby |      200 | user=replication_user password=replication_pass host=pgreplica3 dbname=replication_db port=5432 connect_timeout=2
+       2 | node2     | t      |                1 | node1              | standby |      100 | user=replication_user password=replication_pass host=pgreplica1 dbname=replication_db port=5432 connect_timeout=2
 (3 rows)
 ```
 
@@ -75,6 +75,6 @@ gosu postgres repmgr cluster show
  ID | Name  | Role    | Status        | Upstream | Location | Connection string
 ----+-------+---------+---------------+----------+----------+-----------------------------------------------------------------------------------------------------------------
  1  | node1 | primary | * running     |          | default  | user=replication_user password=replication_pass host=pgmaster dbname=replication_db port=5432 connect_timeout=2
- 2  | node2 | standby | ? unreachable | node1    | default  | user=replication_user password=replication_pass host=pgslave1 dbname=replication_db port=5432 connect_timeout=2
- 4  | node4 | standby | ? unreachable | node1    | default  | user=replication_user password=replication_pass host=pgslave3 dbname=replication_db port=5432 connect_timeout=2
+ 2  | node2 | standby | ? unreachable | node1    | default  | user=replication_user password=replication_pass host=pgreplica1 dbname=replication_db port=5432 connect_timeout=2
+ 4  | node4 | standby | ? unreachable | node1    | default  | user=replication_user password=replication_pass host=pgreplica3 dbname=replication_db port=5432 connect_timeout=2
  ```

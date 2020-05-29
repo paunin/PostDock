@@ -21,7 +21,7 @@ RUN  wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key a
 RUN  apt-get install -y postgresql-client-9.6
 
 
-RUN install_deb_pkg "http://atalia.postgresql.org/morgue/b/barman/barman_2.4-1.pgdg90+1_all.deb"
+RUN install_deb_pkg "https://apt-archive.postgresql.org/pub/repos/apt/pool/main/b/barman/barman_2.4-1.pgdg100%2B1_all.deb"
 
 RUN apt-get -y install cron
 ADD barman/crontab /etc/cron.d/barman

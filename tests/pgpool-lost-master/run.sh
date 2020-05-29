@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-docker-compose up -d pgmaster pgslave1 pgslave2 pgslave3 pgpool
+docker-compose up -d pgmaster pgreplica1 pgreplica2 pgreplica3 pgpool
 
 docker-compose exec -T pgmaster wait_local_postgres
-docker-compose exec -T pgslave1 wait_local_postgres
-docker-compose exec -T pgslave2 wait_local_postgres
-docker-compose exec -T pgslave3 wait_local_postgres
+docker-compose exec -T pgreplica1 wait_local_postgres
+docker-compose exec -T pgreplica2 wait_local_postgres
+docker-compose exec -T pgreplica3 wait_local_postgres
 
 sleep 20
 docker-compose kill pgmaster

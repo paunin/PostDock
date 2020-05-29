@@ -8,7 +8,7 @@ Upod recovery completion duplicates wil be removed.
 
 ## Recovery steps:
 
-1. Stop pg cluster, but retain containers. **IMPORTANT start with slaves**
+1. Stop pg cluster, but retain containers. **IMPORTANT start with replicas**
     ```
     touch /var/run/recovery.lock
     killall repmgrd

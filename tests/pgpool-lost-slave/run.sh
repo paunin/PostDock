@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-docker-compose up -d pgmaster pgslave1 pgslave2 pgslave3 pgpool
+docker-compose up -d pgmaster pgreplica1 pgreplica2 pgreplica3 pgpool
 
 docker-compose exec -T pgmaster wait_local_postgres
-docker-compose exec -T pgslave1 wait_local_postgres
-docker-compose exec -T pgslave2 wait_local_postgres
-docker-compose exec -T pgslave3 wait_local_postgres
+docker-compose exec -T pgreplica1 wait_local_postgres
+docker-compose exec -T pgreplica2 wait_local_postgres
+docker-compose exec -T pgreplica3 wait_local_postgres
 sleep 20
-docker-compose kill pgslave3
+docker-compose kill pgreplica3
 
 # Generate some load
 for i in `seq 1 50`; do
@@ -21,7 +21,7 @@ done
 
 sleep 180
 
-NODE_IS_OUT=`docker-compose exec -T pgpool bash -c 'PGCONNECT_TIMEOUT=10 PGPASSWORD=$CHECK_PASSWORD psql -U $CHECK_USER -h 127.0.0.1 template1 -c "show pool_nodes"' | grep pgslave3 | awk -F"|" '{print $4}' | grep 'down\|3' | wc -l | tr -d ' '`
+NODE_IS_OUT=`docker-compose exec -T pgpool bash -c 'PGCONNECT_TIMEOUT=10 PGPASSWORD=$CHECK_PASSWORD psql -U $CHECK_USER -h 127.0.0.1 template1 -c "show pool_nodes"' | grep pgreplica3 | awk -F"|" '{print $4}' | grep 'down\|3' | wc -l | tr -d ' '`
 if [[ "$NODE_IS_OUT" != "1" ]]; then
     echo ">>> Node should be removed from pgpool!"
 fi

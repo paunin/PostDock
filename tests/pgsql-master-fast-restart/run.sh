@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-docker-compose up -d pgmaster pgslave1 pgslave3
+docker-compose up -d pgmaster pgreplica1 pgreplica3
 
 docker-compose exec  pgmaster wait_local_postgres && \
-docker-compose exec  pgslave1 wait_local_postgres && \
-docker-compose exec  pgslave3 wait_local_postgres && \
+docker-compose exec  pgreplica1 wait_local_postgres && \
+docker-compose exec  pgreplica3 wait_local_postgres && \
 sleep 10
 
 docker-compose restart pgmaster && \

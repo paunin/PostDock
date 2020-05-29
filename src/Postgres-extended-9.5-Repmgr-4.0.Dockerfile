@@ -11,8 +11,8 @@ COPY ./dockerfile/bin /usr/local/bin/dockerfile
 RUN chmod -R +x /usr/local/bin/dockerfile && ln -s /usr/local/bin/dockerfile/functions/* /usr/local/bin/
 
 
-RUN install_deb_pkg "http://atalia.postgresql.org/morgue/r/repmgr/repmgr-common_4.0.6-2.pgdg80+1_all.deb" 
-RUN install_deb_pkg "http://atalia.postgresql.org/morgue/r/repmgr/postgresql-$PG_MAJOR-repmgr_4.0.6-2.pgdg80+1_amd64.deb" 
+RUN install_deb_pkg "https://apt-archive.postgresql.org/pub/repos/apt/pool/main/r/repmgr/repmgr-common_4.0.6-2.pgdg80+1_all.deb" 
+RUN install_deb_pkg "https://apt-archive.postgresql.org/pub/repos/apt/pool/main/r/repmgr/postgresql-$PG_MAJOR-repmgr_4.0.6-2.pgdg80+1_amd64.deb" 
 
 # Inherited variables
 # ENV POSTGRES_PASSWORD monkey_pass
