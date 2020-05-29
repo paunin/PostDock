@@ -66,6 +66,12 @@ Taking into account that PostDock project itself has versioning schema, all dock
     * for `barman` - `postgres` can be `96`, `10`, `11`, ...
     * for `pgpool` - `postgres` can be `96`, `10`, `11`, ...
 
+docker-compose/latest.yml is symlinked to the component versions you desire. Change the symlink to the appropriate versions available in the docker-compose/ directory as needed. For example, by default, the symlink is:
+
+```
+latest.yml -> postgres-11_repmgr-4.0_pgpool-3.7_barman-2.4.yml
+```
+
 Aliases are available **(not recommended to use for production)**:
 
 * `postdock/<component>:latest-<component><component_version>[-<sub_component><sub_component_version>[...]]` - refers to the latest release of the postdock, certain version of the component, certain version of the sub-components(e.g. `postdock/postgres:latest-postgres101-repmgr32`,`postdock/postgres:latest-barman23-postgres101`)
