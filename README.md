@@ -2,7 +2,9 @@
 
 PostgreSQL cluster with **High Availability** and **Self Healing** features for any cloud and docker environment (Amazon, Google Cloud, Kubernetes, Docker Compose, Docker Swarm, Apache Mesos)
 
-**NOTE: This fork has been changed from the original to fix broken repos for the various components, and there are other slight optimizations.**
+![Formula](https://raw.githubusercontent.com/paunin/PostDock/master/artwork/formula2.png)
+
+[![Build Status](https://travis-ci.org/paunin/PostDock.svg?branch=master)](https://travis-ci.org/paunin/PostDock)
 
 - [Info](#info)
   * [Features](#features)
@@ -66,12 +68,6 @@ Taking into account that PostDock project itself has versioning schema, all dock
     * for `barman` - `postgres` can be `96`, `10`, `11`, ...
     * for `pgpool` - `postgres` can be `96`, `10`, `11`, ...
 
-docker-compose/latest.yml is symlinked to the component versions you desire. Change the symlink to the appropriate versions available in the docker-compose/ directory as needed. For example, by default, the symlink is:
-
-```
-latest.yml -> postgres-11_repmgr-4.0_pgpool-3.7_barman-2.4.yml
-```
-
 Aliases are available **(not recommended to use for production)**:
 
 * `postdock/<component>:latest-<component><component_version>[-<sub_component><sub_component_version>[...]]` - refers to the latest release of the postdock, certain version of the component, certain version of the sub-components(e.g. `postdock/postgres:latest-postgres101-repmgr32`,`postdock/postgres:latest-barman23-postgres101`)
@@ -88,19 +84,19 @@ All available tags (versions and combinations of it) are listed in respective do
 
 ## Start cluster with docker-compose
 
-To start cluster run it as normal `docker-compose` application `docker-compose -f ./docker-compose/latest.yml up -d pgmaster pgreplica1 pgreplica2 pgreplica3 pgreplica4 pgpool backup`
+To start cluster run it as normal `docker-compose` application `docker-compose -f ./docker-compose/latest.yml up -d pgmaster pgslave1 pgslave2 pgslave3 pgslave4 pgpool backup`
 
 Schema of the example cluster:
 
 ```
 pgmaster (primary node1)  --|
-|- pgreplica1 (node2)       --|
-|  |- pgreplica2 (node3)    --|----pgpool (master_replica_mode stream)
-|- pgreplica3 (node4)       --|
-   |- pgreplica4 (node5)    --|
+|- pgslave1 (node2)       --|
+|  |- pgslave2 (node3)    --|----pgpool (master_slave_mode stream)
+|- pgslave3 (node4)       --|
+   |- pgslave4 (node5)    --|
 ```
 
-Each `postgres` node (`pgmaster`, `pgreplicaX`) is managed by `repmgr/repmgrd`. It allows to use automatic `failover` and check cluster status.
+Each `postgres` node (`pgmaster`, `pgslaveX`) is managed by `repmgr/repmgrd`. It allows to use automatic `failover` and check cluster status.
 
 Please check comments for each `ENV` variable in [./docker-compose/latest.yml](./docker-compose/latest.yml) file to understand parameter for each cluster node
 
@@ -127,7 +123,7 @@ The most important part to configure in Pgpool (apart of general `CONFIGS`) is b
 
 ```
 DB_USERS: monkey_user:monkey_pass # in format user:password[,user:password[...]]
-BACKENDS: "0:pgmaster:5432:1:/var/lib/postgresql/data:ALLOW_TO_FAILOVER,1:pgreplica1::::,3:pgreplica3::::,2:pgreplica2::::" #,4:pgreplicaDOES_NOT_EXIST::::
+BACKENDS: "0:pgmaster:5432:1:/var/lib/postgresql/data:ALLOW_TO_FAILOVER,1:pgslave1::::,3:pgslave3::::,2:pgslave2::::" #,4:pgslaveDOES_NOT_EXIST::::
             # in format num:host:port:weight:data_directory:flag[,...]
             # defaults:
             #   port: 5432
@@ -229,34 +225,6 @@ To make sure you cluster works as expected without 'split-brain' or other issues
 
 Any command might be wrapped with `docker-compose` or `kubectl` - `docker-compose exec {NODE} bash -c '{COMMAND}'` or `kubectl exec {POD_NAME} -- bash -c '{COMMAND}'`
 
-* Populate test data
-
-See https://github.com/robconery/dvdrental for more details.
-
-Do this on pgmaster if needed; data is retained in pgmaster/pgreplicaN directory and so might already be present.
-
-```
-wget https://github.com/robconery/dvdrental/blob/master/dvdrental.tar?raw=true
-
-createdb dvdrental -U postgres
-
-psql -U postgres dvdrental -c'CREATE EXTENSION pg_stat_statements' #enable plugin
-
-pg_restore -d dvdrental dvdrental.tar?raw=true -U postgres
-
-psql -U postgres dvdrental -c'select * from actor limit 10' #verification
-```
-
-* Benchmark/load test
-
-Do this on pgmaster.
-
-See https://wiki.postgresql.org/wiki/Pgbenchtesting for more load examples.
-
-```
-pgbench -i dvdrental -U postgres #initialize database
-pgbench -c 64 -j 4 -T 600 dvdrental -U postgres #example load
-```
 
 ## Scenarios
 
@@ -278,8 +246,9 @@ Check [the doc](./doc/CONTRIBUTE.md) to understand how to contribute
     * Complex logic with a lot of go-code
     * Non-standard tools for Postgres ecosystem
 * [How to promote master, after failover on postgresql with docker](http://stackoverflow.com/questions/37710868/how-to-promote-master-after-failover-on-postgresql-with-docker)
-* Killing of node in the middle (e.g. `pgreplica1`) will cause [dieing of whole branch](https://groups.google.com/forum/?hl=fil#!topic/repmgr/lPAYlawhL0o)
+* Killing of node in the middle (e.g. `pgslave1`) will cause [dieing of whole branch](https://groups.google.com/forum/?hl=fil#!topic/repmgr/lPAYlawhL0o)
    * That make seance as second or deeper level of replication should not be able to connect to root master (it makes extra load on server) or change upstream at all
+
 
 ## Documentation and manuals
 
