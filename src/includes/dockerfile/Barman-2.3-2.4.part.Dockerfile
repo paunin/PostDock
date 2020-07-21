@@ -12,18 +12,18 @@ RUN chmod -R +x /usr/local/bin/dockerfile && ln -s /usr/local/bin/dockerfile/fun
 RUN  wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key add - && \
      sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" >> /etc/apt/sources.list.d/pgdg.list' && \
      apt-get update && \
-     apt-get install -y libffi-dev libssl-dev openssh-server
+     apt-get install -y libffi-dev libssl-dev openssh-server python-argcomplete python-argh python-dateutil python-psycopg2 rsync
 
 {{ #PG_CLIENT_LATEST }}
 RUN  apt-get install -y postgresql-client-{{ PG_CLIENT_VERSION }}
 {{ /PG_CLIENT_LATEST }}{{ ^PG_CLIENT_LATEST }}
-RUN install_deb_pkg "http://atalia.postgresql.org/morgue/p/postgresql-{{ PG_CLIENT_VERSION }}/postgresql-client-{{ PG_CLIENT_VERSION }}_{{ PG_CLIENT_PACKAGE_VERSION }}_amd64.deb"
+RUN install_deb_pkg "http://apt-archive.postgresql.org/pub/repos/apt/pool/main/p/postgresql-{{ PG_CLIENT_VERSION }}/postgresql-client-{{ PG_CLIENT_VERSION }}_{{ PG_CLIENT_PACKAGE_VERSION }}_amd64.deb"
 {{ /PG_CLIENT_LATEST }}
 
 {{ #BARMAN_LATEST }}
 RUN  apt-get install -y barman={{ BARMAN_VERSION }}\*
 {{ /BARMAN_LATEST }}{{ ^BARMAN_LATEST }}
-RUN install_deb_pkg "http://atalia.postgresql.org/morgue/b/barman/barman_{{ BARMAN_PACKAGE_VERSION }}_all.deb"
+RUN install_deb_pkg "http://apt-archive.postgresql.org/pub/repos/apt/pool/main/b/barman/barman_{{ BARMAN_PACKAGE_VERSION }}_all.deb"
 {{ /BARMAN_LATEST }}
 
 RUN apt-get -y install cron

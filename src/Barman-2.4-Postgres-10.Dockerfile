@@ -16,12 +16,12 @@ RUN chmod -R +x /usr/local/bin/dockerfile && ln -s /usr/local/bin/dockerfile/fun
 RUN  wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key add - && \
      sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" >> /etc/apt/sources.list.d/pgdg.list' && \
      apt-get update && \
-     apt-get install -y libffi-dev libssl-dev openssh-server
+     apt-get install -y libffi-dev libssl-dev openssh-server python-argcomplete python-argh python-dateutil python-psycopg2 rsync
 
 RUN  apt-get install -y postgresql-client-10
 
 
-RUN install_deb_pkg "http://atalia.postgresql.org/morgue/b/barman/barman_2.4-1.pgdg90+1_all.deb"
+RUN install_deb_pkg "http://apt-archive.postgresql.org/pub/repos/apt/pool/main/b/barman/barman_2.4-1.pgdg%2B1_all.deb"
 
 RUN apt-get -y install cron
 ADD barman/crontab /etc/cron.d/barman

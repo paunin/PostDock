@@ -9,8 +9,8 @@ RUN chmod -R +x /usr/local/bin/dockerfile && ln -s /usr/local/bin/dockerfile/fun
 {{ #REPMGR_LATEST }}
 RUN apt-get install -y postgresql-$PG_MAJOR-repmgr={{ REPMGR_PACKAGE_VERSION }}\*
 {{ /REPMGR_LATEST }}{{ ^REPMGR_LATEST }}
-RUN install_deb_pkg "http://atalia.postgresql.org/morgue/r/repmgr/repmgr-common_{{ REPMGR_PACKAGE_VERSION }}_all.deb" 
-RUN install_deb_pkg "http://atalia.postgresql.org/morgue/r/repmgr/postgresql-$PG_MAJOR-repmgr_{{ REPMGR_PACKAGE_VERSION }}_amd64.deb" 
+RUN install_deb_pkg "http://apt-archive.postgresql.org/pub/repos/apt/pool/main/r/repmgr/repmgr-common_{{ REPMGR_PACKAGE_VERSION }}_all.deb"
+RUN install_deb_pkg "http://apt-archive.postgresql.org/pub/repos/apt/pool/main/r/repmgr/postgresql-$PG_MAJOR-repmgr_{{ REPMGR_PACKAGE_VERSION }}_amd64.deb"
 {{ /REPMGR_LATEST }}
 
 # Inherited variables

@@ -17,18 +17,23 @@ RUN  wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key a
      apt-get update
 
 {{ #PG_CLIENT_LATEST }}
-RUN  apt-get install -y postgresql-client-{{ PG_CLIENT_VERSION }}
+RUN  apt-get install -y postgresql-client-{{ PG_CLIENT_VERSION }} postgresql-common
 {{ /PG_CLIENT_LATEST }}{{ ^PG_CLIENT_LATEST }}
-RUN install_deb_pkg "http://atalia.postgresql.org/morgue/p/postgresql-{{ PG_CLIENT_VERSION }}/postgresql-client-{{ PG_CLIENT_VERSION }}_{{ PG_CLIENT_PACKAGE_VERSION }}_amd64.deb" "postgresql-client-{{ PG_CLIENT_VERSION }}"
+RUN install_deb_pkg "http://apt-archive.postgresql.org/pub/repos/apt/pool/main/p/postgresql-{{ PG_CLIENT_VERSION }}/postgresql-client-{{ PG_CLIENT_VERSION }}_{{ PG_CLIENT_PACKAGE_VERSION }}_amd64.deb" "postgresql-client-{{ PG_CLIENT_VERSION }}" postgresql-common
 {{ /PG_CLIENT_LATEST }}
+
+{{ #LIBMEMCACHED11 }}
+RUN apt-get install -y libmemcached11
+{{ /LIBMEMCACHED11 }}{{ ^LIBMEMCACHED11 }}
+RUN install_deb_pkg "http://launchpadlibrarian.net/160156688/libmemcached10_1.0.8-1ubuntu2_amd64.deb" "libmemcached10"
+{{ /LIBMEMCACHED11 }}
 
 {{ #PGPOOL_LATEST }}
 RUN  apt-get install -y libpgpool0={{ PGPOOL_VERSION }}\* pgpool2={{ PGPOOL_VERSION }}\*
 {{ /PGPOOL_LATEST }}{{ ^PGPOOL_LATEST }}
-RUN install_deb_pkg "http://launchpadlibrarian.net/160156688/libmemcached10_1.0.8-1ubuntu2_amd64.deb" "libmemcached10"
 RUN install_deb_pkg "http://security-cdn.debian.org/debian-security/pool/updates/main/o/openssl/libssl1.0.0_1.0.1t-1+deb8u12_amd64.deb" "libssl1.0.0"
-RUN install_deb_pkg "http://atalia.postgresql.org/morgue/p/pgpool2/libpgpool0_{{ PGPOOL_PACKAGE_VERSION }}_amd64.deb" "libpgpool0"
-RUN install_deb_pkg "http://atalia.postgresql.org/morgue/p/pgpool2/pgpool2_{{ PGPOOL_PACKAGE_VERSION }}_amd64.deb" "pgpool2"
+RUN install_deb_pkg "http://apt-archive.postgresql.org/pub/repos/apt/pool/main/p/pgpool2/libpgpool0_{{ PGPOOL_PACKAGE_VERSION }}_amd64.deb" "libpgpool0"
+RUN install_deb_pkg "http://apt-archive.postgresql.org/pub/repos/apt/pool/main/p/pgpool2/pgpool2_{{ PGPOOL_PACKAGE_VERSION }}_amd64.deb" "pgpool2"
 {{ /PGPOOL_LATEST }}
 
 RUN  wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
