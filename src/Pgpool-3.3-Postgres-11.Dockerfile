@@ -20,13 +20,15 @@ RUN  wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key a
      sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" >> /etc/apt/sources.list.d/pgdg.list' && \
      apt-get update
 
-RUN  apt-get install -y postgresql-client-11
+RUN  apt-get install -y postgresql-client-11 postgresql-common
 
 
 RUN install_deb_pkg "http://launchpadlibrarian.net/160156688/libmemcached10_1.0.8-1ubuntu2_amd64.deb" "libmemcached10"
+
+
 RUN install_deb_pkg "http://security-cdn.debian.org/debian-security/pool/updates/main/o/openssl/libssl1.0.0_1.0.1t-1+deb8u12_amd64.deb" "libssl1.0.0"
-RUN install_deb_pkg "http://atalia.postgresql.org/morgue/p/pgpool2/libpgpool0_3.3.4-1.pgdg70+1_amd64.deb" "libpgpool0"
-RUN install_deb_pkg "http://atalia.postgresql.org/morgue/p/pgpool2/pgpool2_3.3.4-1.pgdg70+1_amd64.deb" "pgpool2"
+RUN install_deb_pkg "http://apt-archive.postgresql.org/pub/repos/apt/pool/main/p/pgpool2/libpgpool0_3.3.4-1.pgdg70%2B1_amd64.deb" "libpgpool0"
+RUN install_deb_pkg "http://apt-archive.postgresql.org/pub/repos/apt/pool/main/p/pgpool2/pgpool2_3.3.4-1.pgdg70%2B1_amd64.deb" "pgpool2"
 
 RUN  wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
      tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
