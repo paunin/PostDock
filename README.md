@@ -115,6 +115,8 @@ You can configure any node of the cluster(`postgres.conf`) or pgpool(`pgpool.con
 
 ### Postgres
 
+To provide your own config file (apart from options given in `$CONFIGS`) you can put it in `/postgresql.conf.base`. The postdock postgres image will use that file as the base when configuring postgresql.conf.
+
 For the rest - you better **follow** the advise and look into the [src/Postgres-latest.Dockerfile](./src/Postgres-latest.Dockerfile) file - it full of comments :)
 
 ### Pgpool

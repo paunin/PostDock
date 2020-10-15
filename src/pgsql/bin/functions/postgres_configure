@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 
 CONFIG_FILE=$PGDATA/postgresql.conf
+CONFIG_FILE_BASE=/postgresql.conf.base
 
 echo ">>> Configuring $CONFIG_FILE"
 
-if [ "$FORCE_RECONFIGURE" == 1 ] || [ ! -f $CONFIG_FILE ]; then
+if [[ (( "$FORCE_RECONFIGURE" == 1 ) || ( ! -f $CONFIG_FILE )) && ( ! -f $CONFIG_FILE_BASE ) ]]; then
     echo ">>>>>> Config file was replaced with standard one!"
     cp -f /var/cluster_configs/postgresql.conf $CONFIG_FILE
+elif [[ (( "$FORCE_RECONFIGURE" == 1 ) || ( ! -f $CONFIG_FILE )) && ( -f $CONFIG_FILE_BASE ) ]]; then
+    echo ">>>>>> Adding configs to given $CONFIG_FILE_BASE"
 else
-    echo ">>>>>> Will add configs to the exists file"
+    echo ">>>>>> Will add configs to the existing file"
 fi
 
 IFS=$CONFIGS_DELIMITER_SYMBOL read -ra CONFIG_PAIRS <<< "$CONFIGS"
