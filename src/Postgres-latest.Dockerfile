@@ -1,1 +1,1 @@
-Postgres-11-Repmgr-4.0.Dockerfile
+Postgres-12-Repmgr-5.1.Dockerfile
