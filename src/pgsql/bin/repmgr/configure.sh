@@ -11,9 +11,9 @@ fi
 echo ">>> Setting up repmgr config file '$REPMGR_CONFIG_FILE'..."
 echo "
 event_notification_command='/usr/local/bin/cluster/repmgr/events/router.sh %n %e %s \"%t\" \"%d\"'
-ssh_options=-o \"StrictHostKeyChecking no\" -v
+ssh_options='-o \"StrictHostKeyChecking no\" -v'
 use_replication_slots=$USE_REPLICATION_SLOTS
-pg_bindir=/usr/lib/postgresql/$PG_MAJOR/bin
+pg_bindir='/usr/lib/postgresql/$PG_MAJOR/bin'
 
 $REPMGR_NODE_ID_PARAM_NAME=$(get_node_id)
 node_name=$NODE_NAME
