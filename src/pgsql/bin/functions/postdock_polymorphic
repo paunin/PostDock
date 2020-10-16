@@ -24,7 +24,7 @@ elif [ "$REPMGR_MAJOR" == "4" ]; then
     PRELOAD_REPMGR_LIB="repmgr"
     # new required params
     echo "degraded_monitoring_timeout=$REPMGR_DEGRADED_MONITORING_TIMEOUT" >> $REPMGR_CONFIG_FILE
-    echo "data_directory=$PGDATA" >> $REPMGR_CONFIG_FILE
+    echo "data_directory='$PGDATA'" >> $REPMGR_CONFIG_FILE
     echo "async_query_timeout=$MASTER_RESPONSE_TIMEOUT" >> $REPMGR_CONFIG_FILE
 fi
 

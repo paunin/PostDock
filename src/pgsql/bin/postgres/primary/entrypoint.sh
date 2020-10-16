@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -e
+
 FORCE_RECONFIGURE=1 postgres_configure
 
 # We need to create postgres user explicitly,

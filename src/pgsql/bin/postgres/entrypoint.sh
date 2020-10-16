@@ -9,14 +9,6 @@ echo "*:$REPLICATION_PRIMARY_PORT:*:$REPLICATION_USER:$REPLICATION_PASSWORD" >> 
 chmod 0600 $PG_HOME/.pgpass
 chown postgres:postgres $PG_HOME/.pgpass
 
-if ! has_pg_cluster; then
-    echo ">>> Cleaning data folder which might have some garbage..."
-    rm -rf $PGDATA/*
-else
-    postgres_configure
-fi
-
-
 export CURRENT_REPLICATION_PRIMARY_HOST=""
 CURRENT_MASTER=`cluster_master || echo ''`
 echo ">>> Auto-detected master name: '$CURRENT_MASTER'"
@@ -47,11 +39,12 @@ chown -R postgres $PGDATA && chmod -R 0700 $PGDATA
 source /usr/local/bin/cluster/repmgr/configure.sh
 
 echo ">>> Sending in background postgres start..."
+
 if [[ "$CURRENT_REPLICATION_PRIMARY_HOST" == "" ]]; then
+    /usr/local/bin/cluster/repmgr/start.sh &
     cp -f /usr/local/bin/cluster/postgres/primary/entrypoint.sh /docker-entrypoint-initdb.d/
-    /docker-entrypoint.sh postgres &
+    /docker-entrypoint.sh postgres
 else
+    # repmgr is started after initial sync
     /usr/local/bin/cluster/postgres/standby/entrypoint.sh
 fi
-
-/usr/local/bin/cluster/repmgr/start.sh

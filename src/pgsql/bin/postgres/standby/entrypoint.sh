@@ -23,7 +23,8 @@ fi
 
 rm -f $MASTER_ROLE_LOCK_FILE_NAME # that file should not be here anyways
 
-postgres_configure
+FORCE_RECONFIGURE=1 postgres_configure
 
 echo ">>> Starting postgres..."
-exec gosu postgres postgres &
+/usr/local/bin/cluster/repmgr/start.sh &
+exec gosu postgres postgres

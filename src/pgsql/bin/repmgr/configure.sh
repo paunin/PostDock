@@ -11,16 +11,16 @@ fi
 echo ">>> Setting up repmgr config file '$REPMGR_CONFIG_FILE'..."
 echo "
 event_notification_command='/usr/local/bin/cluster/repmgr/events/router.sh %n %e %s \"%t\" \"%d\"'
-ssh_options=-o \"StrictHostKeyChecking no\" -v
+ssh_options='-o \"StrictHostKeyChecking no\" -v'
 use_replication_slots=$USE_REPLICATION_SLOTS
-pg_bindir=/usr/lib/postgresql/$PG_MAJOR/bin
+pg_bindir='/usr/lib/postgresql/$PG_MAJOR/bin'
 
 $REPMGR_NODE_ID_PARAM_NAME=$(get_node_id)
 node_name=$NODE_NAME
 conninfo='user=$REPLICATION_USER password=$REPLICATION_PASSWORD host=$CLUSTER_NODE_NETWORK_NAME dbname=$REPLICATION_DB port=$REPLICATION_PRIMARY_PORT connect_timeout=$CONNECT_TIMEOUT'
 failover=automatic
-promote_command='PGPASSWORD=$REPLICATION_PASSWORD repmgr standby promote --log-level DEBUG --verbose'
-follow_command='PGPASSWORD=$REPLICATION_PASSWORD repmgr standby follow -W --log-level DEBUG --verbose'
+promote_command='PGPASSWORD=\'$REPLICATION_PASSWORD\' repmgr standby promote --log-level DEBUG --verbose'
+follow_command='PGPASSWORD=\'$REPLICATION_PASSWORD\' repmgr standby follow -W --log-level DEBUG --verbose'
 reconnect_attempts=$RECONNECT_ATTEMPTS
 reconnect_interval=$RECONNECT_INTERVAL
 $REPMGR_LOG_LEVEL_PARAM_NAME=$LOG_LEVEL
