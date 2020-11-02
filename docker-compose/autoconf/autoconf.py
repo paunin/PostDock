@@ -378,5 +378,3 @@ if __name__ == "__main__":
         print(yml)
 
         sys.stdout = original_stdout
-
-        getGraphRepresentation()
