@@ -145,7 +145,7 @@ def printSlave(rep_group_id, slave_id, yml):
             slaves.append("pgslave{}-0".format(rid))  # Only the first slave of each group
 
         yml = indentPrint("PARTNER_NODES: \"{}\"".format(','.join(masters+slaves)), yml)
-        yml = indentPrint("REPLICATION_PRIMARY_HOST: {}".format(masters[slave_uid % N_MASTERS]), yml)
+        yml = indentPrint("REPLICATION_PRIMARY_HOST: {}".format(masters[rep_group_id % N_MASTERS]), yml)
 
         yml = indentPrint("CLEAN_OVER_REWIND: 1", yml)
         yml = indentPrint("CONFIGS_DELIMITER_SYMBOL: ;", yml)
@@ -283,18 +283,19 @@ try:
         masters = ["pgmaster{}".format(i) for i in range(N_MASTERS)]
         
         main_slaves = ["pgslave{}-0".format(i) for i in range(N_REPLICAS)]
-        master_links = [("pgmaster{}".format((10 * i + 1000) %  N_MASTERS), "pgslave{}-0".format(i)) for i in range(N_REPLICAS)]
+        master_links = [("pgmaster{}".format(i %  N_MASTERS), "pgslave{}-0".format(i)) for i in range(N_REPLICAS)]
         
+        utilities = ["pgpool", "barman"]
+        utilities_links = [("pgmaster0", "barman")] + [("pgpool", "pgmaster{}".format(i)) for i in range(N_MASTERS)]  
+        pgpool_links = [("pgpool", "pgslave{}-0".format(i)) for i in range(N_REPLICAS)]
+
         secondary_slaves = []
         secondary_links = []
         for rep_group_id in range(0,N_REPLICAS):
             for slave_id in range(1,REPLICA_SIZE):
                 secondary_slaves.append("pgslave{}-{}".format(rep_group_id, slave_id))
                 secondary_links.append(("pgslave{}-0".format(rep_group_id), "pgslave{}-{}".format(rep_group_id, slave_id)))
-        
-        utilities = ["pgpool", "barman"]
-        utilities_links = [("pgmaster0", "barman")] + [("pgpool", "pgmaster{}".format(i)) for i in range(N_MASTERS)]  
-        pgpool_links = [("pgpool", "pgslave{}-0".format(i)) for i in range(N_REPLICAS)]
+                pgpool_links.append(("pgpool", "pgslave{}-{}".format(rep_group_id, slave_id)))
 
         G=nx.DiGraph()
         G.add_nodes_from(masters, size = 18)
@@ -304,6 +305,7 @@ try:
         G.add_edges_from(master_links, weight=4)
         G.add_edges_from(secondary_links, weight=2)
         G.add_edges_from(utilities_links, weight=1)
+        G.add_edges_from(pgpool_links, weight=1)
         # nx.draw(G, with_labels=True, pos=nx.spring_layout(G, k=0.25, iterations=50))
         pos = nx.spring_layout(G, iterations=43)
         nx.draw_networkx_nodes(G, pos, nodelist=masters, cmap=plt.get_cmap('jet'), node_color = '#0064a5', node_size = 1000)
@@ -317,6 +319,7 @@ try:
         nx.draw_networkx_edges(G, pos, edgelist=pgpool_links, arrows=True)
 
         nw.visualize(G)
+        # plt.show()
 except:
     print("Some modules required for network representation were not found. Skipping!")
     
@@ -375,3 +378,5 @@ if __name__ == "__main__":
         print(yml)
 
         sys.stdout = original_stdout
+
+        getGraphRepresentation()
