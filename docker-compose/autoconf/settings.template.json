@@ -1,0 +1,17 @@
+{
+        "PG_VERSION": "11",
+        "REPMGR_VERSION": "4.0",
+        "PGPOOL_VERSION": "3.7",
+        "BARMAN_VERSION": "2.4",
+        "N_MASTERS": "1",
+        "N_REPLICAS": "3",
+        "REPLICA_SIZE": "2",
+        "PG_DB": "monkey_db",
+        "PG_USER": "monkey_user",
+        "PG_PASSWORD": "monkey_pass",
+        "REP_DB": "replication_db",
+        "REP_USER": "replication_user",
+        "REP_PASSWORD": "replication_pass",
+        "PCP_USER": "pcp_user",
+        "PCP_PASSWORD": "pcp_pass"
+}
